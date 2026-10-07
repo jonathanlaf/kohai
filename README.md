@@ -12,6 +12,9 @@ Kata study sheets for the Club de Karaté Traditionnel Chaleurs, served at https
 - `assets/vendor/paged.js` — Paged.js 0.4.3 (MIT).
 - `katas/katas.json` — list of kata shown on the home page.
 - `katas/<id>.html` — one file per kata; each `<section data-view="…" data-title="…">` is one screen.
+- `shared/accueil.html` — home page text (`#/`). The kata cards are generated from `katas/katas.json` into `[data-kata-groups]`.
+- `shared/libelles.html` — menu entries and short interface labels (kata cards, Précédent / Suivant).
+- `shared/impression.html` — texts used only in print (table of contents title, credits and notice titles, last-page line, vocabulary cover).
 - `shared/lexique.html` — shared vocabulary, shown and printed from `#/lexique`.
 - `shared/kata.html` — texts common to every kata (« L'esprit du kata », « Erreurs fréquentes »), shown under « Kata » and inserted into every printed kata. `data-kata-name` and `data-kata-kiai` placeholders become the kata's name and Kiai moves (`kiai` in `katas.json`) when printed.
 - `shared/about.html` — « À propos » page (`#/a-propos`): who writes the site, and all sources and credits. Each `[data-credits="<kata id>"]` block and the page's introduction (as a disclaimer) are appended to the end of every printed kata.

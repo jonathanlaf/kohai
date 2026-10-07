@@ -296,3 +296,4 @@ p .jp, li .jp { font-family: var(--font-jp); color: var(--accent); }
 }
 .site-foot span:first-child { margin-right: auto; }
 .site-foot a { color: var(--muted); }
+.site-foot .site-updated { flex-basis: 100%; order: 5; font-size: 0.8rem; }

@@ -5,6 +5,9 @@
   var LEXIQUE = 'shared/lexique.html';
   var SHARED = 'shared/kata.html';
   var ABOUT = 'shared/about.html';
+  var HOME = 'shared/accueil.html';
+  var LABELS = 'shared/libelles.html';    // menu and interface labels
+  var PRINT_TEXTS = 'shared/impression.html';  // texts used only in print
   var params = new URLSearchParams(location.search);
   var root = document.documentElement;
 
@@ -35,6 +38,20 @@
       return t.content;
     });
   }
+  // Editable texts: [data-text="key"] elements from shared/libelles.html and shared/impression.html
+  var texts = {};
+  function loadTexts(url) {
+    return fetchFragment(url).then(function (frag) {
+      frag.querySelectorAll('[data-text]').forEach(function (el) { texts[el.dataset.text] = el.innerHTML.trim(); });
+    }).catch(function () {});  // missing file: fall back to the built-in texts
+  }
+  function T(key, fallback) { return Object.prototype.hasOwnProperty.call(texts, key) ? texts[key] : fallback; }
+  function plain(html) {
+    var t = document.createElement('template');  // inert: no images load, no scripts run
+    t.innerHTML = html;
+    return t.content.textContent.trim();
+  }
+
   var manifestPromise = null;
   function getManifest() {
     if (!manifestPromise) {
@@ -66,14 +83,15 @@
       if (kataId && !kata) throw new Error('kata introuvable (' + kataId + ')');
       var doc = document.createElement('div');
       if (!kata) return fetchFragment(LEXIQUE).then(function (lexique) {
-        doc.innerHTML = '<header class="cover"><h1>Lexique du karatéka</h1><p class="sub">Kohai · Club de Karaté Traditionnel Chaleurs</p></header>';
+        doc.innerHTML = '<header class="cover"><h1>' + T('lexique-titre', 'Lexique du karatéka') + '</h1><p class="sub">' +
+          T('lexique-sous-titre', 'Kohai · Club de Karaté Traditionnel Chaleurs') + '</p></header>';
         var lex = lexique.querySelector('section').cloneNode(true);
         var h2 = lex.querySelector('h2');
         if (h2) h2.remove();
         var first = lex.querySelector('p');
         if (first) first.classList.add('pb');
         Array.prototype.forEach.call(lex.childNodes, function (n) { doc.appendChild(n.cloneNode(true)); });
-        return appendCredits(doc, null).then(function () { return { doc: doc, title: 'Lexique du karatéka' }; });
+        return appendCredits(doc, null).then(function () { return { doc: doc, title: plain(T('lexique-titre', 'Lexique du karatéka')) }; });
       });
       return Promise.all([fetchFragment(kata.file), fetchFragment(SHARED)]).then(function (res2) {
         var frag = res2[0], shared = res2[1];
@@ -106,7 +124,8 @@
   function appendCredits(doc, kataId) {
     return fetchFragment(ABOUT).then(function (about) {
       var wrap = document.createElement('div');
-      wrap.innerHTML = '<h2 id="credits" class="pb" data-toc="Sources et crédits">Sources et crédits</h2>';
+      var creditsTitle = T('credits-titre', 'Sources et crédits');
+      wrap.innerHTML = '<h2 id="credits" class="pb" data-toc="' + escapeHtml(plain(creditsTitle)) + '">' + creditsTitle + '</h2>';
       var intro = about.querySelector('#credits + p');
       if (intro) wrap.appendChild(intro.cloneNode(true));
       var block = kataId && about.querySelector('[data-credits="' + kataId + '"]');
@@ -116,7 +135,7 @@
       if (introParas.length) {
         var notice = document.createElement('aside');
         notice.className = 'notice';
-        notice.innerHTML = '<h2>À propos de ces notes</h2>';
+        notice.innerHTML = '<h2>' + T('note-titre', 'À propos de ces notes') + '</h2>';
         Array.prototype.forEach.call(introParas, function (el) {
           var p = document.createElement('p');
           p.innerHTML = el.innerHTML;
@@ -124,7 +143,8 @@
         });
         wrap.appendChild(notice);
       }
-      wrap.insertAdjacentHTML('beforeend', '<p class="source">Une erreur&nbsp;? Écrivez à me@jonathanlafleur.ca. Version à jour&nbsp;: kohai.jonathanlafleur.ca</p>');
+      wrap.insertAdjacentHTML('beforeend', '<p class="source">' +
+        T('pied-de-page', 'Une erreur&nbsp;? Écrivez à me@jonathanlafleur.ca. Version à jour&nbsp;: kohai.jonathanlafleur.ca') + '</p>');
       Array.prototype.slice.call(wrap.childNodes).forEach(function (n) { doc.appendChild(n); });
     });
   }
@@ -142,14 +162,14 @@
 
   function buildPrintToc(doc) {
     var items = doc.querySelectorAll('h2[id], h3[id], [data-toc][id]');
-    var html = '<nav class="toc-print"><h2>Table des matières</h2><ol class="toc-p">';
+    var html = '<nav class="toc-print"><h2>' + T('table-des-matieres', 'Table des matières') + '</h2><ol class="toc-p">';
     var open = false, started = false, seen = {}, nested = !!doc.querySelector('h2[id]');
     Array.prototype.forEach.call(items, function (el) {
       if (seen[el.id]) return;
       seen[el.id] = true;
       var jp = el.querySelector('.jp');
       var label = el.getAttribute('data-toc')
-        ? el.getAttribute('data-toc') + (jp ? ' ' + jp.outerHTML : '')
+        ? escapeHtml(el.getAttribute('data-toc')) + (jp ? ' ' + jp.outerHTML : '')
         : el.innerHTML.trim();
       var link = '<a href="#' + el.id + '">' + label + '</a>';
       if (el.tagName === 'H3' && nested) {
@@ -169,9 +189,12 @@
   function startPagedPrint(size, kataId, noPrint) {
     root.setAttribute('data-theme', 'light');
     document.addEventListener('DOMContentLoaded', function () {
-      document.body.innerHTML = '<div class="paged-status">Préparation de l’impression…</div>';
+      document.body.innerHTML = '<div class="paged-status">…</div>';
       var status = document.body.firstChild;
-      buildPrintDocument(kataId).then(function (built) {
+      loadTexts(PRINT_TEXTS).then(function () {
+        status.innerHTML = T('preparation', 'Préparation de l’impression…');
+        return buildPrintDocument(kataId);
+      }).then(function (built) {
         document.title = built.title + ' · Kohai (impression)';
         var doc = built.doc;
         var cover = doc.querySelector('header.cover');
@@ -279,12 +302,12 @@
   }
   function buildMenu(manifest, ctx) {
     return [
-      { href: '#/', label: 'Accueil', children: [
-        { href: '#/accueil/about', label: 'Qu’est-ce qu’un kata ?' }
+      { href: '#/', label: T('menu-accueil', 'Accueil'), children: [
+        { href: '#/accueil/about', label: T('menu-qu-est-ce-qu-un-kata', 'Qu’est-ce qu’un kata ?') }
       ] },
-      { href: '#/accueil/kata-title', label: 'Kata', open: true, children: [
-        { href: '#/kata/esprit', label: 'L\u2019esprit du kata', children: ctx.sharedView === 'esprit' ? ctx.sharedItems : null },
-        { href: '#/kata/erreurs', label: 'Erreurs fréquentes', children: ctx.sharedView === 'erreurs' ? ctx.sharedItems : null }
+      { href: '#/accueil/kata-title', label: T('menu-kata', 'Kata'), open: true, children: [
+        { href: '#/kata/esprit', label: T('menu-esprit', 'L\u2019esprit du kata'), children: ctx.sharedView === 'esprit' ? ctx.sharedItems : null },
+        { href: '#/kata/erreurs', label: T('menu-erreurs', 'Erreurs fréquentes'), children: ctx.sharedView === 'erreurs' ? ctx.sharedItems : null }
       ].concat(manifest.groups.map(function (g) {
         var ready = manifest.katas.filter(function (k) { return k.group === g.id && k.file; });
         return { href: '#/accueil/g-' + g.id, label: escapeHtml(g.name), open: ctx.home && ready.length > 0,
@@ -292,8 +315,8 @@
             return { href: '#/' + k.id, label: escapeHtml(k.name), children: k.id === ctx.kataId ? ctx.kataItems : null };
           }) };
       })) },
-      { href: '#/lexique', label: 'Lexique du karatéka', children: ctx.lexItems || null },
-      { href: '#/a-propos', label: 'À propos', children: ctx.aboutItems || null }
+      { href: '#/lexique', label: T('menu-lexique', 'Lexique du karatéka'), children: ctx.lexItems || null },
+      { href: '#/a-propos', label: T('menu-a-propos', 'À propos'), children: ctx.aboutItems || null }
     ];
   }
   function setNav(tree, activeHref) {
@@ -356,7 +379,7 @@
         for (var i = 0; i < (parseInt(parts[1], 10) || 0); i++) marks += '<b></b>';
         return '<i class="belt belt-' + parts[0] + '" aria-hidden="true">' + marks + '</i>';
       }).join('');
-      return '<span class="belt-bar">' + chips + '</span><span class="belt-label">Ceinture ' + escapeHtml(k.belt.charAt(0).toLowerCase() + k.belt.slice(1)) + '</span>';
+      return '<span class="belt-bar">' + chips + '</span><span class="belt-label">' + T('carte-ceinture', 'Ceinture') + ' ' + escapeHtml(k.belt.charAt(0).toLowerCase() + k.belt.slice(1)) + '</span>';
     }
     function card(k) {
       var inner =
@@ -364,7 +387,7 @@
         '<span class="kata-card-name">' + escapeHtml(k.name) + '</span>' +
         '<span class="kata-card-meaning">' + escapeHtml(k.meaning) + '</span>' +
         '<span class="kata-card-belt">' + belt(k) + '</span>' +
-        '<span class="kata-card-meta">' + (k.file ? k.moves + ' mouvements' : 'En préparation') + '</span>';
+        '<span class="kata-card-meta">' + (k.file ? k.moves + ' ' + T('carte-mouvements', 'mouvements') : T('carte-en-preparation', 'En préparation')) + '</span>';
       return k.file
         ? '<li><a class="kata-card" href="#/' + k.id + '">' + inner + '</a></li>'
         : '<li><div class="kata-card is-soon" aria-disabled="true">' + inner + '</div></li>';
@@ -378,25 +401,14 @@
         '<ul class="kata-list">' + list.map(card).join('') + '</ul></section>';
     }).join('');
     var ready = manifest.katas.filter(function (k) { return k.file; }).length;
-    var wrap = document.createElement('div');
-    wrap.className = 'home';
-    wrap.innerHTML =
-      '<header class="home-head">' +
-        '<h1>Kohai <span class="jp" lang="ja">後輩</span></h1>' +
-        '<p class="lead">Fiches d’étude des kata pour les élèves du Club de Karaté Traditionnel Chaleurs.</p>' +
-        '<p>Au dojo, le <em>kohai</em> est l’élève qui apprend auprès de ses aînés, les <em>senpai</em>. Ces fiches l’accompagnent entre deux cours : pour chaque kata, son esprit, son embusen, chaque mouvement illustré et expliqué, une vidéo, les erreurs fréquentes et le vocabulaire japonais. Chaque fiche s’imprime avec sa table des matières. Elles complètent l’enseignement du sensei sans le remplacer. <a href="#/a-propos">Qui suis-je et pourquoi ce site\u00a0?</a></p>' +
-      '</header>' +
-      '<section class="about-kata" aria-labelledby="about">' +
-        '<h2 id="about">Qu’est-ce qu’un kata <span class="jp" lang="ja">型</span> ?</h2>' +
-        '<p>Un kata (<span lang="ja">型</span>, « forme ») est un enchaînement codifié de techniques, exécuté seul face à des adversaires imaginaires. C’est la mémoire du karaté : chaque kata transmet des techniques, des postures, des déplacements et des principes de combat d’une génération de pratiquants à la suivante.</p>' +
-        '<p>Chaque kata suit un tracé précis au sol, l’<em>embusen</em>, commence et se termine au même endroit, et s’ouvre et se ferme par un salut. On l’évalue sur la justesse des postures, la puissance des techniques (<em>kime</em>), l’intensité (<em>kihaku</em>) et la vigilance qui demeure jusqu’au dernier mouvement (<em>zanshin</em>).</p>' +
-        '<p>Le Shotokan compte 26 kata, regroupés en quatre familles. On les apprend dans l’ordre, au rythme des passages de grade.</p>' +
-      '</section>' +
-      '<section aria-labelledby="kata-title"><h2 id="kata-title">Kata <span class="jp" lang="ja">型</span> <span class="count">' + ready + ' disponible' + (ready > 1 ? 's' : '') + '</span></h2>' + groups + '</section>' +
-      '<section aria-labelledby="ref-title"><h2 id="ref-title">Référence <span class="jp" lang="ja">参考</span></h2><ul class="kata-list"><li><a class="kata-card" href="#/lexique">' +
-      '<span class="kata-card-jp" lang="ja">用語</span><span class="kata-card-name">Lexique du karatéka</span>' +
-      '<span class="kata-card-meaning">Les mots japonais pour comprendre les consignes du sensei, avec la prononciation.</span></a></li></ul></section>';
-    show(wrap, anchor);
+    return fetchFragment(HOME).then(function (frag) {
+      var wrap = frag.cloneNode(true);
+      var slot = wrap.querySelector('[data-kata-groups]');
+      if (slot) slot.outerHTML = groups;
+      var count = wrap.querySelector('[data-ready-count]');
+      if (count) count.innerHTML = ready + ' ' + (ready > 1 ? T('carte-disponibles', 'disponibles') : T('carte-disponible', 'disponible'));
+      show(wrap, anchor);
+    });
   }
 
   function childrenOf(section, base) {
@@ -476,20 +488,41 @@
       var prev = sections[idx - 1], next = sections[idx + 1];
       wrap.insertAdjacentHTML('beforeend',
         '<nav class="pager" aria-label="Section précédente et suivante">' +
-        (prev ? '<a class="pager-prev" href="' + base + '/' + prev.dataset.view + '"><span>Précédent</span>' + escapeHtml(prev.dataset.title) + '</a>' : '<span></span>') +
-        (next ? '<a class="pager-next" href="' + base + '/' + next.dataset.view + '"><span>Suivant</span>' + escapeHtml(next.dataset.title) + '</a>' : '<span></span>') +
+        (prev ? '<a class="pager-prev" href="' + base + '/' + prev.dataset.view + '"><span>' + T('page-precedente', 'Précédent') + '</span>' + escapeHtml(prev.dataset.title) + '</a>' : '<span></span>') +
+        (next ? '<a class="pager-next" href="' + base + '/' + next.dataset.view + '"><span>' + T('page-suivante', 'Suivant') + '</span>' + escapeHtml(next.dataset.title) + '</a>' : '<span></span>') +
         '</nav>');
       show(wrap, anchor);
     });
   }
 
+  var labelsReady = loadTexts(LABELS);
+
+  // Footer: when the site was last published, in Montreal time ("17 h 05 @ 7 octobre 2026").
+  // GitHub Pages sends the deploy time as Last-Modified on every file, so ask our own site.
+  function showLastUpdate(when) {
+    var el = document.getElementById('site-updated');
+    var d = new Date(when);
+    if (!el || isNaN(d)) return;
+    var tz = { timeZone: 'America/Montreal' };
+    var time = d.toLocaleTimeString('fr-CA', Object.assign({ hour: '2-digit', minute: '2-digit' }, tz));
+    var date = d.toLocaleDateString('fr-CA', Object.assign({ day: 'numeric', month: 'long', year: 'numeric' }, tz));
+    labelsReady.then(function () {
+      el.innerHTML = T('pied-mise-a-jour', 'Dernière mise-à-jour&nbsp;:') + ' <time datetime="' + escapeHtml(d.toISOString()) + '">' +
+        escapeHtml(time) + ' @ ' + escapeHtml(date) + '</time>';
+      el.hidden = false;
+    });
+  }
+  fetch(MANIFEST, { method: 'HEAD', cache: 'no-cache' })
+    .then(function (r) { var lm = r.headers.get('Last-Modified'); if (lm) showLastUpdate(lm); })
+    .catch(function () {});  // no date shown if the header is missing
   var routeToken = 0;
   function route() {
     var r = parseRoute();
     var token = ++routeToken;
-    getManifest().then(function (manifest) {
+    Promise.all([getManifest(), labelsReady]).then(function (res) {
+      var manifest = res[0];
       var kata = findKata(manifest, r.page);
-      var url = r.page === 'lexique' ? LEXIQUE : r.page === 'a-propos' ? ABOUT : r.page === 'kata' ? SHARED : kata ? kata.file : null;
+      var url = !r.page || r.page === 'accueil' ? HOME : r.page === 'lexique' ? LEXIQUE : r.page === 'a-propos' ? ABOUT : r.page === 'kata' ? SHARED : kata ? kata.file : null;
       return (url ? fetchText(url) : Promise.resolve()).then(function () { return manifest; });
     }).then(function (manifest) {
       if (token !== routeToken) return;  // the user already navigated somewhere else
