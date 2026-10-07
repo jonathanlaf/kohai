@@ -1,0 +1,34 @@
+/* Used only by Paged.js (?print=letter|a4), on top of print.css. Page size is added at runtime. */
+@page {
+  margin: 16mm 15mm 18mm;
+  @bottom-center {
+    content: counter(page) " / " counter(pages);
+    font: 9pt -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color: #666;
+  }
+}
+@page:first {
+  @bottom-center { content: none; }
+}
+
+.toc-p a::after {
+  content: target-counter(attr(href url), page);
+  order: 2;
+  min-width: 2ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* On-screen preview of the paginated document */
+@media screen {
+  html, body { background: #7a7671 !important; }
+  .pagedjs_pages { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px 0; }
+  .pagedjs_page { background: #fff; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25); }
+  .paged-status {
+    position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 20;
+    background: #141312; color: #fff; padding: 8px 14px; border-radius: 8px; font: 14px -apple-system, sans-serif;
+  }
+}
+@media print {
+  .paged-status { display: none; }
+}

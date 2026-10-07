@@ -1,0 +1,60 @@
+/* Print rules. Loaded with media="print" for the browser's own print, and as a plain stylesheet by Paged.js (?print=letter|a4). */
+:root, :root[data-theme] {
+  --bg: #ffffff; --fg: #111111; --muted: #555555; --line: #cccccc;
+  --head: #eeeeee; --head-fg: #111111; --stripe: #f7f7f7; --accent: #a3271f; --paper: transparent;
+  color-scheme: light;
+}
+body { background: #fff; color: #111; font-size: 11pt; padding: 0; }
+.topbar, .toc-web, .screen-only, .video-frame, .pager, .eyebrow { display: none !important; }
+.print-only { display: inline; }
+.layout { display: block; max-width: none; padding: 0; }
+main { max-width: none; padding: 0; }
+a { color: inherit; text-decoration: none; }
+.source a { text-decoration: underline; }
+
+.move-img, .sheet img { mix-blend-mode: multiply !important; padding: 0 !important; background: transparent !important; }
+.table-wrap { overflow: visible; border-radius: 0; }
+tr { break-inside: avoid; }
+thead { display: table-header-group; }
+th, tbody tr:nth-child(even), .embusen, .embusen *, .legend * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+.pb { break-before: page; }
+h2, h3 { break-after: avoid; }
+p { orphans: 3; widows: 3; }
+.embusen { break-inside: avoid; }
+.embusen > svg { max-width: 220px; }
+.embusen > svg.embusen-end { max-width: 175px; }
+.sheet { break-inside: avoid; }
+.sheet img { max-width: 100%; max-height: 22cm; width: auto; }
+
+.video { margin: 4px 0 16px; }
+.video figcaption { font-size: 10.5pt; color: #111; margin: 0; }
+.video .url { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 10pt; word-break: break-all; }
+
+/* Cover page with the printed table of contents */
+.cover { padding-top: 20mm; }
+.cover h1 { font-size: 30pt; }
+.cover .sub { font-size: 13pt; }
+.toc-print { display: block; margin-top: 18mm; }
+.toc-print h2 { font-size: 14pt; margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+.toc-p, .toc-p ol { list-style: none; margin: 0; padding: 0; }
+.toc-p > li { margin: 6px 0; font-weight: 600; }
+.toc-p ol { padding-left: 18px; font-weight: 400; }
+.toc-p ol li { margin: 2px 0; }
+.toc-p a { display: flex; align-items: baseline; gap: 6px; color: #111; }
+.toc-p a::before { content: ""; flex: 1; order: 1; min-width: 16px; border-bottom: 1px dotted #888; transform: translateY(-3px); }
+.toc-p .jp { font-family: var(--font-jp); color: var(--accent); font-weight: 500; margin-left: 4px; }
+.legend { font-size: 8.5pt; gap: 4px 14px; margin-bottom: 0; }
+.embusen-inset > svg { max-width: 86% !important; min-width: 0 !important; }
+.embusen-inset { overflow: visible; }
+.embusen-inset > svg.embusen-desktop { display: inline !important; }
+.embusen-inset > svg.embusen-mobile { display: none !important; }
+
+.site-foot { display: none !important; }
+.notice { margin: 14px 0 0; padding: 10px 12px 2px; border: 1px solid #ccc; border-left: 3px solid #a3271f; }
+.notice h2 { font-size: 10pt; margin: 0 0 4px; }
+.credits { margin-top: 10px; break-inside: avoid; }
+.credits dl { display: grid; grid-template-columns: 45mm 1fr; gap: 3px 12px; font-size: 10pt; }
+.credits dt { font-weight: 600; }
+.credits dd { margin: 0; }
+.credits dd a::after { content: " · " attr(href); font-size: 8.5pt; color: #555; word-break: break-all; }

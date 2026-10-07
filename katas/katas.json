@@ -1,0 +1,56 @@
+{
+  "groups": [
+    {
+      "id": "heian",
+      "name": "Heian",
+      "kanji": "平安",
+      "description": "Les cinq kata de base, étudiés pendant les premières ceintures. Leur nom signifie « paix et tranquillité »."
+    },
+    {
+      "id": "tekki",
+      "name": "Tekki",
+      "kanji": "鉄騎",
+      "description": "Trois kata exécutés en Kiba Dachi, avec des déplacements latéraux sur une seule ligne. Leur nom signifie « cavalier de fer »."
+    },
+    {
+      "id": "shitei",
+      "name": "Shitei",
+      "kanji": "指定",
+      "description": "Les quatre kata « imposés » des compétitions et des grades avancés."
+    },
+    {
+      "id": "sentei",
+      "name": "Sentei",
+      "kanji": "選定",
+      "description": "Les kata « au choix », étudiés surtout aux grades de ceinture noire."
+    }
+  ],
+  "katas": [
+    {"id": "heian-shodan", "group": "heian", "name": "Heian Shodan", "kanji": "平安初段", "meaning": "Esprit paisible, premier niveau", "moves": 21, "kiai": [9, 17], "file": "katas/heian-shodan.html", "belt": "Blanche → jaune", "beltColors": ["blanche", "jaune"]},
+    {"id": "heian-nidan", "group": "heian", "name": "Heian Nidan", "kanji": "平安二段", "meaning": "Esprit paisible, deuxième niveau", "belt": "Jaune → orange", "beltColors": ["jaune", "orange"]},
+    {"id": "heian-sandan", "group": "heian", "name": "Heian Sandan", "kanji": "平安三段", "meaning": "Esprit paisible, troisième niveau", "belt": "Orange → verte", "beltColors": ["orange", "verte"]},
+    {"id": "heian-yondan", "group": "heian", "name": "Heian Yondan", "kanji": "平安四段", "meaning": "Esprit paisible, quatrième niveau", "belt": "Verte → bleue", "beltColors": ["verte", "bleue"]},
+    {"id": "heian-godan", "group": "heian", "name": "Heian Godan", "kanji": "平安五段", "meaning": "Esprit paisible, cinquième niveau", "belt": "Bleue → marron, 3e kyu", "beltColors": ["bleue", "marron:1"]},
+    {"id": "tekki-shodan", "group": "tekki", "name": "Tekki Shodan", "kanji": "鉄騎初段", "meaning": "Cavalier de fer, premier niveau", "belt": "Marron, 2e kyu", "beltColors": ["marron:2"]},
+    {"id": "tekki-nidan", "group": "tekki", "name": "Tekki Nidan", "kanji": "鉄騎二段", "meaning": "Cavalier de fer, deuxième niveau", "belt": "Noire, 2e dan", "beltColors": ["noire:2"]},
+    {"id": "tekki-sandan", "group": "tekki", "name": "Tekki Sandan", "kanji": "鉄騎三段", "meaning": "Cavalier de fer, troisième niveau", "belt": "Noire, 3e dan", "beltColors": ["noire:3"]},
+    {"id": "bassai-dai", "group": "shitei", "name": "Bassai Dai", "kanji": "抜塞大", "meaning": "Pénétrer la forteresse (grand)", "belt": "Marron, 1er kyu", "beltColors": ["marron:3"]},
+    {"id": "kanku-dai", "group": "shitei", "name": "Kanku Dai", "kanji": "観空大", "meaning": "Contempler le ciel (grand)", "belt": "Noire, 1er dan", "beltColors": ["noire:1"]},
+    {"id": "enpi", "group": "shitei", "name": "Enpi", "kanji": "燕飛", "meaning": "Le vol de l'hirondelle", "belt": "Noire, 1er dan", "beltColors": ["noire:1"]},
+    {"id": "jion", "group": "shitei", "name": "Jion", "kanji": "慈恩", "meaning": "Amour et bienveillance", "belt": "Noire, 1er dan", "beltColors": ["noire:1"]},
+    {"id": "bassai-sho", "group": "sentei", "name": "Bassai Sho", "kanji": "抜塞小", "meaning": "Pénétrer la forteresse (petit)", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]},
+    {"id": "kanku-sho", "group": "sentei", "name": "Kanku Sho", "kanji": "観空小", "meaning": "Contempler le ciel (petit)", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]},
+    {"id": "gankaku", "group": "sentei", "name": "Gankaku", "kanji": "岩鶴", "meaning": "La grue sur le rocher", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]},
+    {"id": "jitte", "group": "sentei", "name": "Jitte", "kanji": "十手", "meaning": "Dix mains", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]},
+    {"id": "hangetsu", "group": "sentei", "name": "Hangetsu", "kanji": "半月", "meaning": "La demi-lune", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]},
+    {"id": "chinte", "group": "sentei", "name": "Chinte", "kanji": "珍手", "meaning": "Mains rares", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]},
+    {"id": "nijushiho", "group": "sentei", "name": "Nijushiho", "kanji": "二十四歩", "meaning": "Vingt-quatre pas", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]},
+    {"id": "gojushiho-dai", "group": "sentei", "name": "Gojushiho Dai", "kanji": "五十四歩大", "meaning": "Cinquante-quatre pas (grand)", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]},
+    {"id": "gojushiho-sho", "group": "sentei", "name": "Gojushiho Sho", "kanji": "五十四歩小", "meaning": "Cinquante-quatre pas (petit)", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]},
+    {"id": "meikyo", "group": "sentei", "name": "Meikyo", "kanji": "明鏡", "meaning": "Le miroir clair", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]},
+    {"id": "sochin", "group": "sentei", "name": "Sochin", "kanji": "壮鎮", "meaning": "Force tranquille", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]},
+    {"id": "unsu", "group": "sentei", "name": "Unsu", "kanji": "雲手", "meaning": "Mains de nuage", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]},
+    {"id": "wankan", "group": "sentei", "name": "Wankan", "kanji": "王冠", "meaning": "La couronne du roi", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]},
+    {"id": "jiin", "group": "sentei", "name": "Jiin", "kanji": "慈陰", "meaning": "L'ombre du temple", "belt": "Noire, 2e dan et +", "beltColors": ["noire:2"]}
+  ]
+}

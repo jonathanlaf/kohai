@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kohai</title>
+<meta name="description" content="Fiches d'étude des kata du Club de Karaté Traditionnel Chaleurs : esprit du kata, embusen, mouvements illustrés, vidéos et lexique japonais.">
+<meta name="color-scheme" content="light dark">
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('kohai-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/print.css" media="print">
+<script src="assets/app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <nav class="crumbs" aria-label="Fil d'Ariane">
+    <a class="brand" href="#/">Kohai <span class="brand-jp">後輩</span></a>
+    <span class="crumb" id="crumb" hidden></span>
+  </nav>
+  <div class="tools">
+    <div class="theme-switch" role="group" aria-label="Thème">
+      <button type="button" data-theme-choice="light" aria-pressed="false">Clair</button>
+      <button type="button" data-theme-choice="auto" aria-pressed="true">Auto</button>
+      <button type="button" data-theme-choice="dark" aria-pressed="false">Sombre</button>
+    </div>
+    <span class="print-tools" id="print-tools" hidden>
+      <label class="paper"><span class="visually-hidden">Format du papier</span>
+        <select id="paper-size">
+          <option value="letter">Lettre</option>
+          <option value="a4">A4</option>
+        </select>
+      </label>
+      <a id="print-link" class="print-btn" href="#" target="_blank" rel="noopener">Imprimer</a>
+    </span>
+  </div>
+</header>
+
+<div class="layout" id="layout">
+  <nav class="toc-web" id="toc-web" aria-label="Sections" hidden>
+    <details id="toc-details" open>
+      <summary id="toc-title">Sections</summary>
+      <ol class="toc" id="toc"></ol>
+    </details>
+  </nav>
+  <main id="view" tabindex="-1">
+    <p class="loading">Chargement…</p>
+    <noscript><p>Cette page a besoin de JavaScript pour afficher les fiches.</p></noscript>
+    <footer class="site-foot">
+      <span>Kohai <span class="jp" lang="ja">後輩</span> · les notes d'un élève, non approuvées par le dojo.</span>
+      <a href="#/a-propos">À propos</a>
+      <a href="#/a-propos/credits">Sources et crédits</a>
+      <a href="mailto:me@jonathanlafleur.ca?subject=Kohai%20%E2%80%94%20erreur%20%C3%A0%20corriger">Signaler une erreur</a>
+    </footer>
+  </main>
+</div>
+</body>
+</html>
