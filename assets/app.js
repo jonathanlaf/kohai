@@ -80,7 +80,7 @@
   function buildPrintDocument(kataId) {
     return getManifest().then(function (manifest) {
       var kata = kataId && findKata(manifest, kataId);
-      if (kataId && !kata) throw new Error('kata introuvable (' + kataId + ')');
+      if (kataId && !kata) throw new Error(plain(T('erreur-kata-introuvable', 'kata introuvable')) + ' (' + kataId + ')');
       var doc = document.createElement('div');
       if (!kata) return fetchFragment(LEXIQUE).then(function (lexique) {
         doc.innerHTML = '<header class="cover"><h1>' + T('lexique-titre', 'Lexique du karatéka') + '</h1><p class="sub">' +
@@ -195,7 +195,7 @@
         status.innerHTML = T('preparation', 'Préparation de l’impression…');
         return buildPrintDocument(kataId);
       }).then(function (built) {
-        document.title = built.title + ' · Kohai (impression)';
+        document.title = built.title + ' · ' + plain(T('site-nom', 'Kohai')) + ' ' + plain(T('onglet-impression', '(impression)'));
         var doc = built.doc;
         var cover = doc.querySelector('header.cover');
         if (cover) cover.insertAdjacentHTML('afterend', buildPrintToc(doc));
@@ -211,7 +211,7 @@
 
         var script = document.createElement('script');
         script.src = 'assets/vendor/paged.js';
-        script.onerror = function () { status.textContent = 'Impossible de charger le module d’impression.'; };
+        script.onerror = function () { status.innerHTML = T('erreur-module', 'Impossible de charger le module d’impression.'); };
         script.onload = function () {
           var Paged = window.Paged;
           class RepeatTableHeaders extends Paged.Handler {
@@ -235,11 +235,11 @@
               root.setAttribute('data-paged-done', String(flow.total));
               if (!noPrint) setTimeout(function () { window.print(); }, 300);
             })
-            .catch(function (err) { status.textContent = 'Impossible de préparer l’impression : ' + err.message; });
+            .catch(function (err) { status.innerHTML = T('erreur-preparation', 'Impossible de préparer l’impression&nbsp;:') + ' ' + escapeHtml(err.message); });
         };
         document.head.appendChild(script);
       }).catch(function (err) {
-        status.textContent = 'Impossible de préparer l’impression : ' + err.message;
+        status.innerHTML = T('erreur-preparation', 'Impossible de préparer l’impression&nbsp;:') + ' ' + escapeHtml(err.message);
       });
     });
   }
@@ -321,7 +321,7 @@
   }
   function setNav(tree, activeHref) {
     tocWeb.hidden = false;
-    tocTitle.textContent = 'Menu';
+    tocTitle.innerHTML = T('menu-titre', 'Menu');
     function list(items) {
       return items.map(function (it) {
         var kids = it.children && it.children.length;
@@ -330,7 +330,7 @@
         var link = '<a href="' + it.href + '"' + (isActive ? ' class="active" aria-current="page"' : '') + '>' + it.label + '</a>';
         if (!kids) return '<li><div class="row"><span class="tw-space"></span>' + link + '</div></li>';
         return '<li class="node' + (open ? ' open' : '') + '"><div class="row">' +
-          '<button type="button" class="tw" data-key="' + it.href + '" aria-expanded="' + open + '" aria-label="' + (open ? 'Replier' : 'Déplier') + '"></button>' +
+          '<button type="button" class="tw" data-key="' + it.href + '" aria-expanded="' + open + '" aria-label="' + escapeHtml(plain(open ? T('menu-replier', 'Replier') : T('menu-deplier', 'Déplier'))) + '"></button>' +
           link + '</div><ol>' + list(it.children) + '</ol></li>';
       }).join('');
     }
@@ -347,7 +347,7 @@
     var open = !li.classList.contains('open');
     li.classList.toggle('open', open);
     btn.setAttribute('aria-expanded', String(open));
-    btn.setAttribute('aria-label', open ? 'Replier' : 'Déplier');
+    btn.setAttribute('aria-label', plain(open ? T('menu-replier', 'Replier') : T('menu-deplier', 'Déplier')));
     toggled[btn.dataset.key] = open;
   });
 
@@ -371,7 +371,7 @@
     printTarget = null; updatePrint();
     setCrumb('');
     setNav(buildMenu(manifest, { home: true }), anchor ? '#/accueil/' + anchor : '#/');
-    document.title = 'Kohai · Fiches d’étude des kata';
+    document.title = plain(T('onglet-accueil', 'Kohai · Fiches d’étude des kata'));
     function belt(k) {
       // "marron:2" = brown belt with 2 stripes (kyu); "noire:1" = black belt with 1 bar (dan)
       var chips = (k.beltColors || []).map(function (c) {
@@ -422,10 +422,10 @@
   function renderLexique(manifest, anchor) {
     return fetchFragment(LEXIQUE).then(function (frag) {
       printTarget = 'lexique'; updatePrint();
-      setCrumb('Lexique');
+      setCrumb(plain(T('fil-lexique', 'Lexique')));
       var section = frag.querySelector('section').cloneNode(true);
       setNav(buildMenu(manifest, { lexItems: childrenOf(section, '#/lexique') }), anchor ? '#/lexique/' + anchor : '#/lexique');
-      document.title = 'Lexique du karatéka · Kohai';
+      document.title = plain(T('menu-lexique', 'Lexique du karatéka')) + ' · ' + plain(T('site-nom', 'Kohai'));
       show(section, anchor);
     });
   }
@@ -433,13 +433,13 @@
   function renderAbout(manifest, anchor) {
     return fetchFragment(ABOUT).then(function (frag) {
       printTarget = null; updatePrint();
-      setCrumb('À propos');
+      setCrumb(plain(T('menu-a-propos', 'À propos')));
       var section = frag.querySelector('section').cloneNode(true);
       var items = Array.prototype.map.call(section.querySelectorAll('h2[id]'), function (h) {
         return { href: '#/a-propos/' + h.id, label: escapeHtml(h.textContent.trim()) };
       });
       setNav(buildMenu(manifest, { aboutItems: items }), anchor ? '#/a-propos/' + anchor : '#/a-propos');
-      document.title = 'À propos · Kohai';
+      document.title = plain(T('menu-a-propos', 'À propos')) + ' · ' + plain(T('site-nom', 'Kohai'));
       show(section, anchor);
     });
   }
@@ -454,7 +454,7 @@
       var base = '#/kata/' + viewId;
       setNav(buildMenu(manifest, { sharedView: viewId, sharedItems: childrenOf(section, base).filter(function (c) { return c.href !== base + '/'; }) }),
         anchor ? base + '/' + anchor : base);
-      document.title = section.dataset.title + ' · Kohai';
+      document.title = section.dataset.title + ' · ' + plain(T('site-nom', 'Kohai'));
       var wrap = document.createElement('div');
       wrap.className = 'kata-view';
       wrap.insertAdjacentHTML('beforeend', '<p class="eyebrow"><a href="#/accueil/kata-title">Kata</a></p>');
@@ -476,7 +476,7 @@
       printTarget = kata.id; updatePrint();
       setCrumb(kata.name);
       setNav(buildMenu(manifest, { kataId: kata.id, kataItems: items }), base + '/' + current.dataset.view + (anchor ? '/' + anchor : ''));
-      document.title = current.dataset.title + ' · ' + kata.name + ' · Kohai';
+      document.title = current.dataset.title + ' · ' + kata.name + ' · ' + plain(T('site-nom', 'Kohai'));
 
       var idx = sections.indexOf(current);
       var wrap = document.createElement('div');
@@ -487,7 +487,7 @@
       wrap.appendChild(current.cloneNode(true));
       var prev = sections[idx - 1], next = sections[idx + 1];
       wrap.insertAdjacentHTML('beforeend',
-        '<nav class="pager" aria-label="Section précédente et suivante">' +
+        '<nav class="pager" aria-label="' + escapeHtml(plain(T('page-navigation', 'Section précédente et suivante'))) + '">' +
         (prev ? '<a class="pager-prev" href="' + base + '/' + prev.dataset.view + '"><span>' + T('page-precedente', 'Précédent') + '</span>' + escapeHtml(prev.dataset.title) + '</a>' : '<span></span>') +
         (next ? '<a class="pager-next" href="' + base + '/' + next.dataset.view + '"><span>' + T('page-suivante', 'Suivant') + '</span>' + escapeHtml(next.dataset.title) + '</a>' : '<span></span>') +
         '</nav>');
@@ -507,7 +507,7 @@
     var time = d.toLocaleTimeString('fr-CA', Object.assign({ hour: '2-digit', minute: '2-digit' }, tz));
     var date = d.toLocaleDateString('fr-CA', Object.assign({ day: 'numeric', month: 'long', year: 'numeric' }, tz));
     labelsReady.then(function () {
-      el.innerHTML = T('pied-mise-a-jour', 'Dernière mise-à-jour&nbsp;:') + ' <time datetime="' + escapeHtml(d.toISOString()) + '">' +
+      el.innerHTML = T('pied-mise-a-jour', 'Dernière mise à jour&nbsp;:') + ' <time datetime="' + escapeHtml(d.toISOString()) + '">' +
         escapeHtml(time) + ' @ ' + escapeHtml(date) + '</time>';
       el.hidden = false;
     });
@@ -535,7 +535,8 @@
       return renderKata(manifest, kata, r.view, r.anchor);
     }).catch(function (err) {
       if (token !== routeToken) return;
-      view.innerHTML = '<p class="error">Impossible de charger le contenu (' + escapeHtml(err.message) + '). Rechargez la page.</p>';
+      view.innerHTML = '<p class="error">' + T('erreur-chargement', 'Impossible de charger le contenu. Rechargez la page.') +
+        ' <small>(' + escapeHtml(err.message) + ')</small></p>';
     });
   }
 
