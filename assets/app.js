@@ -111,8 +111,19 @@
       if (intro) wrap.appendChild(intro.cloneNode(true));
       var block = kataId && about.querySelector('[data-credits="' + kataId + '"]');
       if (block) wrap.appendChild(block.cloneNode(true));
-      var notice = about.querySelector('#avertissement');
-      if (notice) wrap.appendChild(notice.cloneNode(true));
+      // The About introduction doubles as the printed disclaimer
+      var introParas = about.querySelectorAll('.about-head .intro');  // the .lead (who I am) stays on the web page only
+      if (introParas.length) {
+        var notice = document.createElement('aside');
+        notice.className = 'notice';
+        notice.innerHTML = '<h2>À propos de ces notes</h2>';
+        Array.prototype.forEach.call(introParas, function (el) {
+          var p = document.createElement('p');
+          p.innerHTML = el.innerHTML;
+          notice.appendChild(p);
+        });
+        wrap.appendChild(notice);
+      }
       wrap.insertAdjacentHTML('beforeend', '<p class="source">Une erreur&nbsp;? Écrivez à me@jonathanlafleur.ca. Version à jour&nbsp;: kohai.jonathanlafleur.ca</p>');
       Array.prototype.slice.call(wrap.childNodes).forEach(function (n) { doc.appendChild(n); });
     });

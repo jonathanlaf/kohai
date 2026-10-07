@@ -276,7 +276,7 @@ p .jp, li .jp { font-family: var(--font-jp); color: var(--accent); }
 .about-head { padding: 16px 0 8px; }
 .eyebrow-plain { margin: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
 .about-head h1 { font-size: 2.1rem; margin: 6px 0 8px; }
-.about-head .lead { font-size: 1.2rem; color: var(--fg); }
+.about-head .lead { font-size: 1rem; color: var(--fg); }
 .about h2 { margin-top: 36px; }
 .notice {
   margin: 36px 0 8px; padding: 18px 20px 8px; border: 1px solid var(--line);
