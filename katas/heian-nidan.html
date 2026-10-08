@@ -1,0 +1,120 @@
+<!-- Heian Nidan (BROUILLON). Each <section data-view> is one screen in the web app; print joins them in order.
+     Elements with class="todo" mark what is left to write. -->
+<article class="kata" data-kata="heian-nidan">
+<section data-view="presentation" data-title="Présentation" class="kata-intro">
+  <header class="cover">
+  <h1>Heian Nidan <span class="jp" lang="ja">平安二段</span></h1>
+  <p class="sub">Esprit paisible, deuxième niveau</p>
+  <p>Heian Nidan, le deuxième kata Heian, compte 26 mouvements, avec deux Kiai&nbsp;: au 11<sup>e</sup> et au 26<sup>e</sup> mouvement. Il est requis pour l’examen de passage de la ceinture jaune à la ceinture orange. Son embusen a presque la forme d’un «&nbsp;I&nbsp;».</p>
+  </header>
+  <p class="screen-only see-also">À lire aussi, commun à tous les kata&nbsp;: <a href="#/kata/esprit">L'esprit du kata</a> et <a href="#/kata/erreurs">Erreurs fréquentes</a>.</p>
+  <h2 id="decomposition" data-toc="Décomposition du kata">Décomposition du kata <span class="jp" lang="ja">型</span>, étape par étape</h2>
+  <p>La moitié du kata se fait en Kokutsu Dachi (posture arrière). Le blocage main-sabre (shuto uke) y revient sept fois&nbsp;: c’est une technique centrale du kata. Heian Nidan est le premier kata qui enseigne les coups de pied et les techniques à deux mains, ainsi que le gyaku hanmi (les hanches tournées dans le sens inverse du bras qui bloque). Portez une attention particulière à la combinaison du coup de pied de côté et du revers du poing (mouvement 7)&nbsp;: on la retrouve dans plusieurs autres kata.</p>
+</section>
+<section data-view="embusen" data-title="Embusen">
+  <h2 id="embusen" class="pb" data-toc="Embusen">Embusen <span class="jp" lang="ja">演武線</span> (ligne de déplacement)</h2>
+  <p>Le kata suit un tracé en «&nbsp;I&nbsp;». Les mouvements 1 à 7 se font sur place, au point de départ, tout comme 23 et 25. On part ensuite sur la ligne centrale (8 à 11, Kiai au 11<sup>e</sup>), on fait les quatre shuto uke à l’autre bout (12 à 15, dont deux en diagonale), puis on revient sur la même ligne (16 à 22). Les mouvements 23 à 26 se font au point de départ, avec deux pas en diagonale (Kiai au 26<sup>e</sup>). On revient enfin au point de départ avec Yame.</p>
+  <figure class="embusen">
+    <svg viewBox="150 60 300 490" role="img" aria-label="Embusen de Heian Nidan">
+      <defs>
+        <marker id="arr-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" class="arrow"/>
+        </marker>
+      </defs>
+      <line class="bar" x1="170" y1="110" x2="430" y2="110"/>
+      <line class="bar" x1="170" y1="520" x2="430" y2="520"/>
+      <rect class="node" x="232" y="96" width="136" height="28" rx="14"/><text class="num" x="300" y="110">0 · 1 à 7 · 23 · 25</text>
+      <path class="seg" fill="none" d="M258,124 C258,150 258,150 258,173" marker-end="url(#arr-n)"/>
+      <path class="seg" fill="none" d="M258,208 L258,253" marker-end="url(#arr-n)"/>
+      <path class="seg" fill="none" d="M258,288 L258,333" marker-end="url(#arr-n)"/>
+      <path class="seg" fill="none" d="M258,368 L258,413" marker-end="url(#arr-n)"/>
+      <rect class="node" x="244" y="176" width="28" height="28" rx="5"/><text class="num" x="258" y="190">8</text>
+      <rect class="node" x="244" y="256" width="28" height="28" rx="5"/><text class="num" x="258" y="270">9</text>
+      <rect class="node" x="244" y="336" width="28" height="28" rx="5"/><text class="num" x="258" y="350">10</text>
+      <circle class="kiai" cx="258" cy="430" r="14"/><text class="kiai-t" x="258" y="430">11</text>
+      <path class="seg" fill="none" d="M258,446 C258,480 280,490 285,503" marker-end="url(#arr-n)"/>
+      <rect class="node" x="270" y="506" width="60" height="28" rx="6"/><text class="num" x="300" y="520">12 · 14</text>
+      <path class="seg" fill="none" d="M276,506 L224,464" marker-end="url(#arr-n)"/>
+      <rect class="node" x="198" y="438" width="28" height="28" rx="5"/><text class="num" x="212" y="452">13</text>
+      <path class="seg" fill="none" d="M212,466 Q212,520 263,520" marker-end="url(#arr-n)"/>
+      <path class="seg" fill="none" d="M324,506 L376,464" marker-end="url(#arr-n)"/>
+      <rect class="node" x="374" y="438" width="28" height="28" rx="5"/><text class="num" x="388" y="452">15</text>
+      <path class="seg" fill="none" d="M392,439 C392,428 350,440 350,421" marker-end="url(#arr-n)"/>
+      <rect class="node" x="319" y="391" width="58" height="28" rx="14"/><text class="num" x="348" y="405">16 · 17</text>
+      <path class="seg" fill="none" d="M348,391 L348,354" marker-end="url(#arr-n)"/>
+      <rect class="node" x="308" y="321" width="80" height="28" rx="14"/><text class="num" x="348" y="335">18 · 19 · 20</text>
+      <path class="seg" fill="none" d="M348,321 L348,284" marker-end="url(#arr-n)"/>
+      <circle class="node" cx="348" cy="265" r="14"/><text class="num" x="348" y="265">21</text>
+      <path class="seg" fill="none" d="M348,251 L348,209" marker-end="url(#arr-n)"/>
+      <circle class="node" cx="348" cy="190" r="14"/><text class="num" x="348" y="190">22</text>
+      <path class="seg" fill="none" d="M348,176 C348,150 338,140 336,129" marker-end="url(#arr-n)"/>
+      <path class="seg" fill="none" d="M248,124 L231,150" marker-end="url(#arr-n)"/>
+      <circle class="node" cx="220" cy="164" r="14"/><text class="num" x="220" y="164">24</text>
+      <path class="seg" fill="none" d="M352,124 L377,152" marker-end="url(#arr-n)"/>
+      <circle class="kiai" cx="390" cy="164" r="14"/><text class="kiai-t" x="390" y="164">26</text>
+      <text class="kiai-l" x="300" y="84">DÉPART = FIN</text>
+      <text class="kiai-l" x="276" y="452" style="text-anchor:start">KIAI</text>
+      <text class="kiai-l" x="390" y="190">KIAI</text>
+      
+      
+    </svg>
+    <figcaption>Tracé de Heian Nidan, d’après le schéma de karatedo.asia</figcaption>
+  </figure>
+  <p class="todo">À vérifier&nbsp;: sens de l’avant (la ligne centrale part-elle vers l’avant ou vers l’arrière&nbsp;?) et position exacte des mouvements 23 à 26.</p>
+</section>
+<section data-view="illustrations" data-title="Mouvements illustrés">
+  <h2 id="illustrations" class="pb">Les mouvements illustrés</h2>
+  <p class="todo">À compléter&nbsp;: illustration des mouvements (images dans img/heian-nidan/).</p>
+</section>
+<section data-view="tutoriel" data-title="Tutoriel du kata">
+  <h2 id="tutoriel" class="pb" data-toc="Tutoriel du kata">Tutoriel du kata Heian Nidan <span class="jp" lang="ja">平安二段</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Mouvement</th><th>Technique</th><th>Posture</th><th>Direction</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Rei <span class="jp" lang="ja">礼</span> (salut)</td><td>Salut debout (Ritsurei)</td><td>Musubi Dachi (posture d'attention)</td><td>Talons joints, pieds ouverts à 45°, mains à plat le long du corps. Effectuez un salut debout en inclinant le haut du corps vers l'avant, le regard porté environ deux mètres devant vous. Le sensei annonce le kata&nbsp;: répondez «&nbsp;Heian Nidan&nbsp;!&nbsp;» d'une voix forte.</td></tr>
+      <tr><td>Yoi <span class="jp" lang="ja">用意</span> (départ)</td><td>Position prêt</td><td>Heiko Dachi (posture des jambes parallèles)</td><td>Depuis Musubi Dachi, ouvrez le pied gauche puis le pied droit à la largeur des épaules, les poings fermés descendus naturellement devant le corps. Regard droit devant, au point de départ de l'embusen.</td></tr>
+      <tr><td>1. Ichi <span class="jp" lang="ja">一</span> (un)</td><td>Blocage du dos de l’avant-bras gauche (haiwan uke) et garde frontale droite (zenwan hitae kamae), jodan</td><td>Kokutsu Dachi (posture arrière)</td><td>Tournez la tête vers la gauche et avancez le pied gauche de 90° vers la gauche.</td></tr>
+      <tr><td>2. Ni <span class="jp" lang="ja">二</span> (deux)</td><td>Blocage en balayant vers l’extérieur du bras gauche (soto nagashi uke) et frappe circulaire du poing-marteau droit (kentsui soto mawashi uchi), jodan</td><td>Kokutsu Dachi (posture arrière)</td><td>Sur place. Visez le coude de l’adversaire.</td></tr>
+      <tr><td>3. San <span class="jp" lang="ja">三</span> (trois)</td><td>Coup de poing de côté gauche (sokumen zuki, aussi appelé yoko zuki), chudan</td><td>Kokutsu Dachi (posture arrière)</td><td>Sur place, vers la gauche.</td></tr>
+      <tr><td>4. Shi <span class="jp" lang="ja">四</span> (quatre)</td><td>Blocage du dos de l’avant-bras droit (haiwan uke) et garde frontale gauche (zenwan hitae kamae), jodan</td><td>Kokutsu Dachi (posture arrière)</td><td>Tournez la tête vers la droite et pivotez les deux pieds de 180° vers la droite.</td></tr>
+      <tr><td>5. Go <span class="jp" lang="ja">五</span> (cinq)</td><td>Blocage en balayant vers l’extérieur du bras droit (soto nagashi uke) et frappe circulaire du poing-marteau gauche (kentsui soto mawashi uchi), jodan</td><td>Kokutsu Dachi (posture arrière)</td><td>Sur place. Visez le coude de l’adversaire.</td></tr>
+      <tr><td>6. Roku <span class="jp" lang="ja">六</span> (six)</td><td>Coup de poing de côté droit (sokumen zuki), chudan</td><td>Kokutsu Dachi (posture arrière)</td><td>Sur place, vers la droite.</td></tr>
+      <tr><td>7. Shichi <span class="jp" lang="ja">七</span> (sept)</td><td>Poings à la hanche gauche (ryoken koshi kamae), puis frappe du revers du poing droit (uraken yoko mawashi uchi), jodan, et coup de pied de côté droit (yoko geri keage), chudan</td><td>Ashi Dachi (sur une jambe)</td><td>Tournez la tête vers la droite, ramenez le pied gauche sous le centre et les poings sur la hanche gauche, puis frappez et donnez le coup de pied vers la droite.</td></tr>
+      <tr><td>8. Hachi <span class="jp" lang="ja">八</span> (huit)</td><td>Blocage main-sabre gauche (shuto uke), chudan</td><td>Kokutsu Dachi (posture arrière)</td><td>Reposez la jambe droite et pivotez le pied gauche de 90° vers la gauche.</td></tr>
+      <tr><td>9. Ku <span class="jp" lang="ja">九</span> (neuf)</td><td>Blocage main-sabre droit (shuto uke), chudan</td><td>Kokutsu Dachi (posture arrière)</td><td>Avancez le pied droit sur la même ligne.</td></tr>
+      <tr><td>10. Ju <span class="jp" lang="ja">十</span> (dix)</td><td>Blocage main-sabre gauche (shuto uke), chudan</td><td>Kokutsu Dachi (posture arrière)</td><td>Avancez le pied gauche sur la même ligne.</td></tr>
+      <tr><td>11. Ju Ichi <span class="jp" lang="ja">十一</span> (onze)</td><td>Pique de la main droite (shihon nukite) et blocage en appuyant de la main gauche (osae uke), chudan, et <span class="kiai">1er Kiai</span></td><td>Zenkutsu Dachi (posture avant)</td><td>Avancez le pied droit.</td></tr>
+      <tr><td>12. Ju Ni <span class="jp" lang="ja">十二</span> (douze)</td><td>Blocage main-sabre gauche (shuto uke), chudan</td><td>Kokutsu Dachi (posture arrière)</td><td>Pivotez sur le pied droit vers l’arrière et déplacez le pied gauche en Kokutsu Dachi.</td></tr>
+      <tr><td>13. Ju San <span class="jp" lang="ja">十三</span> (treize)</td><td>Blocage main-sabre droit (shuto uke), chudan</td><td>Kokutsu Dachi (posture arrière)</td><td>Pivotez le pied gauche de 45° vers la droite et avancez le pied droit à 45°.</td></tr>
+      <tr><td>14. Ju Shi <span class="jp" lang="ja">十四</span> (quatorze)</td><td>Blocage main-sabre droit (shuto uke), chudan</td><td>Kokutsu Dachi (posture arrière)</td><td>Tournez vers la droite et avancez le pied droit en Kokutsu Dachi. <span class="todo">À vérifier&nbsp;: la source reprend mot pour mot la description du mouvement 13.</span></td></tr>
+      <tr><td>15. Ju Go <span class="jp" lang="ja">十五</span> (quinze)</td><td>Blocage main-sabre gauche (shuto uke), chudan</td><td>Kokutsu Dachi (posture arrière)</td><td>Pivotez le pied droit de 45° vers la gauche et avancez le pied gauche à 45°.</td></tr>
+      <tr><td>16. Ju Roku <span class="jp" lang="ja">十六</span> (seize)</td><td>Blocage intérieur droit (uchi uke), chudan, hanches en gyaku hanmi</td><td>Zenkutsu Dachi (posture avant), large</td><td>Déplacez le pied gauche en arc de 45° vers la gauche et pivotez le pied droit.</td></tr>
+      <tr><td>17. Ju Shichi <span class="jp" lang="ja">十七</span> (dix-sept)</td><td>Coup de pied de face droit (mae geri keage), chudan</td><td>Sur une jambe</td><td>Sur place.</td></tr>
+      <tr><td>18. Ju Hachi <span class="jp" lang="ja">十八</span> (dix-huit)</td><td>Coup de poing inversé gauche (gyaku zuki), chudan</td><td>Zenkutsu Dachi (posture avant)</td><td>Reposez la jambe droite devant.</td></tr>
+      <tr><td>19. Ju Ku <span class="jp" lang="ja">十九</span> (dix-neuf)</td><td>Blocage intérieur gauche (uchi uke), chudan, hanches en gyaku hanmi</td><td>Zenkutsu Dachi (posture avant), large</td><td>Sur place, tournez vivement les hanches vers la droite.</td></tr>
+      <tr><td>20. Ni Ju <span class="jp" lang="ja">二十</span> (vingt)</td><td>Coup de pied de face gauche (mae geri keage), chudan</td><td>Sur une jambe</td><td>Sur place.</td></tr>
+      <tr><td>21. Ni Ju Ichi <span class="jp" lang="ja">二十一</span> (vingt et un)</td><td>Coup de poing inversé droit (gyaku zuki), chudan</td><td>Zenkutsu Dachi (posture avant)</td><td>Reposez la jambe gauche devant.</td></tr>
+      <tr><td>22. Ni Ju Ni <span class="jp" lang="ja">二十二</span> (vingt-deux)</td><td>Blocage renforcé droit (morote uke), chudan</td><td>Zenkutsu Dachi (posture avant)</td><td>Avancez le pied droit sur la même ligne.</td></tr>
+      <tr><td>23. Ni Ju San <span class="jp" lang="ja">二十三</span> (vingt-trois)</td><td>Blocage bas gauche (gedan barai)</td><td>Zenkutsu Dachi (posture avant)</td><td>Déplacez le pied gauche en arc vers l’arrière gauche et pivotez le pied droit de 90°.</td></tr>
+      <tr><td>24. Ni Ju Shi <span class="jp" lang="ja">二十四</span> (vingt-quatre)</td><td>Blocage montant main ouverte gauche, puis blocage haut droit (age uke), jodan</td><td>Zenkutsu Dachi (posture avant)</td><td>Tournez la tête de 45° vers la gauche, puis avancez le pied droit à 45°.</td></tr>
+      <tr><td>25. Ni Ju Go <span class="jp" lang="ja">二十五</span> (vingt-cinq)</td><td>Blocage bas droit (gedan barai)</td><td>Zenkutsu Dachi (posture avant)</td><td>Ramenez le pied droit en arc vers l’arrière et pivotez le pied gauche de 135°.</td></tr>
+      <tr><td>26. Ni Ju Roku <span class="jp" lang="ja">二十六</span> (vingt-six)</td><td>Blocage montant main ouverte droit, puis blocage haut gauche (age uke), jodan, et <span class="kiai">2e Kiai</span></td><td>Zenkutsu Dachi (posture avant)</td><td>Tournez la tête de 45° vers la droite, puis avancez le pied gauche à 45°.</td></tr>
+      <tr><td>Yame <span class="jp" lang="ja">止め</span> (fin)</td><td>Retour en position prêt</td><td>Heiko Dachi (comme au départ)</td><td>Ramenez les pieds dans la position de départ (Yoi), à l’endroit exact où le kata a commencé.</td></tr>
+      <tr><td>Rei <span class="jp" lang="ja">礼</span> (salut)</td><td>Salut debout (Ritsurei)</td><td>Musubi Dachi (posture d'attention)</td><td>Depuis Yoi Dachi, joignez les pieds en Musubi Dachi. Effectuez un salut debout en inclinant le haut du corps vers l'avant, le regard porté environ deux mètres devant vous.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+<section data-view="video" data-title="Tutoriel vidéo">
+  <h2 id="video">Tutoriel vidéo</h2>
+  <figure class="video">
+    <div class="video-frame">
+      <iframe src="https://www.youtube-nocookie.com/embed/rgs1ysn0R-0" title="Kata Heian Nidan Full Tutorial (ULTIMATE KARATE)" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <figcaption><span class="screen-only">Kata Heian Nidan Full Tutorial, par ULTIMATE KARATE (YouTube).</span><span class="print-only">Regardez le tutoriel vidéo «&nbsp;Kata Heian Nidan Full Tutorial&nbsp;» (ULTIMATE KARATE)&nbsp;: <span class="url">https://www.youtube.com/watch?v=rgs1ysn0R-0</span></span></figcaption>
+  </figure>
+</section>
+</article>

@@ -6,6 +6,7 @@
   var SHARED = 'shared/kata.html';
   var ABOUT = 'shared/about.html';
   var HOME = 'shared/accueil.html';
+  var CHANGELOG = 'shared/changelog.html';
   var LABELS = 'shared/libelles.html';    // menu and interface labels
   var PRINT_TEXTS = 'shared/impression.html';  // texts used only in print
   var params = new URLSearchParams(location.search);
@@ -62,8 +63,14 @@
     }
     return manifestPromise;
   }
+  // A kata is shown when it has a file. "statut": "brouillon" in katas.json keeps it to localhost only.
+  // Local = this computer or a private network address (phone on the same Wi-Fi), never the public domain
+  var LOCAL = /^(localhost|0\.0\.0\.0|127\.\d+\.\d+\.\d+|\[::1\]|::1|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)$/.test(location.hostname) ||
+    /\.local$/.test(location.hostname);
+  function isDraft(k) { return k.statut === 'brouillon'; }
+  function isAvailable(k) { return !!k.file && (!isDraft(k) || LOCAL); }
   function findKata(manifest, id) {
-    return manifest.katas.filter(function (k) { return k.id === id && k.file; })[0];
+    return manifest.katas.filter(function (k) { return k.id === id && isAvailable(k); })[0];
   }
   function escapeHtml(s) {
     return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
@@ -309,7 +316,7 @@
         { href: '#/kata/esprit', label: T('menu-esprit', 'L\u2019esprit du kata'), children: ctx.sharedView === 'esprit' ? ctx.sharedItems : null },
         { href: '#/kata/erreurs', label: T('menu-erreurs', 'Erreurs fréquentes'), children: ctx.sharedView === 'erreurs' ? ctx.sharedItems : null }
       ].concat(manifest.groups.map(function (g) {
-        var ready = manifest.katas.filter(function (k) { return k.group === g.id && k.file; });
+        var ready = manifest.katas.filter(function (k) { return k.group === g.id && isAvailable(k); });
         return { href: '#/accueil/g-' + g.id, label: escapeHtml(g.name), open: ctx.home && ready.length > 0,
           children: ready.map(function (k) {
             return { href: '#/' + k.id, label: escapeHtml(k.name), children: k.id === ctx.kataId ? ctx.kataItems : null };
@@ -387,8 +394,8 @@
         '<span class="kata-card-name">' + escapeHtml(k.name) + '</span>' +
         '<span class="kata-card-meaning">' + escapeHtml(k.meaning) + '</span>' +
         '<span class="kata-card-belt">' + belt(k) + '</span>' +
-        '<span class="kata-card-meta">' + (k.file ? k.moves + ' ' + T('carte-mouvements', 'mouvements') : T('carte-en-preparation', 'En préparation')) + '</span>';
-      return k.file
+        '<span class="kata-card-meta">' + (isAvailable(k) ? (isDraft(k) ? '<b class="draft-badge">' + T('carte-brouillon', 'Brouillon') + '</b> ' : '') + (k.moves ? k.moves + ' ' + T('carte-mouvements', 'mouvements') : '') : T('carte-en-preparation', 'En préparation')) + '</span>';
+      return isAvailable(k)
         ? '<li><a class="kata-card" href="#/' + k.id + '">' + inner + '</a></li>'
         : '<li><div class="kata-card is-soon" aria-disabled="true">' + inner + '</div></li>';
     }
@@ -400,7 +407,7 @@
         '<p class="group-desc">' + escapeHtml(g.description) + '</p>' +
         '<ul class="kata-list">' + list.map(card).join('') + '</ul></section>';
     }).join('');
-    var ready = manifest.katas.filter(function (k) { return k.file; }).length;
+    var ready = manifest.katas.filter(function (k) { return k.file && !isDraft(k); }).length;
     return fetchFragment(HOME).then(function (frag) {
       var wrap = frag.cloneNode(true);
       var slot = wrap.querySelector('[data-kata-groups]');
@@ -431,10 +438,18 @@
   }
 
   function renderAbout(manifest, anchor) {
-    return fetchFragment(ABOUT).then(function (frag) {
+    return Promise.all([fetchFragment(ABOUT), fetchFragment(CHANGELOG).catch(function () { return null; })]).then(function (res) {
+      var frag = res[0], changelog = res[1];
       printTarget = null; updatePrint();
       setCrumb(plain(T('menu-a-propos', 'À propos')));
       var section = frag.querySelector('section').cloneNode(true);
+      // Credits of a draft kata stay hidden until it is published
+      section.querySelectorAll('[data-credits]').forEach(function (block) {
+        var known = manifest.katas.some(function (x) { return x.id === block.dataset.credits; });
+        if (known && !findKata(manifest, block.dataset.credits)) block.remove();
+      });
+      var slot = section.querySelector('[data-changelog]');
+      if (slot && changelog) slot.replaceWith(changelog.cloneNode(true));
       var items = Array.prototype.map.call(section.querySelectorAll('h2[id]'), function (h) {
         return { href: '#/a-propos/' + h.id, label: escapeHtml(h.textContent.trim()) };
       });
@@ -483,6 +498,10 @@
       wrap.className = 'kata-view';
       if (current.dataset.view !== 'presentation') {
         wrap.insertAdjacentHTML('beforeend', '<p class="eyebrow"><a href="' + base + '/presentation">' + escapeHtml(kata.name) + '</a></p>');
+      }
+      if (isDraft(kata)) {
+        wrap.insertAdjacentHTML('afterbegin', '<p class="draft-banner">' +
+          T('brouillon-bandeau', 'Brouillon&nbsp;: ce kata n’est visible qu’en local. Mettez «&nbsp;statut&nbsp;» à «&nbsp;publie&nbsp;» dans katas/katas.json pour le publier.') + '</p>');
       }
       wrap.appendChild(current.cloneNode(true));
       var prev = sections[idx - 1], next = sections[idx + 1];

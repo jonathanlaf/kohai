@@ -31,6 +31,16 @@ Kata study sheets for the Club de Karaté Traditionnel Chaleurs, served at https
 2. Put its images in `img/<id>/`.
 3. Add an entry to `katas/katas.json`.
 
+## Draft kata
+
+`"statut": "brouillon"` in `katas/katas.json` shows the kata only on localhost (badge on the card, banner on its pages).
+Switch it to `"publie"` to publish. Drafts are hidden, not secret: their files are still in the public repo.
+
+## Changelog
+
+Each commit that changes content adds a line at the top of `shared/changelog.html`, shown in « À propos ».
+A pre-commit hook enforces it; enable it once per clone with `git config core.hooksPath .githooks`.
+
 ## Print
 
 The **Imprimer** button (and Cmd/Ctrl+P) opens `?print=letter|a4&kata=<id>`, which lays the kata out with Paged.js
