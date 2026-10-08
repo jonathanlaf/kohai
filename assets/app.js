@@ -299,6 +299,20 @@
     });
   });
 
+  // Language link: the same page in the other language (both shells use the same routes)
+  var langLink = document.getElementById('lang-link');
+  function updateLangLink() {
+    if (langLink) langLink.href = (LANG === 'fr' ? 'en/' : '../') + location.hash;
+  }
+  function chooseOtherLang() {
+    updateLangLink();  // current hash, even if it changed without a route
+    store('kohai-lang', LANG === 'fr' ? 'en' : 'fr');
+  }
+  if (langLink) {
+    langLink.addEventListener('click', chooseOtherLang);
+    langLink.addEventListener('auxclick', chooseOtherLang);  // middle-click: new tab
+  }
+
   // Print link
   var savedPaper = load('kohai-paper');
   if (savedPaper === 'letter' || savedPaper === 'a4') paper.value = savedPaper;
@@ -582,6 +596,7 @@
     .catch(function () {});  // no date shown if the header is missing
   var routeToken = 0;
   function route() {
+    updateLangLink();
     var r = parseRoute();
     var token = ++routeToken;
     Promise.all([getManifest(), labelsReady]).then(function (res) {

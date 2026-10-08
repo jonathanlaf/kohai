@@ -51,6 +51,11 @@ a { color: var(--accent); }
 }
 .theme-switch button + button { border-left: 1px solid var(--line); }
 .theme-switch button[aria-pressed="true"] { background: var(--chip); color: var(--fg); font-weight: 600; }
+.lang-link {
+  display: inline-flex; align-items: center; font-size: 0.85rem; font-weight: 600; padding: 6px 10px;
+  border: 1px solid var(--line); border-radius: 8px; color: var(--fg); text-decoration: none;
+}
+.lang-link:hover { background: var(--chip); }
 .paper select {
   font: inherit; font-size: 0.85rem; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px;
   background: var(--bg); color: var(--fg);

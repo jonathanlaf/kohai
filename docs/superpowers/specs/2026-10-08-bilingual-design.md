@@ -18,7 +18,7 @@ Both languages are required: a content change is not committed unless both versi
 | Who translates | Claude drafts all English text; the site owner proofreads before publishing. |
 | Missing translation | Not allowed: commit-time check enforces both languages. |
 | URL | French at `/`, English at `/en/` (same hash routes: `/en/#/heian-shodan/embusen`). |
-| Default language | First visit only: English browser is redirected to `/en/`; afterwards the URL decides. |
+| Default language | Home page only (`/`, `/#/`): redirected to `/en/` when the reader's language is English (saved choice, else browser). Deep links keep their language. |
 | File layout | English twin next to each French file: `x.html` + `x.en.html`. Images shared. |
 | Manifest | Translatable fields in `katas.json` become `{ "fr": …, "en": … }`. |
 | Changelog | Both `changelog.html` and `changelog.en.html`, each gets a new top entry per content commit. |
@@ -32,10 +32,12 @@ Both languages are required: a content change is not committed unless both versi
 - Both shells carry `<link rel="alternate" hreflang="fr|en|x-default">` pointing to `/` and `/en/`.
 - Top bar gets a language link (`EN` on the French site, `FR` on the English site). Its `href` is the other
   shell plus the current hash, updated on every route change. Clicking it stores `kohai-lang`.
-- First-visit redirect: a small inline script in the root shell's `<head>`. If `kohai-lang` is absent, it reads
-  `navigator.languages`; if the first of `fr`/`en` found is `en`, it stores `en` and replaces the location with
-  `en/` + current hash. Otherwise it stores `fr`. Skipped when the URL has `?print=`.
-  Once `kohai-lang` exists, no automatic redirect ever happens: shared links open in their own language.
+- Language redirect (revised after review, see the plan ledger): a small inline script in the root shell's `<head>`.
+  The reader's language is `kohai-lang` if set, else the first of `fr`/`en` in `navigator.languages` (then stored).
+  Only the home page (`/` or `/#/`) is sent to `/en/` when that language is English; deep links always open in their
+  own language. Skipped for `?print=` URLs and for crawler user agents (`bot|crawl|spider|slurp`), so the French
+  page stays indexable. The English shell stores `en` on a first visit; the language link stores the other language
+  on click or middle-click.
 - Shell static texts are duplicated in the two shells; a change to one shell is made in both (AGENTS.md rule).
 
 ## 2. app.js

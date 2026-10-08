@@ -6,11 +6,16 @@
 <title>Kohai</title>
 <meta name="description" content="Study notes on the kata of the Club de Karaté Traditionnel Chaleurs: spirit of the kata, embusen, illustrated moves, videos and Japanese vocabulary.">
 <meta name="color-scheme" content="light dark">
+<link rel="alternate" hreflang="fr" href="/">
+<link rel="alternate" hreflang="en" href="/en/">
+<link rel="alternate" hreflang="x-default" href="/">
 <script>
   (function () {
     try {
       var t = localStorage.getItem('kohai-theme');
       if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      // A first visit through the English site makes English the reader's language (see index.html)
+      if (!localStorage.getItem('kohai-lang')) localStorage.setItem('kohai-lang', 'en');
     } catch (e) {}
   })();
 </script>
@@ -25,6 +30,7 @@
     <span class="crumb" id="crumb" hidden></span>
   </nav>
   <div class="tools">
+    <a id="lang-link" class="lang-link" href="../" hreflang="fr" lang="fr" aria-label="Version française">FR</a>
     <div class="theme-switch" role="group" aria-label="Theme">
       <button type="button" data-theme-choice="light" aria-pressed="false">Light</button>
       <button type="button" data-theme-choice="auto" aria-pressed="true">Auto</button>
