@@ -1,16 +1,4 @@
 #!/bin/bash
-# Refuse a commit that changes site content without a new entry at the top of shared/changelog.html.
-# Content = katas/, img/, shared/ (except the changelog itself).
+# Both languages are required: see .githooks/check-i18n.py (twins, labels, views, katas.json, both changelogs).
 # Skip once for a commit with no visible change: git commit --no-verify
-staged=$(git diff --cached --name-only --diff-filter=ACMRD)
-content=$(printf '%s\n' "$staged" | grep -E '^(katas/|img/|shared/)' | grep -v '^shared/changelog\.html$')
-[ -z "$content" ] && exit 0
-fail() { echo "pre-commit: $1" >&2; echo "  Changed: $(printf '%s ' $content)" >&2; echo "  Add a <li> at the top of shared/changelog.html (see AGENTS.md), or use --no-verify if nothing visible changed." >&2; exit 1; }
-printf '%s\n' "$staged" | grep -qx 'shared/changelog.html' || fail "content changed without a changelog entry."
-# The first entry of the staged changelog must be new (absent from the last commit)
-first=$(git show :shared/changelog.html | grep -m1 -E '^[[:space:]]*<li[ >]' | sed -E 's/^[[:space:]]+//')
-[ -n "$first" ] || fail "no <li> entry found in shared/changelog.html."
-if git cat-file -e HEAD:shared/changelog.html 2>/dev/null && git show HEAD:shared/changelog.html | sed -E 's/^[[:space:]]+//' | grep -qxF "$first"; then
-  fail "the first entry of shared/changelog.html is not new: add the new entry at the top."
-fi
-exit 0
+exec python3 "$(dirname "$0")/check-i18n.py" --staged
