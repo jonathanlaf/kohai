@@ -206,7 +206,7 @@
         var doc = built.doc;
         var cover = doc.querySelector('header.cover');
         if (cover) cover.insertAdjacentHTML('afterend', buildPrintToc(doc));
-        doc.querySelectorAll('.screen-only').forEach(function (el) { el.remove(); });
+        doc.querySelectorAll('.screen-only, .video-frame').forEach(function (el) { el.remove(); });  // no video iframe loads in print
         doc.querySelectorAll('img[loading]').forEach(function (img) { img.removeAttribute('loading'); });
 
         var heads = {}, n = 0;
@@ -363,8 +363,32 @@
     crumb.textContent = text || '';
   }
 
+  // Videos load only on click: until then a local placeholder stands in and nothing is requested from YouTube
+  function videoFacades(nodes) {
+    nodes.querySelectorAll('.video-frame iframe').forEach(function (frame) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'video-facade';
+      btn.innerHTML = '<span class="video-facade-play" aria-hidden="true"></span>' +
+        '<span class="visually-hidden">' + T('video-lire', 'Lire la vidéo') + '</span>' +
+        '<span class="video-facade-title"></span>' +
+        '<span class="video-facade-note">' + T('video-note', 'La vidéo se charge depuis YouTube quand vous cliquez.') + '</span>';
+      btn.querySelector('.video-facade-title').textContent = frame.title;
+      btn.addEventListener('click', function () {
+        var url = new URL(frame.getAttribute('src'), location.href);
+        url.searchParams.set('autoplay', '1');
+        frame.setAttribute('src', url.href);
+        frame.setAttribute('allow', 'autoplay; ' + (frame.getAttribute('allow') || ''));
+        frame.removeAttribute('loading');
+        btn.replaceWith(frame);
+      });
+      frame.replaceWith(btn);
+    });
+  }
+
   var siteFoot = document.querySelector('.site-foot');
   function show(nodes, anchorId) {
+    videoFacades(nodes);
     view.innerHTML = '';
     view.appendChild(nodes);
     if (siteFoot) view.appendChild(siteFoot);
