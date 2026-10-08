@@ -1,16 +1,24 @@
 (function () {
   'use strict';
 
-  var MANIFEST = 'katas/katas.json';
-  var LEXIQUE = 'shared/lexique.html';
-  var SHARED = 'shared/kata.html';
-  var ABOUT = 'shared/about.html';
-  var HOME = 'shared/accueil.html';
-  var CHANGELOG = 'shared/changelog.html';
-  var LABELS = 'shared/libelles.html';    // menu and interface labels
-  var PRINT_TEXTS = 'shared/impression.html';  // texts used only in print
-  var params = new URLSearchParams(location.search);
   var root = document.documentElement;
+  // Language of this shell: index.html is French, en/index.html is English (data-root="../" points back to the site root)
+  var LANG = /^en\b/i.test(root.lang) ? 'en' : 'fr';
+  var ROOT = root.getAttribute('data-root') || '';
+  // Content file in the page's language: katas/x.html → katas/x.en.html in English
+  function localized(path) { return ROOT + (LANG === 'en' ? path.replace(/\.html$/, '.en.html') : path); }
+  // katas.json text fields are {"fr": …, "en": …} (French if a translation is missing, rather than "undefined")
+  function L(v) { return v && typeof v === 'object' ? (v[LANG] || v.fr || '') : v; }
+
+  var MANIFEST = ROOT + 'katas/katas.json';
+  var LEXIQUE = localized('shared/lexique.html');
+  var SHARED = localized('shared/kata.html');
+  var ABOUT = localized('shared/about.html');
+  var HOME = localized('shared/accueil.html');
+  var CHANGELOG = localized('shared/changelog.html');
+  var LABELS = localized('shared/libelles.html');    // menu and interface labels
+  var PRINT_TEXTS = localized('shared/impression.html');  // texts used only in print
+  var params = new URLSearchParams(location.search);
 
   function store(key, value) {
     try { localStorage.setItem(key, value); } catch (e) {}
@@ -32,10 +40,21 @@
     }
     return cache[url];
   }
+  // Content files use paths from the site root (img/…); from /en/ they need ROOT in front
+  function rebase(frag) {
+    if (!ROOT) return;
+    frag.querySelectorAll('[src], [href]').forEach(function (el) {
+      ['src', 'href'].forEach(function (attr) {
+        var v = el.getAttribute(attr);
+        if (v && !/^(#|\/|\?|[a-z][a-z0-9+.-]*:)/i.test(v)) el.setAttribute(attr, ROOT + v);
+      });
+    });
+  }
   function fetchFragment(url) {
     return fetchText(url).then(function (html) {
       var t = document.createElement('template');
       t.innerHTML = html;
+      rebase(t.content);
       return t.content;
     });
   }
@@ -100,7 +119,7 @@
         Array.prototype.forEach.call(lex.childNodes, function (n) { doc.appendChild(n.cloneNode(true)); });
         return appendCredits(doc, null).then(function () { return { doc: doc, title: plain(T('lexique-titre', 'Lexique du karatéka')) }; });
       });
-      return Promise.all([fetchFragment(kata.file), fetchFragment(SHARED)]).then(function (res2) {
+      return Promise.all([fetchFragment(localized(kata.file)), fetchFragment(SHARED)]).then(function (res2) {
         var frag = res2[0], shared = res2[1];
         var sections = Array.prototype.slice.call(frag.querySelectorAll('section[data-view]'));
         // Unwrap the screen sections so print flows exactly like one long page:
@@ -121,7 +140,7 @@
         if (erreurs) append(erreurs);
         return appendCredits(doc, kata.id).then(function () {
           fillKataDetails(doc, kata);
-          return { doc: doc, title: kata.name };
+          return { doc: doc, title: L(kata.name) };
         });
       });
     });
@@ -158,11 +177,12 @@
 
   // Shared texts carry placeholders that become the kata's own name and Kiai moves when printed.
   function fillKataDetails(root, kata) {
-    root.querySelectorAll('[data-kata-name]').forEach(function (el) { el.textContent = kata.name; });
+    root.querySelectorAll('[data-kata-name]').forEach(function (el) { el.textContent = L(kata.name); });
     if (kata.kiai && kata.kiai.length) {
-      var nums = ['', 'Le Kiai', 'Les deux Kiai', 'Les trois Kiai', 'Les quatre Kiai'];
-      var moves = kata.kiai.length > 1 ? kata.kiai.slice(0, -1).join(', ') + ' et ' + kata.kiai[kata.kiai.length - 1] : String(kata.kiai[0]);
-      var text = (nums[kata.kiai.length] || 'Les Kiai') + ' (mouvement' + (kata.kiai.length > 1 ? 's ' : ' ') + moves + ')';
+      var n = kata.kiai.length;
+      var lead = n <= 4 ? T('kiai-' + n, ['', 'Le Kiai', 'Les deux Kiai', 'Les trois Kiai', 'Les quatre Kiai'][n]) : T('kiai-n', 'Les Kiai');
+      var moves = n > 1 ? kata.kiai.slice(0, -1).join(', ') + ' ' + plain(T('kiai-et', 'et')) + ' ' + kata.kiai[n - 1] : String(kata.kiai[0]);
+      var text = plain(lead) + ' (' + plain(n > 1 ? T('kiai-mouvements', 'mouvements') : T('kiai-mouvement', 'mouvement')) + ' ' + moves + ')';
       root.querySelectorAll('[data-kata-kiai]').forEach(function (el) { el.textContent = text; });
     }
   }
@@ -217,7 +237,7 @@
         });
 
         var script = document.createElement('script');
-        script.src = 'assets/vendor/paged.js';
+        script.src = ROOT + 'assets/vendor/paged.js';
         script.onerror = function () { status.innerHTML = T('erreur-module', 'Impossible de charger le module d’impression.'); };
         script.onload = function () {
           var Paged = window.Paged;
@@ -235,7 +255,7 @@
           var content = document.createElement('template');
           content.content.appendChild(doc);
           new Paged.Previewer()
-            .preview(content.content, ['assets/style.css', 'assets/print.css', 'assets/paged.css', sizeUrl], document.body)
+            .preview(content.content, [ROOT + 'assets/style.css', ROOT + 'assets/print.css', ROOT + 'assets/paged.css', sizeUrl], document.body)
             .then(function (flow) {
               URL.revokeObjectURL(sizeUrl);
               status.remove();
@@ -317,9 +337,9 @@
         { href: '#/kata/erreurs', label: T('menu-erreurs', 'Erreurs fréquentes'), children: ctx.sharedView === 'erreurs' ? ctx.sharedItems : null }
       ].concat(manifest.groups.map(function (g) {
         var ready = manifest.katas.filter(function (k) { return k.group === g.id && isAvailable(k); });
-        return { href: '#/accueil/g-' + g.id, label: escapeHtml(g.name), open: ctx.home && ready.length > 0,
+        return { href: '#/accueil/g-' + g.id, label: escapeHtml(L(g.name)), open: ctx.home && ready.length > 0,
           children: ready.map(function (k) {
-            return { href: '#/' + k.id, label: escapeHtml(k.name), children: k.id === ctx.kataId ? ctx.kataItems : null };
+            return { href: '#/' + k.id, label: escapeHtml(L(k.name)), children: k.id === ctx.kataId ? ctx.kataItems : null };
           }) };
       })) },
       { href: '#/lexique', label: T('menu-lexique', 'Lexique du karatéka'), children: ctx.lexItems || null },
@@ -405,18 +425,19 @@
     document.title = plain(T('onglet-accueil', 'Kohai · Fiches d’étude des kata'));
     function belt(k) {
       // "marron:2" = brown belt with 2 stripes (kyu); "noire:1" = black belt with 1 bar (dan)
+      var name = L(k.belt);
       var chips = (k.beltColors || []).map(function (c) {
         var parts = c.split(':'), marks = '';
         for (var i = 0; i < (parseInt(parts[1], 10) || 0); i++) marks += '<b></b>';
         return '<i class="belt belt-' + parts[0] + '" aria-hidden="true">' + marks + '</i>';
       }).join('');
-      return '<span class="belt-bar">' + chips + '</span><span class="belt-label">' + T('carte-ceinture', 'Ceinture') + ' ' + escapeHtml(k.belt.charAt(0).toLowerCase() + k.belt.slice(1)) + '</span>';
+      return '<span class="belt-bar">' + chips + '</span><span class="belt-label">' + T('carte-ceinture', 'Ceinture') + ' ' + escapeHtml(name.charAt(0).toLowerCase() + name.slice(1)) + '</span>';
     }
     function card(k) {
       var inner =
         '<span class="kata-card-jp" lang="ja">' + escapeHtml(k.kanji) + '</span>' +
-        '<span class="kata-card-name">' + escapeHtml(k.name) + '</span>' +
-        '<span class="kata-card-meaning">' + escapeHtml(k.meaning) + '</span>' +
+        '<span class="kata-card-name">' + escapeHtml(L(k.name)) + '</span>' +
+        '<span class="kata-card-meaning">' + escapeHtml(L(k.meaning)) + '</span>' +
         '<span class="kata-card-belt">' + belt(k) + '</span>' +
         '<span class="kata-card-meta">' + (isAvailable(k) ? (isDraft(k) ? '<b class="draft-badge">' + T('carte-brouillon', 'Brouillon') + '</b> ' : '') + (k.moves ? k.moves + ' ' + T('carte-mouvements', 'mouvements') : '') : T('carte-en-preparation', 'En préparation')) + '</span>';
       return isAvailable(k)
@@ -426,9 +447,9 @@
     var groups = manifest.groups.map(function (g) {
       var list = manifest.katas.filter(function (k) { return k.group === g.id; });
       return '<section class="kata-group" aria-labelledby="g-' + g.id + '">' +
-        '<h3 id="g-' + g.id + '">' + escapeHtml(g.name) + ' <span class="jp" lang="ja">' + escapeHtml(g.kanji) + '</span>' +
-        '<span class="count">' + list.length + ' kata</span></h3>' +
-        '<p class="group-desc">' + escapeHtml(g.description) + '</p>' +
+        '<h3 id="g-' + g.id + '">' + escapeHtml(L(g.name)) + ' <span class="jp" lang="ja">' + escapeHtml(g.kanji) + '</span>' +
+        '<span class="count">' + list.length + ' ' + T('groupe-kata', 'kata') + '</span></h3>' +
+        '<p class="group-desc">' + escapeHtml(L(g.description)) + '</p>' +
         '<ul class="kata-list">' + list.map(card).join('') + '</ul></section>';
     }).join('');
     var ready = manifest.katas.filter(function (k) { return k.file && !isDraft(k); }).length;
@@ -496,14 +517,14 @@
       document.title = section.dataset.title + ' · ' + plain(T('site-nom', 'Kohai'));
       var wrap = document.createElement('div');
       wrap.className = 'kata-view';
-      wrap.insertAdjacentHTML('beforeend', '<p class="eyebrow"><a href="#/accueil/kata-title">Kata</a></p>');
+      wrap.insertAdjacentHTML('beforeend', '<p class="eyebrow"><a href="#/accueil/kata-title">' + T('menu-kata', 'Kata') + '</a></p>');
       wrap.appendChild(section);
       show(wrap, anchor);
     });
   }
 
   function renderKata(manifest, kata, viewId, anchor) {
-    return fetchFragment(kata.file).then(function (frag) {
+    return fetchFragment(localized(kata.file)).then(function (frag) {
       var sections = Array.prototype.slice.call(frag.querySelectorAll('section[data-view]'));
 
       var base = '#/' + kata.id;
@@ -513,15 +534,15 @@
           children: s === current ? childrenOf(s, base + '/' + s.dataset.view) : null };
       });
       printTarget = kata.id; updatePrint();
-      setCrumb(kata.name);
+      setCrumb(L(kata.name));
       setNav(buildMenu(manifest, { kataId: kata.id, kataItems: items }), base + '/' + current.dataset.view + (anchor ? '/' + anchor : ''));
-      document.title = current.dataset.title + ' · ' + kata.name + ' · ' + plain(T('site-nom', 'Kohai'));
+      document.title = current.dataset.title + ' · ' + L(kata.name) + ' · ' + plain(T('site-nom', 'Kohai'));
 
       var idx = sections.indexOf(current);
       var wrap = document.createElement('div');
       wrap.className = 'kata-view';
       if (current.dataset.view !== 'presentation') {
-        wrap.insertAdjacentHTML('beforeend', '<p class="eyebrow"><a href="' + base + '/presentation">' + escapeHtml(kata.name) + '</a></p>');
+        wrap.insertAdjacentHTML('beforeend', '<p class="eyebrow"><a href="' + base + '/presentation">' + escapeHtml(L(kata.name)) + '</a></p>');
       }
       if (isDraft(kata)) {
         wrap.insertAdjacentHTML('afterbegin', '<p class="draft-banner">' +
@@ -547,9 +568,10 @@
     var d = new Date(when);
     if (!el || isNaN(d)) return;
     var tz = { timeZone: 'America/Montreal' };
-    var time = d.toLocaleTimeString('fr-CA', Object.assign({ hour: '2-digit', minute: '2-digit' }, tz));
-    var date = d.toLocaleDateString('fr-CA', Object.assign({ day: 'numeric', month: 'long', year: 'numeric' }, tz));
     labelsReady.then(function () {
+      var locale = plain(T('locale', 'fr-CA'));
+      var time = d.toLocaleTimeString(locale, Object.assign({ hour: '2-digit', minute: '2-digit' }, tz));
+      var date = d.toLocaleDateString(locale, Object.assign({ day: 'numeric', month: 'long', year: 'numeric' }, tz));
       el.innerHTML = T('pied-mise-a-jour', 'Dernière mise à jour&nbsp;:') + ' <time datetime="' + escapeHtml(d.toISOString()) + '">' +
         escapeHtml(time) + ' @ ' + escapeHtml(date) + '</time>';
       el.hidden = false;
@@ -565,7 +587,7 @@
     Promise.all([getManifest(), labelsReady]).then(function (res) {
       var manifest = res[0];
       var kata = findKata(manifest, r.page);
-      var url = !r.page || r.page === 'accueil' ? HOME : r.page === 'lexique' ? LEXIQUE : r.page === 'a-propos' ? ABOUT : r.page === 'kata' ? SHARED : kata ? kata.file : null;
+      var url = !r.page || r.page === 'accueil' ? HOME : r.page === 'lexique' ? LEXIQUE : r.page === 'a-propos' ? ABOUT : r.page === 'kata' ? SHARED : kata ? localized(kata.file) : null;
       return (url ? fetchText(url) : Promise.resolve()).then(function () { return manifest; });
     }).then(function (manifest) {
       if (token !== routeToken) return;  // the user already navigated somewhere else
