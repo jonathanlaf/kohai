@@ -310,7 +310,7 @@
   }
   if (langLink) {
     langLink.addEventListener('click', chooseOtherLang);
-    langLink.addEventListener('auxclick', chooseOtherLang);  // middle-click: new tab
+    langLink.addEventListener('auxclick', function (e) { if (e.button === 1) chooseOtherLang(); });  // middle-click: new tab (not right-click)
   }
 
   // Print link

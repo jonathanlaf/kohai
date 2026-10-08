@@ -106,7 +106,7 @@ About sub-menu. Content:
   policy applies.
 - The host, GitHub Pages, keeps standard server logs (IP address) for security, under GitHub's privacy statement.
 
-No consent banner: the only storage is strictly necessary preference storage chosen by the reader.
+No consent banner: the only storage is strictly necessary preference storage (the reader's choices, and a language guessed once from the browser).
 
 ## 7. Video facade (implemented separately, before the bilingual work)
 
@@ -125,7 +125,7 @@ AGENTS.md: bilingual rules (twins, French ids kept, both changelogs, both shells
 - `/` and `/en/` load; menu, home cards, kata pages, lexique, About work in both languages.
 - Language link keeps the current hash in both directions.
 - Images load under `/en/`.
-- First visit with cleared storage and an English browser redirects once; a later visit to `/` does not.
+- Home page follows the reader's language (saved choice, else browser); deep links, `?print=` URLs and crawlers never redirect (`redirect-tests.sh`, 9 cases).
 - Print Letter and A4 for Heian Shodan and the lexique in both languages; embusen still fits one page.
 - `check-i18n.py` fails on each of its five cases (temporary test changes) and passes on the final tree.
 - Video facade: no request to YouTube/Google before click (network panel); video plays after click.
