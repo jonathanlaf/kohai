@@ -1,6 +1,6 @@
 # Kohai
 
-Kata study sheets for the Club de Karaté Traditionnel Chaleurs, served at https://kohai.jonathanlafleur.ca (GitHub Pages, no build step).
+Personal study notes on Shotokan karate kata, served at https://kohai.jonathanlafleur.ca (GitHub Pages, no build step).
 
 ## Layout
 

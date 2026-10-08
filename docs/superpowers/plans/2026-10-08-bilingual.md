@@ -616,7 +616,7 @@ git commit --no-verify -m "feat: language plumbing in app.js, bilingual katas.js
 
 Copy `index.html` to `en/index.html`, then change:
 - `<html lang="fr">` → `<html lang="en" data-root="../">`
-- `<meta name="description">` → `Study notes on the kata of the Club de Karaté Traditionnel Chaleurs: spirit of the kata, embusen, illustrated moves, videos and Japanese vocabulary.`
+- `<meta name="description">` → `Personal study notes on Shotokan karate kata: spirit of the kata, embusen, illustrated moves, videos and Japanese vocabulary.`
 - `href="assets/style.css"` → `href="../assets/style.css"`; `href="assets/print.css"` → `href="../assets/print.css"`; `src="assets/app.js"` → `src="../assets/app.js"`
 - `aria-label="Fil d'Ariane"` → `aria-label="Breadcrumb"`; `aria-label="Thème"` → `aria-label="Theme"`
 - Theme buttons: `Clair` → `Light`, `Auto` stays, `Sombre` → `Dark`

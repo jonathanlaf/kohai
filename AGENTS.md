@@ -10,6 +10,9 @@ credentials, tokens, keys, internal URLs, local machine paths, or anything learn
 Describe rules and conventions only. Personal content that the site itself publishes belongs in the site's
 HTML files, not here.
 
+The site never names the dojo, club or organization where the author trains: these are personal notes, not
+affiliated with anyone. Say « le dojo » / « mon dojo » (EN: “the dojo” / “my dojo”).
+
 ## What the project is
 
 A static, bilingual study site for karate kata (Shotokan), French at `/` and English at `/en/`, served by GitHub Pages from `main`

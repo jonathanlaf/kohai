@@ -110,7 +110,7 @@
       var doc = document.createElement('div');
       if (!kata) return fetchFragment(LEXIQUE).then(function (lexique) {
         doc.innerHTML = '<header class="cover"><h1>' + T('lexique-titre', 'Lexique du karatéka') + '</h1><p class="sub">' +
-          T('lexique-sous-titre', 'Kohai · Club de Karaté Traditionnel Chaleurs') + '</p></header>';
+          T('lexique-sous-titre', 'Kohai · les notes d’un élève') + '</p></header>';
         var lex = lexique.querySelector('section').cloneNode(true);
         var h2 = lex.querySelector('h2');
         if (h2) h2.remove();
