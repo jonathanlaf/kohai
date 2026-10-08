@@ -570,7 +570,7 @@
     var tz = { timeZone: 'America/Montreal' };
     labelsReady.then(function () {
       var locale = plain(T('locale', 'fr-CA'));
-      var time = d.toLocaleTimeString(locale, Object.assign({ hour: '2-digit', minute: '2-digit' }, tz));
+      var time = d.toLocaleTimeString(locale, Object.assign({ hour: 'numeric', minute: '2-digit' }, tz));
       var date = d.toLocaleDateString(locale, Object.assign({ day: 'numeric', month: 'long', year: 'numeric' }, tz));
       el.innerHTML = T('pied-mise-a-jour', 'Dernière mise à jour&nbsp;:') + ' <time datetime="' + escapeHtml(d.toISOString()) + '">' +
         escapeHtml(time) + ' @ ' + escapeHtml(date) + '</time>';

@@ -1,0 +1,31 @@
+<!-- Home page (#/). Edit the text freely. The kata cards are generated from katas/katas.json into [data-kata-groups], and [data-ready-count] shows how many kata are available. -->
+<div class="home">
+  <header class="home-head">
+    <h1>Kohai <span class="jp" lang="ja">後輩</span></h1>
+    <p class="lead">Kata study notes for the students of the Club de Karaté Traditionnel Chaleurs.</p>
+    <p>In the dojo, the <em>kohai</em> is the student who learns from their elders, the <em>senpai</em>. These notes keep them company between classes: for each kata, its spirit, its embusen, every move illustrated and explained, a video, the common mistakes and the Japanese vocabulary. Each set of notes prints with its own table of contents. They complement the sensei’s teaching without replacing it. <a href="#/a-propos">Who am I and why this site?</a></p>
+  </header>
+
+  <section class="about-kata" aria-labelledby="about">
+    <h2 id="about">What is a kata <span class="jp" lang="ja">型</span>?</h2>
+    <p>A kata (<span lang="ja">型</span>, “form”) is a set sequence of techniques, performed alone against imaginary opponents. It is the memory of karate: each kata passes techniques, stances, movements and fighting principles from one generation of practitioners to the next.</p>
+    <p>Each kata follows a precise pattern on the floor, the <em>embusen</em>, starts and ends at the same spot, and opens and closes with a bow. It is judged on the accuracy of the stances, the power of the techniques (<em>kime</em>), the intensity (<em>kihaku</em>) and the awareness that remains until the last move (<em>zanshin</em>).</p>
+    <p>Shotokan has 26 kata, grouped into four families. They are learned in order, as you move up through the grades.</p>
+  </section>
+
+  <section aria-labelledby="kata-title">
+    <h2 id="kata-title">Kata <span class="jp" lang="ja">型</span> <span class="count" data-ready-count></span></h2>
+    <div data-kata-groups></div>
+  </section>
+
+  <section aria-labelledby="ref-title">
+    <h2 id="ref-title">Reference <span class="jp" lang="ja">参考</span></h2>
+    <ul class="kata-list">
+      <li><a class="kata-card" href="#/lexique">
+        <span class="kata-card-jp" lang="ja">用語</span>
+        <span class="kata-card-name">Karateka’s vocabulary</span>
+        <span class="kata-card-meaning">The Japanese words you need to follow the sensei’s instructions, with pronunciation.</span>
+      </a></li>
+    </ul>
+  </section>
+</div>
