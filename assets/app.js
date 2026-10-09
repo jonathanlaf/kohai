@@ -14,6 +14,7 @@
   var LEXIQUE = localized('shared/lexique.html');
   var SHARED = localized('shared/kata.html');
   var ABOUT = localized('shared/about.html');
+  var UNIFORM = localized('shared/uniforme.html');
   var HOME = localized('shared/accueil.html');
   var CHANGELOG = localized('shared/changelog.html');
   var LABELS = localized('shared/libelles.html');    // menu and interface labels
@@ -98,51 +99,95 @@
   // ---------- Print (Paged.js) ----------
   var printSize = params.get('print');
   if (printSize === 'letter' || printSize === 'a4') {
-    startPagedPrint(printSize, params.get('kata'), params.get('noprint') === '1');
+    startPagedPrint(printSize, params.get('chapitre') || params.get('kata') || 'lexique', params.get('noprint') === '1');
     return;
   }
 
-  // Builds the full printable document for one kata (or the vocabulary alone).
-  function buildPrintDocument(kataId) {
-    return getManifest().then(function (manifest) {
-      var kata = kataId && findKata(manifest, kataId);
-      if (kataId && !kata) throw new Error(plain(T('erreur-kata-introuvable', 'kata introuvable')) + ' (' + kataId + ')');
-      var doc = document.createElement('div');
-      if (!kata) return fetchFragment(LEXIQUE).then(function (lexique) {
-        doc.innerHTML = '<header class="cover"><h1>' + T('lexique-titre', 'Lexique du karatéka') + '</h1><p class="sub">' +
-          T('lexique-sous-titre', 'Kohai · les notes d’un élève') + '</p></header>';
-        var lex = lexique.querySelector('section').cloneNode(true);
-        var h2 = lex.querySelector('h2');
-        if (h2) h2.remove();
-        var first = lex.querySelector('p');
-        if (first) first.classList.add('pb');
-        Array.prototype.forEach.call(lex.childNodes, function (n) { doc.appendChild(n.cloneNode(true)); });
-        return appendCredits(doc, null).then(function () { return { doc: doc, title: plain(T('lexique-titre', 'Lexique du karatéka')) }; });
+  // Printed chapters: each kata, the karate uniform and the vocabulary. « tout » prints them all, in menu order.
+  function chapterIds(manifest, target) {
+    if (target !== 'tout') return [target];
+    return ['uniforme', 'kata'].concat(manifest.katas.filter(isAvailable).map(function (k) { return k.id; }), ['lexique']);
+  }
+  function cover(title, sub) {
+    return '<header class="cover"><h1>' + title + '</h1><p class="sub">' + sub + '</p></header>';
+  }
+  function unwrap(section, doc) {
+    Array.prototype.forEach.call(section.cloneNode(true).childNodes, function (n) { doc.appendChild(n.cloneNode(true)); });
+  }
+
+  // Builds one printable chapter: { doc, title }. The cover comes first; the table of contents is added after it.
+  function buildChapter(manifest, id) {
+    var doc = document.createElement('div');
+    if (id === 'lexique') return fetchFragment(LEXIQUE).then(function (lexique) {
+      doc.innerHTML = cover(T('lexique-titre', 'Lexique du karatéka'), T('lexique-sous-titre', 'Kohai · les notes d’un élève'));
+      var lex = lexique.querySelector('section').cloneNode(true);
+      var h2 = lex.querySelector('h2');
+      if (h2) h2.remove();
+      var first = lex.querySelector('p');
+      if (first) first.classList.add('pb');
+      unwrap(lex, doc);
+      return appendCredits(doc, null).then(function () { return { doc: doc, title: plain(T('lexique-titre', 'Lexique du karatéka')) }; });
+    });
+    if (id === 'uniforme') return fetchFragment(UNIFORM).then(function (uniform) {
+      doc.innerHTML = cover(T('uniforme-titre', 'Uniforme de karaté (Dogi)'), T('uniforme-sous-titre', 'Kohai · les notes d’un élève'));
+      uniform.querySelectorAll('section[data-view]').forEach(function (s, i) {
+        var page = s.cloneNode(true);
+        var h2 = page.querySelector('h2');
+        if (h2 && i === 0) h2.classList.add('pb');  // the text starts after the table of contents, then flows on
+        unwrap(page, doc);
       });
-      return Promise.all([fetchFragment(localized(kata.file)), fetchFragment(SHARED)]).then(function (res2) {
-        var frag = res2[0], shared = res2[1];
-        var sections = Array.prototype.slice.call(frag.querySelectorAll('section[data-view]'));
-        // Unwrap the screen sections so print flows exactly like one long page:
-        // cover, spirit of kata, kata content, common mistakes, credits (the vocabulary prints on its own page)
-        function append(section) {
-          Array.prototype.forEach.call(section.cloneNode(true).childNodes, function (n) { doc.appendChild(n.cloneNode(true)); });
-        }
-        sections.forEach(function (s) {
-          append(s);
-          var cover = s.dataset.view === 'presentation' && doc.querySelector('header.cover');
-          var esprit = shared.querySelector('[data-view="esprit"]');
-          if (cover && esprit) {
-            var after = cover;
-            Array.prototype.slice.call(esprit.cloneNode(true).childNodes).forEach(function (n) { after.after(n); after = n; });
-          }
-        });
-        var erreurs = shared.querySelector('[data-view="erreurs"]');
-        if (erreurs) append(erreurs);
-        return appendCredits(doc, kata.id).then(function () {
-          fillKataDetails(doc, kata);
-          return { doc: doc, title: L(kata.name) };
-        });
+      return appendCredits(doc, 'uniforme').then(function () { return { doc: doc, title: plain(T('uniforme-titre', 'Uniforme de karaté (Dogi)')) }; });
+    });
+    if (id === 'kata') return fetchFragment(SHARED).then(function (shared) {
+      doc.innerHTML = cover(T('kata-titre', 'Katas'), T('kata-sous-titre', 'L’esprit du kata et les erreurs fréquentes'));
+      shared.querySelectorAll('section[data-view]').forEach(function (s) { unwrap(s, doc); });
+      return appendCredits(doc, 'kata').then(function () { return { doc: doc, title: plain(T('kata-titre', 'Katas')) }; });
+    });
+    var kata = findKata(manifest, id);
+    if (!kata) return Promise.reject(new Error(plain(T('erreur-kata-introuvable', 'kata introuvable')) + ' (' + id + ')'));
+    return fetchFragment(localized(kata.file)).then(function (frag) {
+      // Unwrap the screen sections so print flows like one long page: cover, kata content, credits
+      frag.querySelectorAll('section[data-view]').forEach(function (s) { unwrap(s, doc); });
+      return appendCredits(doc, kata.id).then(function () { return { doc: doc, title: L(kata.name) }; });
+    });
+  }
+
+  // Several chapters in one document repeat the same ids (#credits, #embusen…): give each chapter its own.
+  function prefixIds(node, prefix) {
+    var ids = {};
+    node.querySelectorAll('[id]').forEach(function (el) { ids[el.id] = true; el.id = prefix + el.id; });
+    node.querySelectorAll('*').forEach(function (el) {
+      Array.prototype.forEach.call(el.attributes, function (attr) {
+        var v = attr.value.replace(/url\(#([^)]+)\)/g, function (m, id) { return ids[id] ? 'url(#' + prefix + id + ')' : m; });
+        if (v.charAt(0) === '#' && ids[v.slice(1)]) v = '#' + prefix + v.slice(1);
+        if (v !== attr.value) attr.value = v;
       });
+    });
+  }
+
+  // Footers and table of contents numbers, counted per chapter: « Heian Shodan … 3 / 12 ».
+  function numberPages() {
+    var chapters = {};
+    document.querySelectorAll('.pagedjs_page').forEach(function (page) {
+      var ch = page.querySelector('[data-chapter]');
+      if (!ch) return;
+      var key = ch.getAttribute('data-chapter');
+      (chapters[key] = chapters[key] || { name: ch.getAttribute('data-chapter-name'), pages: [] }).pages.push(page);
+    });
+    var numbers = new Map();
+    Object.keys(chapters).forEach(function (key) {
+      var c = chapters[key];
+      c.pages.forEach(function (page, i) {
+        numbers.set(page, i + 1);
+        if (i === 0) return;  // no footer on the cover
+        page.querySelector('.pagedjs_margin-bottom-left .pagedjs_margin-content').textContent = c.name;
+        page.querySelector('.pagedjs_margin-bottom-right .pagedjs_margin-content').textContent = (i + 1) + ' / ' + c.pages.length;
+      });
+    });
+    document.querySelectorAll('.toc-p a[href^="#"]').forEach(function (a) {
+      var target = document.getElementById(a.getAttribute('href').slice(1));
+      var page = target && target.closest('.pagedjs_page');
+      if (page && numbers.has(page)) a.setAttribute('data-page', numbers.get(page));
     });
   }
 
@@ -175,18 +220,6 @@
     });
   }
 
-  // Shared texts carry placeholders that become the kata's own name and Kiai moves when printed.
-  function fillKataDetails(root, kata) {
-    root.querySelectorAll('[data-kata-name]').forEach(function (el) { el.textContent = L(kata.name); });
-    if (kata.kiai && kata.kiai.length) {
-      var n = kata.kiai.length;
-      var lead = n <= 4 ? T('kiai-' + n, ['', 'Le Kiai', 'Les deux Kiai', 'Les trois Kiai', 'Les quatre Kiai'][n]) : T('kiai-n', 'Les Kiai');
-      var moves = n > 1 ? kata.kiai.slice(0, -1).join(', ') + ' ' + plain(T('kiai-et', 'et')) + ' ' + kata.kiai[n - 1] : String(kata.kiai[0]);
-      var text = plain(lead) + ' (' + plain(n > 1 ? T('kiai-mouvements', 'mouvements') : T('kiai-mouvement', 'mouvement')) + ' ' + moves + ')';
-      root.querySelectorAll('[data-kata-kiai]').forEach(function (el) { el.textContent = text; });
-    }
-  }
-
   function buildPrintToc(doc) {
     var items = doc.querySelectorAll('h2[id], h3[id], [data-toc][id]');
     var html = '<nav class="toc-print"><h2>' + T('table-des-matieres', 'Table des matières') + '</h2><ol class="toc-p">';
@@ -213,20 +246,36 @@
     return html;
   }
 
-  function startPagedPrint(size, kataId, noPrint) {
+  function startPagedPrint(size, target, noPrint) {
     root.setAttribute('data-theme', 'light');
     document.addEventListener('DOMContentLoaded', function () {
       document.body.innerHTML = '<div class="paged-status">…</div>';
       var status = document.body.firstChild;
-      loadTexts(PRINT_TEXTS).then(function () {
+      Promise.all([loadTexts(PRINT_TEXTS), loadTexts(LABELS)]).then(function () {
         status.innerHTML = T('preparation', 'Préparation de l’impression…');
-        return buildPrintDocument(kataId);
-      }).then(function (built) {
-        document.title = built.title + ' · ' + plain(T('site-nom', 'Kohai')) + ' ' + plain(T('onglet-impression', '(impression)'));
-        var doc = built.doc;
-        var cover = doc.querySelector('header.cover');
-        if (cover) cover.insertAdjacentHTML('afterend', buildPrintToc(doc));
-        doc.querySelectorAll('.screen-only, .video-frame').forEach(function (el) { el.remove(); });  // no video iframe loads in print
+        return getManifest();
+      }).then(function (manifest) {
+        return Promise.all(chapterIds(manifest, target).map(function (id) { return buildChapter(manifest, id); }));
+      }).then(function (chapters) {
+        var title = chapters.length > 1 ? plain(T('tout-titre', 'Toutes les notes')) : chapters[0].title;
+        document.title = title + ' · ' + plain(T('site-nom', 'Kohai')) + ' ' + plain(T('onglet-impression', '(impression)'));
+        var doc = document.createElement('div');
+        chapters.forEach(function (built, i) {
+          var chapter = document.createElement('section');
+          chapter.className = 'chapter';
+          chapter.setAttribute('data-chapter', String(i));
+          chapter.setAttribute('data-chapter-name', built.title);
+          var cov = built.doc.querySelector('header.cover');
+          if (cov) {
+            cov.insertAdjacentHTML('afterend', buildPrintToc(built.doc));
+            var first = cov.nextElementSibling.nextElementSibling;  // the chapter text starts after the cover and its table of contents
+            if (first) first.classList.add('pb');
+          }
+          built.doc.querySelectorAll('.screen-only, .video-frame').forEach(function (el) { el.remove(); });  // no video iframe loads in print
+          if (chapters.length > 1) prefixIds(built.doc, 'c' + i + '-');
+          Array.prototype.slice.call(built.doc.childNodes).forEach(function (n) { chapter.appendChild(n); });
+          doc.appendChild(chapter);
+        });
         doc.querySelectorAll('img[loading]').forEach(function (img) { img.removeAttribute('loading'); });
 
         var heads = {}, n = 0;
@@ -258,6 +307,7 @@
             .preview(content.content, [ROOT + 'assets/style.css', ROOT + 'assets/print.css', ROOT + 'assets/paged.css', sizeUrl], document.body)
             .then(function (flow) {
               URL.revokeObjectURL(sizeUrl);
+              numberPages();
               status.remove();
               root.setAttribute('data-paged-done', String(flow.total));
               if (!noPrint) setTimeout(function () { window.print(); }, 300);
@@ -314,21 +364,24 @@
   }
 
   // Print link
+  var printLabel = printLink.innerHTML;
   var savedPaper = load('kohai-paper');
   if (savedPaper === 'letter' || savedPaper === 'a4') paper.value = savedPaper;
   function updatePrint() {
     printTools.hidden = !printTarget;
-    if (printTarget) printLink.href = '?print=' + paper.value + (printTarget === 'lexique' ? '' : '&kata=' + encodeURIComponent(printTarget));
+    if (!printTarget) return;
+    printLink.href = '?print=' + paper.value + '&chapitre=' + encodeURIComponent(printTarget);
+    printLink.innerHTML = printTarget === 'tout' ? T('imprimer-tout', 'Tout imprimer') : printLabel;
   }
   paper.addEventListener('change', function () { store('kohai-paper', paper.value); updatePrint(); });
   document.addEventListener('keydown', function (e) {
-    if (printTarget && (e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey && (e.key === 'p' || e.key === 'P')) {
+    if (printTarget && printTarget !== 'tout' && (e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey && (e.key === 'p' || e.key === 'P')) {  // « Tout imprimer » only by its button
       e.preventDefault();
       window.open(printLink.href, '_blank', 'noopener');
     }
   });
 
-  // Routes: #/  ·  #/lexique[/anchor]  ·  #/<kata>[/<view>[/<anchor>]]
+  // Routes: #/  ·  #/lexique[/anchor]  ·  #/uniforme[/<view>[/<anchor>]]  ·  #/<kata>[/<view>[/<anchor>]]
   function parseRoute() {
     var parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(function (p) {
       try { return decodeURIComponent(p); } catch (e) { return p; }
@@ -346,7 +399,13 @@
       { href: '#/', label: T('menu-accueil', 'Accueil'), children: [
         { href: '#/accueil/about', label: T('menu-qu-est-ce-qu-un-kata', 'Qu’est-ce qu’un kata ?') }
       ] },
-      { href: '#/accueil/kata-title', label: T('menu-kata', 'Kata'), open: true, children: [
+      { href: '#/uniforme', label: T('menu-uniforme', 'Uniforme de karaté (Dogi)'), children: [
+        { href: '#/uniforme/dogi', label: T('menu-dogi', 'Le dogi'), children: ctx.uniformView === 'dogi' ? ctx.uniformItems : null },
+        { href: '#/uniforme/choisir', label: T('menu-choisir-dogi', 'Choisir son dogi'), children: ctx.uniformView === 'choisir' ? ctx.uniformItems : null },
+        { href: '#/uniforme/entretien', label: T('menu-entretien-dogi', 'Entretien et pliage'), children: ctx.uniformView === 'entretien' ? ctx.uniformItems : null },
+        { href: '#/uniforme/obi', label: T('menu-obi', 'Nouer sa ceinture'), children: ctx.uniformView === 'obi' ? ctx.uniformItems : null }
+      ] },
+      { href: '#/accueil/kata-title', label: T('menu-kata', 'Katas'), open: true, children: [
         { href: '#/kata/esprit', label: T('menu-esprit', 'L\u2019esprit du kata'), children: ctx.sharedView === 'esprit' ? ctx.sharedItems : null },
         { href: '#/kata/erreurs', label: T('menu-erreurs', 'Erreurs fréquentes'), children: ctx.sharedView === 'erreurs' ? ctx.sharedItems : null }
       ].concat(manifest.groups.map(function (g) {
@@ -433,10 +492,10 @@
   }
 
   function renderHome(manifest, anchor) {
-    printTarget = null; updatePrint();
+    printTarget = 'tout'; updatePrint();
     setCrumb('');
     setNav(buildMenu(manifest, { home: true }), anchor ? '#/accueil/' + anchor : '#/');
-    document.title = plain(T('onglet-accueil', 'Kohai · Fiches d’étude des kata'));
+    document.title = plain(T('onglet-accueil', 'Kohai · Fiches d’étude des katas'));
     function belt(k) {
       // "marron:2" = brown belt with 2 stripes (kyu); "noire:1" = black belt with 1 bar (dan)
       var name = L(k.belt);
@@ -462,7 +521,7 @@
       var list = manifest.katas.filter(function (k) { return k.group === g.id; });
       return '<section class="kata-group" aria-labelledby="g-' + g.id + '">' +
         '<h3 id="g-' + g.id + '">' + escapeHtml(L(g.name)) + ' <span class="jp" lang="ja">' + escapeHtml(g.kanji) + '</span>' +
-        '<span class="count">' + list.length + ' ' + T('groupe-kata', 'kata') + '</span></h3>' +
+        '<span class="count">' + list.length + ' ' + T('groupe-kata', 'katas') + '</span></h3>' +
         '<p class="group-desc">' + escapeHtml(L(g.description)) + '</p>' +
         '<ul class="kata-list">' + list.map(card).join('') + '</ul></section>';
     }).join('');
@@ -496,6 +555,21 @@
     });
   }
 
+  function renderUniform(manifest, viewId, anchor) {
+    return fetchFragment(UNIFORM).then(function (frag) {
+      var sections = Array.prototype.slice.call(frag.querySelectorAll('section[data-view]'));
+      var section = sections.filter(function (s) { return s.dataset.view === viewId; })[0];
+      if (!section) { location.hash = sections.length ? '#/uniforme/' + sections[0].dataset.view : '#/'; return; }
+      section = section.cloneNode(true);
+      printTarget = 'uniforme'; updatePrint();
+      setCrumb(plain(T('menu-uniforme', 'Uniforme de karaté (Dogi)')));
+      var base = '#/uniforme/' + section.dataset.view;
+      setNav(buildMenu(manifest, { uniformView: section.dataset.view, uniformItems: childrenOf(section, base) }), anchor ? base + '/' + anchor : base);
+      document.title = section.dataset.title + ' · ' + plain(T('site-nom', 'Kohai'));
+      show(section, anchor);
+    });
+  }
+
   function renderAbout(manifest, anchor) {
     return Promise.all([fetchFragment(ABOUT), fetchFragment(CHANGELOG).catch(function () { return null; })]).then(function (res) {
       var frag = res[0], changelog = res[1];
@@ -523,7 +597,7 @@
       var section = frag.querySelector('[data-view="' + viewId + '"]');
       if (!section) { location.hash = '#/'; return; }
       section = section.cloneNode(true);
-      printTarget = null; updatePrint();
+      printTarget = 'kata'; updatePrint();
       setCrumb(section.dataset.title);
       var base = '#/kata/' + viewId;
       setNav(buildMenu(manifest, { sharedView: viewId, sharedItems: childrenOf(section, base).filter(function (c) { return c.href !== base + '/'; }) }),
@@ -531,7 +605,7 @@
       document.title = section.dataset.title + ' · ' + plain(T('site-nom', 'Kohai'));
       var wrap = document.createElement('div');
       wrap.className = 'kata-view';
-      wrap.insertAdjacentHTML('beforeend', '<p class="eyebrow"><a href="#/accueil/kata-title">' + T('menu-kata', 'Kata') + '</a></p>');
+      wrap.insertAdjacentHTML('beforeend', '<p class="eyebrow"><a href="#/accueil/kata-title">' + T('menu-kata', 'Katas') + '</a></p>');
       wrap.appendChild(section);
       show(wrap, anchor);
     });
@@ -602,12 +676,13 @@
     Promise.all([getManifest(), labelsReady]).then(function (res) {
       var manifest = res[0];
       var kata = findKata(manifest, r.page);
-      var url = !r.page || r.page === 'accueil' ? HOME : r.page === 'lexique' ? LEXIQUE : r.page === 'a-propos' ? ABOUT : r.page === 'kata' ? SHARED : kata ? localized(kata.file) : null;
+      var url = !r.page || r.page === 'accueil' ? HOME : r.page === 'lexique' ? LEXIQUE : r.page === 'uniforme' ? UNIFORM : r.page === 'a-propos' ? ABOUT : r.page === 'kata' ? SHARED : kata ? localized(kata.file) : null;
       return (url ? fetchText(url) : Promise.resolve()).then(function () { return manifest; });
     }).then(function (manifest) {
       if (token !== routeToken) return;  // the user already navigated somewhere else
       if (!r.page || r.page === 'accueil') return renderHome(manifest, r.view);
       if (r.page === 'lexique') return renderLexique(manifest, r.view);
+      if (r.page === 'uniforme') return renderUniform(manifest, r.view, r.anchor);
       if (r.page === 'a-propos') return renderAbout(manifest, r.view);
       if (r.page === 'kata') return renderShared(manifest, r.view || 'esprit', r.anchor);
       var kata = findKata(manifest, r.page);

@@ -1,18 +1,25 @@
 /* Used only by Paged.js (?print=letter|a4), on top of print.css. Page size is added at runtime. */
+/* Footers are filled per chapter by numberPages() in app.js: chapter name on the left, « 3 / 12 » on the right. */
 @page {
   margin: 16mm 15mm 18mm;
-  @bottom-center {
-    content: counter(page) " / " counter(pages);
+  @bottom-left {
+    content: "";
     font: 9pt -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     color: #666;
   }
-}
-@page:first {
-  @bottom-center { content: none; }
+  @bottom-right {
+    content: "";
+    font: 9pt -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color: #666;
+    text-align: right;
+  }
 }
 
+/* Each chapter starts on a right-hand page (a blank page is added when needed), numbered from 1 */
+.chapter + .chapter { break-before: right; }
+
 .toc-p a::after {
-  content: target-counter(attr(href url), page);
+  content: attr(data-page);
   order: 2;
   min-width: 2ch;
   text-align: right;

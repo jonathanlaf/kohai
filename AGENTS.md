@@ -23,16 +23,17 @@ Pages are loaded with `fetch`, so test through a local server (`python3 -m http.
 
 - `index.html` — French app shell: top bar, menu, `<main id="view">`, footer.
 - `en/index.html` — English app shell (`lang="en" data-root="../"`), same `app.js`. A change to one shell is made in the other.
-- `assets/app.js` — hash router (`#/`, `#/<kata-id>/<section>`, `#/kata/esprit|erreurs`, `#/lexique`, `#/a-propos`;
+- `assets/app.js` — hash router (`#/`, `#/<kata-id>/<section>`, `#/kata/esprit|erreurs`, `#/uniforme/<view>`, `#/lexique`, `#/a-propos`;
   identical in both languages), menu, theme, language link, print mode (Paged.js). Logic only: user-facing text lives in the HTML files below.
 - `assets/style.css` (screen, light/dark tokens), `assets/print.css` (print), `assets/paged.css` (Paged.js only).
 - `assets/vendor/paged.js` — vendored Paged.js 0.4.3 (MIT). Do not edit.
 - `katas/katas.json` — the kata: family, name, kanji, meaning, belt, and for written ones `file`, `moves`, `kiai`, `statut`.
   Text fields (`name`, `meaning`, `belt`, group `name` and `description`) are `{"fr": …, "en": …}`.
 - `katas/<id>.html` — one kata; each `<section data-view data-title>` is one screen; printing joins them.
-- `shared/accueil.html` home, `shared/kata.html` (L'esprit du kata, Erreurs fréquentes), `shared/lexique.html`,
+- `shared/accueil.html` home, `shared/kata.html` (L'esprit du kata, Erreurs fréquentes: general, for every kata), `shared/lexique.html`,
   `shared/about.html` (À propos + credits), `shared/changelog.html` (journal des modifications),
   `shared/libelles.html` (menu and interface labels), `shared/impression.html` (print-only texts).
+- `shared/uniforme.html` — Uniforme de karaté (Dogi): one `<section data-view>` per page (`#/uniforme/<view>`).
 - `img/<kata-id>/` — images of each kata.
 - Every `.html` under `katas/` and `shared/` has an English twin next to it: `x.html` + `x.en.html`.
 - `.githooks/pre-commit` runs `.githooks/check-i18n.py --staged` (see « Two languages »).
@@ -97,9 +98,13 @@ if someone knows the URL: drafts are hidden, not secret.
 
 ## Print
 
-`?print=letter|a4&kata=<id>` lays out one kata with Paged.js: cover + numbered table of contents, L'esprit du kata,
-the kata, Erreurs fréquentes, credits and the disclaimer paragraphs from the About page. The vocabulary prints
-alone from `#/lexique`. `class="pb"` on an `h2` starts a new page. After layout changes, check that the embusen
+Printing is by chapter: `?print=letter|a4&chapitre=<id>` lays out one chapter with Paged.js, where `<id>` is a kata id,
+`kata` (L'esprit du kata + Erreurs fréquentes, written for every kata and printed only here), `uniforme` (every page of
+`shared/uniforme.html`, flowing one after the other) or `lexique` (`kata=<id>` still works). Every chapter is: cover +
+numbered table of contents, its content, credits (`data-credits="<id>"` in the About page) and the disclaimer paragraphs
+from the About page. `chapitre=tout` (« Tout imprimer » on the home page) prints every chapter in menu order; each starts
+on a right-hand page (blank page added when needed) and is numbered from 1. Footers show the chapter name and « page / pages of the chapter » (`numberPages()`
+in `app.js`), and ids are prefixed per chapter so they stay unique. `class="pb"` on an `h2` starts a new page. After layout changes, check that the embusen
 section still fits on one page in Letter and A4, in both languages (`&noprint=1` previews without the dialog;
 `/en/?print=…` prints in English).
 

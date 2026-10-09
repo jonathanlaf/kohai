@@ -4,25 +4,25 @@
       "id": "heian",
       "name": {"fr": "Heian", "en": "Heian"},
       "kanji": "平安",
-      "description": {"fr": "Les cinq kata de base, étudiés pendant les premières ceintures. Leur nom signifie « paix et tranquillité ».", "en": "The five basic kata, studied during the first belts. Their name means “peace and tranquillity.”"}
+      "description": {"fr": "Les cinq katas de base, étudiés pendant les premières ceintures. Leur nom signifie « paix et tranquillité ».", "en": "The five basic katas, studied during the first belts. Their name means “peace and tranquillity.”"}
     },
     {
       "id": "tekki",
       "name": {"fr": "Tekki", "en": "Tekki"},
       "kanji": "鉄騎",
-      "description": {"fr": "Trois kata exécutés en Kiba Dachi, avec des déplacements latéraux sur une seule ligne. Leur nom signifie « cavalier de fer ».", "en": "Three kata performed in Kiba Dachi, moving sideways along a single line. Their name means “iron horseman.”"}
+      "description": {"fr": "Trois katas exécutés en Kiba Dachi, avec des déplacements latéraux sur une seule ligne. Leur nom signifie « cavalier de fer ».", "en": "Three katas performed in Kiba Dachi, moving sideways along a single line. Their name means “iron horseman.”"}
     },
     {
       "id": "shitei",
       "name": {"fr": "Shitei", "en": "Shitei"},
       "kanji": "指定",
-      "description": {"fr": "Les quatre kata « imposés » des compétitions et des grades avancés.", "en": "The four “designated” kata of competitions and advanced grades."}
+      "description": {"fr": "Les quatre katas « imposés » des compétitions et des grades avancés.", "en": "The four “designated” katas of competitions and advanced grades."}
     },
     {
       "id": "sentei",
       "name": {"fr": "Sentei", "en": "Sentei"},
       "kanji": "選定",
-      "description": {"fr": "Les kata « au choix », étudiés surtout aux grades de ceinture noire.", "en": "The “chosen” kata, studied mostly at black belt grades."}
+      "description": {"fr": "Les katas « au choix », étudiés surtout aux grades de ceinture noire.", "en": "The “chosen” katas, studied mostly at black belt grades."}
     }
   ],
   "katas": [
