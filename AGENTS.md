@@ -23,7 +23,7 @@ Pages are loaded with `fetch`, so test through a local server (`python3 -m http.
 
 - `index.html` — French app shell: top bar, menu, `<main id="view">`, footer.
 - `en/index.html` — English app shell (`lang="en" data-root="../"`), same `app.js`. A change to one shell is made in the other.
-- `assets/app.js` — hash router (`#/`, `#/<kata-id>/<section>`, `#/kata/esprit|erreurs`, `#/uniforme/<view>`, `#/lexique`, `#/a-propos`;
+- `assets/app.js` — hash router (`#/`, `#/<kata-id>/<section>`, `#/kata/esprit|erreurs`, `#/uniforme/<view>`, `#/histoire`, `#/dojo-kun`, `#/etiquette`, `#/kihon`, `#/lexique`, `#/a-propos`;
   identical in both languages), menu, theme, language link, print mode (Paged.js). Logic only: user-facing text lives in the HTML files below.
 - `assets/style.css` (screen, light/dark tokens), `assets/print.css` (print), `assets/paged.css` (Paged.js only).
   The shells load them (and `app.js`) with one shared `?v=YYYYMMDD<letter>` (e.g. `20261013g`; next letter for another change the same day):
@@ -36,6 +36,9 @@ Pages are loaded with `fetch`, so test through a local server (`python3 -m http.
 - `shared/accueil.html` home, `shared/kata.html` (L'esprit du kata, Erreurs fréquentes: general, for every kata), `shared/lexique.html`,
   `shared/about.html` (À propos + credits), `shared/changelog.html` (journal des modifications),
   `shared/libelles.html` (menu and interface labels), `shared/impression.html` (print-only texts).
+- One-page sections, listed in `PAGES` in `app.js` (menu label `menu-<id>`, print cover `<id>-titre` / `<id>-sous-titre`, credits `data-credits="<id>"`):
+  `shared/histoire.html` (Histoire du Shotokan), `shared/dojo-kun.html` (Dojo Kun, one `.kun` card per precept),
+  `shared/etiquette.html` (Étiquette au dojo), `shared/kihon.html` (Kihon, one `.fiche` card per technique).
 - `shared/uniforme.html` — Uniforme de karaté (Dogi): one `<section data-view>` per page (`#/uniforme/<view>`).
 - `img/<kata-id>/` — images of each kata.
 - Every `.html` under `katas/` and `shared/` has an English twin next to it: `x.html` + `x.en.html`.
@@ -94,7 +97,7 @@ and the parameter follows navigation, the language link and printing.
 ## Kata tutorial table
 
 `<table class="steps">`, one `<tbody class="step">` per move (`step step-kiai` for a Kiai), two rows:
-the first holds `td.step-head` (rowspan 2: number bubble, Japanese count, image), `td.step-tech`
+the first holds `td.step-head` (rowspan 2: number bubble, `.visually-hidden` number for screen readers, Japanese count, image), `td.step-tech`
 (`.tech-jp` Japanese name, `.tech-sep`, `.tech-tr` translation, `.badges`), `td.step-stance` (name + `<small>` gloss)
 and `td.step-lvl` (Jodan/Chudan/Gedan + `<small>` target: the point aimed at for a strike, the zone protected for a block);
 the second holds `td.step-move` (colspan 3: footwork, then an optional `.step-note`). The number bubble is a small SVG
@@ -115,7 +118,7 @@ with a legend of the shapes the kata uses.
 ## Print
 
 Printing is by chapter: `?print=letter|a4&chapitre=<id>` lays out one chapter with Paged.js, where `<id>` is a kata id,
-`kata` (L'esprit du kata + Erreurs fréquentes, written for every kata and printed only here), `uniforme` (every page of
+`histoire`, `dojo-kun`, `etiquette`, `kihon`, `kata` (L'esprit du kata + Erreurs fréquentes, written for every kata and printed only here), `uniforme` (every page of
 `shared/uniforme.html`, flowing one after the other) or `lexique` (`kata=<id>` still works). Every chapter is: cover +
 numbered table of contents, its content, credits (`data-credits="<id>"` in the About page) and the disclaimer paragraphs
 from the About page. `chapitre=tout` (« Tout imprimer » on the home page) prints every chapter in menu order; each starts

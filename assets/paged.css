@@ -15,6 +15,9 @@
   }
 }
 
+/* Move stripes come from .step-alt (set before layout), not from :nth-of-type, which restarts in each split table */
+.steps tbody.step.step:not(.step-alt) { background: none; }
+
 /* Each chapter starts on a right-hand page (a blank page is added when needed), numbered from 1 */
 .chapter + .chapter { break-before: right; }
 

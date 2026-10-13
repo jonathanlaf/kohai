@@ -110,6 +110,19 @@ td:first-child { white-space: nowrap; font-weight: 600; }
   th, td { padding: 8px; }
 }
 
+/* Dojo Kun: one card per precept; Kihon: one card per technique */
+.kun, .fiche { margin: 0 0 22px; padding: 14px 16px; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; }
+.kun p { margin: 0 0 8px; }
+.kun .kun-jp { font-size: 1.5rem; line-height: 1.4; }
+.kun .kun-romaji { font-style: italic; margin-bottom: 2px; }
+.kun .kun-pron { color: var(--muted); font-size: 0.93rem; }
+.kun .kun-tr { font-weight: 600; font-size: 1.05rem; }
+.kun .table-wrap { margin: 4px 0 10px; }
+.kun td.kanji { white-space: nowrap; }
+.fiche p, .fiche ul, .fiche ol { margin: 0 0 6px; }
+.fiche h4 { margin: 0 0 2px; font-size: 1.05rem; }
+.fiche .fiche-tr { color: var(--muted); font-style: italic; }
+
 /* « How to read this tutorial » box above the tutorial table, with the embusen legend */
 .guide { margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; background: var(--stripe); font-size: 0.93rem; }
 .guide p { margin: 0 0 8px; }
@@ -117,7 +130,7 @@ td:first-child { white-space: nowrap; font-weight: 600; }
 .guide .legend { justify-content: flex-start; margin: 10px 0 0; }
 /* Kata tutorial: one <tbody class="step"> per move, two rows (technique / footwork), the image spans both */
 .steps tbody tr { background: none; }
-.steps tbody.step:nth-of-type(even) { background: var(--stripe); }
+.steps tbody.step:nth-of-type(even), .steps tbody.step-alt { background: var(--stripe); }
 .steps tbody.step td { border-bottom: none; }
 .steps tbody.step + tbody.step tr:first-child td { border-top: 1px solid var(--line); }
 .steps .step-head { width: 1%; min-width: 150px; border-right: 1px solid var(--line); white-space: nowrap; }  /* as wide as the longest « San Ju Roku 三十六 », on one line */
