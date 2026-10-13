@@ -110,6 +110,51 @@ td:first-child { white-space: nowrap; font-weight: 600; }
   th, td { padding: 8px; }
 }
 
+/* « How to read this tutorial » box above the tutorial table, with the embusen legend */
+.guide { margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; background: var(--stripe); font-size: 0.93rem; }
+.guide p { margin: 0 0 8px; }
+.guide .guide-title { font-weight: 600; color: var(--fg); }
+.guide .legend { justify-content: flex-start; margin: 10px 0 0; }
+/* Kata tutorial: one <tbody class="step"> per move, two rows (technique / footwork), the image spans both */
+.steps tbody tr { background: none; }
+.steps tbody.step:nth-of-type(even) { background: var(--stripe); }
+.steps tbody.step td { border-bottom: none; }
+.steps tbody.step + tbody.step tr:first-child td { border-top: 1px solid var(--line); }
+.steps .step-head { width: 1%; min-width: 150px; border-right: 1px solid var(--line); white-space: nowrap; }  /* as wide as the longest « San Ju Roku 三十六 », on one line */
+/* The number bubble takes the embusen shape of the move (circle Zenkutsu, square Kokutsu, hexagon Kiba, dashed Kosa, red Kiai) */
+.steps .step-n { vertical-align: middle; margin-right: 4px; overflow: visible; }
+.steps .step-n text { font: 600 12px var(--font); text-anchor: middle; dominant-baseline: central; }
+.steps .step-n .num { fill: var(--fg); }
+.steps .step-n .kiai-t { fill: #fff; }
+.steps .step-head .jp { white-space: nowrap; }
+.steps .tech-jp { display: block; font-weight: 600; }
+.steps .tech-sep { display: none; }  /* « Oi Zuki — … » only if this stylesheet is missing */
+.steps .tech-tr { display: block; color: var(--muted); }
+.steps td.step-stance small, .steps td.step-lvl small { display: block; color: var(--muted); font-size: 0.85em; }
+.steps .lvl { font-weight: 600; }
+.steps td.step-lvl { white-space: nowrap; }
+.steps td.step-stance { min-width: 9.5em; }
+.steps td.step-move { padding-top: 0; font-size: 0.93rem; white-space: normal; font-weight: 400; vertical-align: top; }
+.steps tbody.step tr:first-child td:not(.step-head) { height: 1px; }  /* the image sets the height: the footwork row takes what is left */
+.steps .step-label { display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-right: 8px; }
+.steps .step-note { display: block; margin-top: 4px; }
+.steps .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.steps .stance-then { display: block; font-size: 0.75em; color: var(--muted); margin: 2px 0; }
+.steps .badge { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; border: 1px solid var(--line); }
+.steps .badge-kiai { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (max-width: 640px) {
+  .steps, .steps tbody, .steps td { display: block; }
+  .steps thead { display: none; }
+  .steps tr { display: contents; }
+  .steps tbody.step { display: grid; grid-template-columns: 112px 1fr; column-gap: 12px; padding: 12px; }
+  .steps tbody.step + tbody.step { border-top: 1px solid var(--line); }
+  .steps tbody.step + tbody.step tr:first-child td { border-top: none; }
+  .steps .step-head { grid-column: 1; grid-row: 1 / span 3; width: auto; min-width: 0; border-right: none; padding: 0; white-space: normal; }
+  .steps .step-head .move-img { height: auto; width: 100%; max-height: 150px; object-fit: contain; }
+  .steps tbody.step tr:first-child td:not(.step-head) { height: auto; }
+  .steps td.step-tech, .steps td.step-stance, .steps td.step-lvl { grid-column: 2; padding: 0 0 6px; }
+  .steps td.step-move { grid-column: 1 / -1; padding: 8px 0 0; }
+}
 /* Line-art images: blend on light, sit on a paper card in dark */
 .move-img, .sheet img { mix-blend-mode: multiply; background: var(--paper); }
 .move-img { display: block; height: 120px; width: auto; max-width: 100%; margin-top: 8px; border-radius: 6px; }
@@ -145,8 +190,9 @@ td:first-child { white-space: nowrap; font-weight: 600; }
 .embusen .seg-k { stroke: var(--fg); stroke-width: 2.5; stroke-dasharray: 6 4; }
 .embusen .seg-y { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 2 4; }
 .embusen .arrow { fill: var(--fg); }
-.embusen .node, .legend .node { fill: var(--bg); stroke: var(--fg); stroke-width: 2; }
-.embusen .kiai, .legend .kiai { fill: var(--accent); stroke: var(--accent); stroke-width: 2; }
+.embusen .node, .legend .node, .steps .node { fill: var(--bg); stroke: var(--fg); stroke-width: 2; }
+.legend .other, .steps .other { fill: var(--line); stroke: var(--muted); stroke-width: 2; }  /* a stance with no embusen shape */
+.embusen .kiai, .legend .kiai, .steps .kiai { fill: var(--accent); stroke: var(--accent); stroke-width: 2; }
 .embusen text { font: 600 13px var(--font); text-anchor: middle; dominant-baseline: central; }
 .embusen .num { fill: var(--fg); }
 .embusen .kiai-t { fill: #fff; }

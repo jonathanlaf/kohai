@@ -26,6 +26,9 @@ Pages are loaded with `fetch`, so test through a local server (`python3 -m http.
 - `assets/app.js` — hash router (`#/`, `#/<kata-id>/<section>`, `#/kata/esprit|erreurs`, `#/uniforme/<view>`, `#/lexique`, `#/a-propos`;
   identical in both languages), menu, theme, language link, print mode (Paged.js). Logic only: user-facing text lives in the HTML files below.
 - `assets/style.css` (screen, light/dark tokens), `assets/print.css` (print), `assets/paged.css` (Paged.js only).
+  The shells load them (and `app.js`) with one shared `?v=YYYYMMDD<letter>` (e.g. `20261013g`; next letter for another change the same day):
+  bump it on all of them in both shells whenever one of these files changes (`app.js` reuses it for the Paged.js stylesheets),
+  so browsers do not keep an old copy. Content pages are fetched with `cache: 'no-cache'`.
 - `assets/vendor/paged.js` — vendored Paged.js 0.4.3 (MIT). Do not edit.
 - `katas/katas.json` — the kata: family, name, kanji, meaning, belt, and for written ones `file`, `moves`, `kiai`, `statut`.
   Text fields (`name`, `meaning`, `belt`, group `name` and `description`) are `{"fr": …, "en": …}`.
@@ -87,6 +90,17 @@ and the parameter follows navigation, the language link and printing.
 - Japanese terms stay in rōmaji, followed by kanji when known: `<span class="jp" lang="ja">前屈立ち</span>`
   (red, Japanese font). In the French vocabulary, pronunciation is written « à la française ».
 - Belts in `katas.json`: `beltColors` like `"marron:2"` (brown, 2 stripes = kyu) or `"noire:1"` (black, 1 bar = dan).
+
+## Kata tutorial table
+
+`<table class="steps">`, one `<tbody class="step">` per move (`step step-kiai` for a Kiai), two rows:
+the first holds `td.step-head` (rowspan 2: number bubble, Japanese count, image), `td.step-tech`
+(`.tech-jp` Japanese name, `.tech-sep`, `.tech-tr` translation, `.badges`), `td.step-stance` (name + `<small>` gloss)
+and `td.step-lvl` (Jodan/Chudan/Gedan + `<small>` target: the point aimed at for a strike, the zone protected for a block);
+the second holds `td.step-move` (colspan 3: footwork, then an optional `.step-note`). The number bubble is a small SVG
+with the embusen shape of the stance the move ends in (circle Zenkutsu, square Kokutsu, hexagon Kiba, dashed circle Kosa,
+grey disc for any other stance, red for a Kiai). An `<aside class="guide">` above the table explains how to read it,
+with a legend of the shapes the kata uses.
 
 ## Embusen diagrams (SVG in the kata file)
 

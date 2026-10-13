@@ -20,6 +20,8 @@
   var LABELS = localized('shared/libelles.html');    // menu and interface labels
   var PRINT_TEXTS = localized('shared/impression.html');  // texts used only in print
   var params = new URLSearchParams(location.search);
+  // Version of the assets (?v= on app.js in the shells), reused for the stylesheets Paged.js loads
+  var V = (function () { var s = document.querySelector('script[src*="assets/app.js"]'); var m = s && /\?v=[^&]+/.exec(s.getAttribute('src')); return m ? m[0] : ''; })();
 
   function store(key, value) {
     try { localStorage.setItem(key, value); } catch (e) {}
@@ -31,7 +33,7 @@
   var cache = {};
   function fetchText(url) {
     if (!cache[url]) {
-      cache[url] = fetch(url).then(function (r) {
+      cache[url] = fetch(url, { cache: 'no-cache' }).then(function (r) {  // always check for a newer version (a 304 when unchanged)
         if (!r.ok) throw new Error(url + ' (' + r.status + ')');
         return r.text();
       }).catch(function (err) {
@@ -308,7 +310,7 @@
           var content = document.createElement('template');
           content.content.appendChild(doc);
           new Paged.Previewer()
-            .preview(content.content, [ROOT + 'assets/style.css', ROOT + 'assets/print.css', ROOT + 'assets/paged.css', sizeUrl], document.body)
+            .preview(content.content, [ROOT + 'assets/style.css' + V, ROOT + 'assets/print.css' + V, ROOT + 'assets/paged.css' + V, sizeUrl], document.body)
             .then(function (flow) {
               URL.revokeObjectURL(sizeUrl);
               numberPages();
