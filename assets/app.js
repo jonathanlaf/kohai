@@ -11,16 +11,17 @@
   function L(v) { return v && typeof v === 'object' ? (v[LANG] || v.fr || '') : v; }
 
   var MANIFEST = ROOT + 'katas/katas.json';
-  var LEXIQUE = localized('shared/lexique.html');
   var SHARED = localized('shared/kata.html');
   var ABOUT = localized('shared/about.html');
   var UNIFORM = localized('shared/uniforme.html');
-  // One-page sections (#/<id>[/anchor]): file, menu label and print cover, with their French fallbacks
+  // One-page sections (#/<id>[/anchor]): file, menu label and print cover, with their French fallbacks.
+  // crumb: a shorter top-bar label (fil-<id>); noHeading: the printed chapter drops the page's h2, already on the cover.
   var PAGES = {
     'histoire': { url: localized('shared/histoire.html'), name: 'Histoire du Shotokan', sub: 'Funakoshi Gichin et la naissance du style' },
     'dojo-kun': { url: localized('shared/dojo-kun.html'), name: 'Dojo Kun', sub: 'Les cinq préceptes du dojo' },
     'etiquette': { url: localized('shared/etiquette.html'), name: 'Étiquette au dojo', sub: 'Le salut, le cours et les titres' },
-    'kihon': { url: localized('shared/kihon.html'), name: 'Kihon', sub: 'Les techniques de base et le passage de grade' }
+    'kihon': { url: localized('shared/kihon.html'), name: 'Kihon', sub: 'Les techniques de base et le passage de grade' },
+    'lexique': { url: localized('shared/lexique.html'), name: 'Lexique du karatéka', sub: 'Kohai · les notes d’un élève', crumb: 'Lexique', noHeading: true }
   };
   Object.setPrototypeOf(PAGES, null);  // so a route like #/constructor is not taken for a page
   function pageName(id) { return T('menu-' + id, PAGES[id].name); }
@@ -123,6 +124,13 @@
     if (target !== 'tout') return [target];
     return ['histoire', 'dojo-kun', 'etiquette', 'uniforme', 'kihon', 'kata'].concat(manifest.katas.filter(isAvailable).map(function (k) { return k.id; }), ['lexique']);
   }
+  // Every second move of a tutorial is shaded. Marked once in the markup rather than with :nth-of-type,
+  // which would restart on each page when Paged.js splits a long table.
+  function markStripes(root) {
+    root.querySelectorAll('table.steps').forEach(function (t) {
+      t.querySelectorAll('tbody.step').forEach(function (b, n) { b.classList.toggle('step-alt', n % 2 === 1); });
+    });
+  }
   function cover(title, sub) {
     return '<header class="cover"><h1>' + title + '</h1><p class="sub">' + sub + '</p></header>';
   }
@@ -133,21 +141,15 @@
   // Builds one printable chapter: { doc, title }. The cover comes first; the table of contents is added after it.
   function buildChapter(manifest, id) {
     var doc = document.createElement('div');
-    if (id === 'lexique') return fetchFragment(LEXIQUE).then(function (lexique) {
-      doc.innerHTML = cover(T('lexique-titre', 'Lexique du karatéka'), T('lexique-sous-titre', 'Kohai · les notes d’un élève'));
-      var lex = lexique.querySelector('section').cloneNode(true);
-      var h2 = lex.querySelector('h2');
-      if (h2) h2.remove();
-      var first = lex.querySelector('p');
-      if (first) first.classList.add('pb');
-      unwrap(lex, doc);
-      return appendCredits(doc, null).then(function () { return { doc: doc, title: plain(T('lexique-titre', 'Lexique du karatéka')) }; });
-    });
     if (PAGES[id]) return fetchFragment(PAGES[id].url).then(function (frag) {
       doc.innerHTML = cover(T(id + '-titre', PAGES[id].name), T(id + '-sous-titre', PAGES[id].sub));
       var page = frag.querySelector('section').cloneNode(true);
       var h2 = page.querySelector('h2');
-      if (h2) h2.classList.add('pb');
+      if (h2 && PAGES[id].noHeading) {
+        h2.remove();
+        var first = page.querySelector('p');
+        if (first) first.classList.add('pb');
+      } else if (h2) h2.classList.add('pb');
       unwrap(page, doc);
       return appendCredits(doc, id).then(function () { return { doc: doc, title: plain(T(id + '-titre', PAGES[id].name)) }; });
     });
@@ -295,10 +297,7 @@
             if (first) first.classList.add('pb');
           }
           built.doc.querySelectorAll('.screen-only, .video-frame').forEach(function (el) { el.remove(); });  // no video iframe loads in print
-          // Mark every second move now: Paged.js splits long tables, and :nth-of-type would restart on each page
-          built.doc.querySelectorAll('table.steps').forEach(function (t) {
-            t.querySelectorAll('tbody.step').forEach(function (b, n) { if (n % 2) b.classList.add('step-alt'); });
-          });
+          markStripes(built.doc);
           if (chapters.length > 1) prefixIds(built.doc, 'c' + i + '-');
           Array.prototype.slice.call(built.doc.childNodes).forEach(function (n) { chapter.appendChild(n); });
           doc.appendChild(chapter);
@@ -446,7 +445,7 @@
             return { href: '#/' + k.id, label: escapeHtml(L(k.name)), children: k.id === ctx.kataId ? ctx.kataItems : null };
           }) };
       })) },
-      { href: '#/lexique', label: T('menu-lexique', 'Lexique du karatéka'), children: ctx.lexItems || null },
+      pageItem('lexique', ctx),
       { href: '#/a-propos', label: T('menu-a-propos', 'À propos'), children: ctx.aboutItems || null }
     ];
   }
@@ -516,6 +515,7 @@
   var siteFoot = document.querySelector('.site-foot');
   function show(nodes, anchorId) {
     videoFacades(nodes);
+    markStripes(nodes);
     view.innerHTML = '';
     view.appendChild(nodes);
     if (siteFoot) view.appendChild(siteFoot);
@@ -578,21 +578,10 @@
     });
   }
 
-  function renderLexique(manifest, anchor) {
-    return fetchFragment(LEXIQUE).then(function (frag) {
-      printTarget = 'lexique'; updatePrint();
-      setCrumb(plain(T('fil-lexique', 'Lexique')));
-      var section = frag.querySelector('section').cloneNode(true);
-      setNav(buildMenu(manifest, { lexItems: childrenOf(section, '#/lexique') }), anchor ? '#/lexique/' + anchor : '#/lexique');
-      document.title = plain(T('menu-lexique', 'Lexique du karatéka')) + ' · ' + plain(T('site-nom', 'Kohai'));
-      show(section, anchor);
-    });
-  }
-
   function renderPage(manifest, id, anchor) {
     return fetchFragment(PAGES[id].url).then(function (frag) {
       printTarget = id; updatePrint();
-      setCrumb(plain(pageName(id)));
+      setCrumb(plain(PAGES[id].crumb ? T('fil-' + id, PAGES[id].crumb) : pageName(id)));
       var section = frag.querySelector('section').cloneNode(true);
       setNav(buildMenu(manifest, { page: id, pageItems: childrenOf(section, '#/' + id) }), anchor ? '#/' + id + '/' + anchor : '#/' + id);
       document.title = plain(pageName(id)) + ' · ' + plain(T('site-nom', 'Kohai'));
@@ -722,12 +711,11 @@
     Promise.all([getManifest(), labelsReady]).then(function (res) {
       var manifest = res[0];
       var kata = findKata(manifest, r.page);
-      var url = !r.page || r.page === 'accueil' ? HOME : r.page === 'lexique' ? LEXIQUE : PAGES[r.page] ? PAGES[r.page].url : r.page === 'uniforme' ? UNIFORM : r.page === 'a-propos' ? ABOUT : r.page === 'kata' ? SHARED : kata ? localized(kata.file) : null;
+      var url = !r.page || r.page === 'accueil' ? HOME : PAGES[r.page] ? PAGES[r.page].url : r.page === 'uniforme' ? UNIFORM : r.page === 'a-propos' ? ABOUT : r.page === 'kata' ? SHARED : kata ? localized(kata.file) : null;
       return (url ? fetchText(url) : Promise.resolve()).then(function () { return manifest; });
     }).then(function (manifest) {
       if (token !== routeToken) return;  // the user already navigated somewhere else
       if (!r.page || r.page === 'accueil') return renderHome(manifest, r.view);
-      if (r.page === 'lexique') return renderLexique(manifest, r.view);
       if (PAGES[r.page]) return renderPage(manifest, r.page, r.view);
       if (r.page === 'uniforme') return renderUniform(manifest, r.view, r.anchor);
       if (r.page === 'a-propos') return renderAbout(manifest, r.view);

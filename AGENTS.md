@@ -38,7 +38,7 @@ Pages are loaded with `fetch`, so test through a local server (`python3 -m http.
   `shared/libelles.html` (menu and interface labels), `shared/impression.html` (print-only texts).
 - One-page sections, listed in `PAGES` in `app.js` (menu label `menu-<id>`, print cover `<id>-titre` / `<id>-sous-titre`, credits `data-credits="<id>"`):
   `shared/histoire.html` (Histoire du Shotokan), `shared/dojo-kun.html` (Dojo Kun, one `.kun` card per precept),
-  `shared/etiquette.html` (Étiquette au dojo), `shared/kihon.html` (Kihon, one `.fiche` card per technique).
+  `shared/etiquette.html` (Étiquette au dojo), `shared/kihon.html` (Kihon, one `.fiche` card per technique), `shared/lexique.html`.
 - `shared/uniforme.html` — Uniforme de karaté (Dogi): one `<section data-view>` per page (`#/uniforme/<view>`).
 - `img/<kata-id>/` — images of each kata.
 - Every `.html` under `katas/` and `shared/` has an English twin next to it: `x.html` + `x.en.html`.
@@ -102,7 +102,8 @@ the first holds `td.step-head` (rowspan 2: number bubble, `.visually-hidden` num
 and `td.step-lvl` (Jodan/Chudan/Gedan + `<small>` target: the point aimed at for a strike, the zone protected for a block);
 the second holds `td.step-move` (colspan 3: footwork, then an optional `.step-note`). The number bubble is a small SVG
 with the embusen shape of the stance the move ends in (circle Zenkutsu, square Kokutsu, hexagon Kiba, dashed circle Kosa,
-grey disc for any other stance, red for a Kiai). An `<aside class="guide">` above the table explains how to read it,
+grey disc for any other stance, red for a Kiai). Every second move is shaded by `.step-alt`, which `markStripes()` in `app.js` sets on screen and before print layout
+(not `:nth-of-type`, which restarts when Paged.js splits a table). An `<aside class="guide">` above the table explains how to read it,
 with a legend of the shapes the kata uses.
 
 ## Embusen diagrams (SVG in the kata file)

@@ -130,7 +130,7 @@ td:first-child { white-space: nowrap; font-weight: 600; }
 .guide .legend { justify-content: flex-start; margin: 10px 0 0; }
 /* Kata tutorial: one <tbody class="step"> per move, two rows (technique / footwork), the image spans both */
 .steps tbody tr { background: none; }
-.steps tbody.step:nth-of-type(even), .steps tbody.step-alt { background: var(--stripe); }
+.steps tbody.step-alt { background: var(--stripe); }
 .steps tbody.step td { border-bottom: none; }
 .steps tbody.step + tbody.step tr:first-child td { border-top: 1px solid var(--line); }
 .steps .step-head { width: 1%; min-width: 150px; border-right: 1px solid var(--line); white-space: nowrap; }  /* as wide as the longest « San Ju Roku 三十六 », on one line */
