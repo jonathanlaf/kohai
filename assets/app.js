@@ -15,13 +15,16 @@
   var ABOUT = localized('shared/about.html');
   var UNIFORM = localized('shared/uniforme.html');
   // One-page sections (#/<id>[/anchor]): file, menu label and print cover, with their French fallbacks.
-  // crumb: a shorter top-bar label (fil-<id>); noHeading: the printed chapter drops the page's h2, already on the cover.
+  // crumb: a shorter top-bar label (fil-<id>); noHeading: the printed chapter drops the page's h2, already on the cover;
+  // noPrint: no print button (the credits are printed with each chapter instead).
   var PAGES = {
     'histoire': { url: localized('shared/histoire.html'), name: 'Histoire du Shotokan', sub: 'Funakoshi Gichin et la naissance du style' },
-    'dojo-kun': { url: localized('shared/dojo-kun.html'), name: 'Dojo Kun', sub: 'Les cinq préceptes du dojo' },
-    'etiquette': { url: localized('shared/etiquette.html'), name: 'Étiquette au dojo', sub: 'Le salut, le cours et les titres' },
-    'kihon': { url: localized('shared/kihon.html'), name: 'Kihon', sub: 'Les techniques de base et le passage de grade' },
-    'lexique': { url: localized('shared/lexique.html'), name: 'Lexique du karatéka', sub: 'Kohai · les notes d’un élève', crumb: 'Lexique', noHeading: true }
+    'dojo-kun': { url: localized('shared/dojo-kun.html'), name: 'Préceptes du dojo (Kun)', sub: 'Les cinq préceptes du dojo' },
+    'etiquette': { url: localized('shared/etiquette.html'), name: 'Étiquette au dojo (Reigi)', sub: 'Le salut, le cours et les titres' },
+    'ceintures': { url: localized('shared/ceintures.html'), name: 'Ceintures et grades (Obi)', sub: 'L’ordre des ceintures, les kyu et les dan' },
+    'kihon': { url: localized('shared/kihon.html'), name: 'Les bases (Kihon)', sub: 'Les techniques de base et le passage de grade' },
+    'lexique': { url: localized('shared/lexique.html'), name: 'Lexique du karatéka', sub: 'Kohai · les notes d’un élève', crumb: 'Lexique', noHeading: true },
+    'credits': { url: localized('shared/credits.html'), name: 'Sources et crédits', sub: '', noPrint: true }
   };
   Object.setPrototypeOf(PAGES, null);  // so a route like #/constructor is not taken for a page
   function pageName(id) { return T('menu-' + id, PAGES[id].name); }
@@ -122,7 +125,7 @@
   // Printed chapters: the one-page sections (PAGES), the karate uniform, the general Katas chapter, each kata and the vocabulary. « tout » prints them all, in menu order.
   function chapterIds(manifest, target) {
     if (target !== 'tout') return [target];
-    return ['histoire', 'dojo-kun', 'etiquette', 'uniforme', 'kihon', 'kata'].concat(manifest.katas.filter(isAvailable).map(function (k) { return k.id; }), ['lexique']);
+    return ['histoire', 'dojo-kun', 'etiquette', 'uniforme', 'ceintures', 'kihon', 'kata'].concat(manifest.katas.filter(isAvailable).map(function (k) { return k.id; }), ['lexique']);
   }
   // Every second move of a tutorial is shaded. Marked once in the markup rather than with :nth-of-type,
   // which would restart on each page when Paged.js splits a long table.
@@ -164,8 +167,8 @@
       return appendCredits(doc, 'uniforme').then(function () { return { doc: doc, title: plain(T('uniforme-titre', 'Uniforme de karaté (Dogi)')) }; });
     });
     if (id === 'kata') return fetchFragment(SHARED).then(function (shared) {
-      doc.innerHTML = cover(T('kata-titre', 'Katas'), T('kata-sous-titre', 'L’esprit du kata et les erreurs fréquentes'));
-      shared.querySelectorAll('section[data-view]').forEach(function (s) { unwrap(s, doc); });
+      doc.innerHTML = cover(T('kata-titre', 'Katas'), T('kata-sous-titre', 'Qu’est-ce qu’un kata, son esprit et les erreurs fréquentes'));
+      shared.querySelectorAll('section[data-view]:not([data-view="liste"])').forEach(function (s) { unwrap(s, doc); });  // the kata cards are for the screen
       return appendCredits(doc, 'kata').then(function () { return { doc: doc, title: plain(T('kata-titre', 'Katas')) }; });
     });
     var kata = findKata(manifest, id);
@@ -216,21 +219,26 @@
     });
   }
 
-  // Every printed document ends with its credits and the disclaimer from the About page.
+  // Every printed document ends with its credits (from the credits page) and the disclaimer from the About page.
   function appendCredits(doc, kataId) {
-    return fetchFragment(ABOUT).then(function (about) {
+    return Promise.all([fetchFragment(ABOUT), fetchFragment(PAGES.credits.url)]).then(function (res) {
+      var about = res[0], credits = res[1];
       var wrap = document.createElement('div');
-      var creditsTitle = T('credits-titre', 'Sources et crédits');
-      wrap.innerHTML = '<h2 id="credits" class="pb" data-toc="' + escapeHtml(plain(creditsTitle)) + '">' + creditsTitle + '</h2>';
-      var intro = about.querySelector('#credits + p');
-      if (intro) wrap.appendChild(intro.cloneNode(true));
-      var block = kataId && about.querySelector('[data-credits="' + kataId + '"]');
-      if (block) wrap.appendChild(block.cloneNode(true));
+      var block = kataId && credits.querySelector('[data-credits="' + kataId + '"]');
+      if (block) {  // a chapter with no sources of its own goes straight to the disclaimer
+        var creditsTitle = T('credits-titre', 'Sources et crédits');
+        wrap.innerHTML = '<h2 id="credits" class="pb" data-toc="' + escapeHtml(plain(creditsTitle)) + '">' + creditsTitle + '</h2>';
+        var intro = credits.querySelector('#credits + p');
+        if (intro) wrap.appendChild(intro.cloneNode(true));
+        block = block.cloneNode(true);
+        block.querySelectorAll('[id]').forEach(function (el) { el.removeAttribute('id'); });  // not a table of contents line in print
+        wrap.appendChild(block);
+      }
       // The About introduction doubles as the printed disclaimer
       var introParas = about.querySelectorAll('.about-head .intro');  // the .lead (who I am) stays on the web page only
       if (introParas.length) {
         var notice = document.createElement('aside');
-        notice.className = 'notice';
+        notice.className = block ? 'notice' : 'notice pb';
         notice.innerHTML = '<h2>' + T('note-titre', 'À propos de ces notes') + '</h2>';
         Array.prototype.forEach.call(introParas, function (el) {
           var p = document.createElement('p');
@@ -416,43 +424,101 @@
   }
 
   // One menu for the whole site. Branches on the current path are open; others stay collapsed unless opened by hand.
-  var toggled = {};
+  // Branches the reader opened or closed by hand, remembered across visits (kohai-menu)
+  var toggled = (function () { try { return JSON.parse(load('kohai-menu')) || {}; } catch (e) { return {}; } })();
   function contains(node, href) {
     return node.href === href || (node.children || []).some(function (c) { return contains(c, href); });
   }
+  // Sub-entries of each menu link (href → items). prefetchMenu() fills them for every page, so each foldable entry
+  // shows its arrow from the start; the page being shown refreshes its own.
+  var menuKids = {};
+  function kids(href) { return menuKids[href] && menuKids[href].length ? menuKids[href] : null; }
+  function item(href, label) { return { href: href, label: label, children: kids(href) }; }
   function buildMenu(manifest, ctx) {
     return [
-      { href: '#/', label: T('menu-accueil', 'Accueil'), children: [
-        { href: '#/accueil/about', label: T('menu-qu-est-ce-qu-un-kata', 'Qu’est-ce qu’un kata ?') }
-      ] },
-      pageItem('histoire', ctx),
-      pageItem('dojo-kun', ctx),
-      pageItem('etiquette', ctx),
+      item('#/', T('menu-accueil', 'Accueil')),
+      pageItem('histoire'),
+      pageItem('dojo-kun'),
+      pageItem('etiquette'),
       { href: '#/uniforme', label: T('menu-uniforme', 'Uniforme de karaté (Dogi)'), children: [
-        { href: '#/uniforme/dogi', label: T('menu-dogi', 'Le dogi'), children: ctx.uniformView === 'dogi' ? ctx.uniformItems : null },
-        { href: '#/uniforme/choisir', label: T('menu-choisir-dogi', 'Choisir son dogi'), children: ctx.uniformView === 'choisir' ? ctx.uniformItems : null },
-        { href: '#/uniforme/entretien', label: T('menu-entretien-dogi', 'Entretien et pliage'), children: ctx.uniformView === 'entretien' ? ctx.uniformItems : null },
-        { href: '#/uniforme/obi', label: T('menu-obi', 'Nouer sa ceinture'), children: ctx.uniformView === 'obi' ? ctx.uniformItems : null }
+        item('#/uniforme/dogi', T('menu-dogi', 'Le dogi')),
+        item('#/uniforme/choisir', T('menu-choisir-dogi', 'Choisir son dogi')),
+        item('#/uniforme/entretien', T('menu-entretien-dogi', 'Entretien et pliage')),
+        item('#/uniforme/obi', T('menu-obi', 'Nouer sa ceinture'))
       ] },
-      pageItem('kihon', ctx),
-      { href: '#/accueil/kata-title', label: T('menu-kata', 'Katas'), open: true, children: [
-        { href: '#/kata/esprit', label: T('menu-esprit', 'L\u2019esprit du kata'), children: ctx.sharedView === 'esprit' ? ctx.sharedItems : null },
-        { href: '#/kata/erreurs', label: T('menu-erreurs', 'Erreurs fréquentes'), children: ctx.sharedView === 'erreurs' ? ctx.sharedItems : null }
+      pageItem('ceintures'),
+      pageItem('kihon'),
+      { href: '#/kata', label: T('menu-kata', 'Katas'), children: [
+        item('#/kata/definition', T('menu-qu-est-ce-qu-un-kata', 'Qu’est-ce qu’un kata ?')),
+        item('#/kata/erreurs', T('menu-erreurs', 'Erreurs fréquentes'))
       ].concat(manifest.groups.map(function (g) {
         var ready = manifest.katas.filter(function (k) { return k.group === g.id && isAvailable(k); });
-        return { href: '#/accueil/g-' + g.id, label: escapeHtml(L(g.name)), open: ctx.home && ready.length > 0,
-          children: ready.map(function (k) {
-            return { href: '#/' + k.id, label: escapeHtml(L(k.name)), children: k.id === ctx.kataId ? ctx.kataItems : null };
-          }) };
+        return { href: '#/kata/liste/g-' + g.id, label: escapeHtml(L(g.name)), open: ctx.sharedView === 'liste' && ready.length > 0,
+          children: ready.map(function (k) { return item('#/' + k.id, escapeHtml(L(k.name))); }) };
       })) },
-      pageItem('lexique', ctx),
-      { href: '#/a-propos', label: T('menu-a-propos', 'À propos'), children: ctx.aboutItems || null }
+      pageItem('lexique'),
+      item('#/a-propos', T('menu-a-propos', 'À propos')),
+      pageItem('credits')
     ];
   }
-  function pageItem(id, ctx) {
-    return { href: '#/' + id, label: pageName(id), children: ctx.page === id ? ctx.pageItems : null };
+  function pageItem(id) { return item('#/' + id, pageName(id)); }
+  var navState = null;
+  function nav(manifest, ctx, activeHref) {
+    navState = { manifest: manifest, ctx: ctx, active: activeHref };
+    setNav(buildMenu(manifest, ctx), activeHref);
   }
-  function setNav(tree, activeHref) {
+
+  // Menu sub-entries of each kind of page
+  function kataKids(kata, frag) {
+    var base = '#/' + kata.id;
+    return Array.prototype.map.call(frag.querySelectorAll('section[data-view]'), function (s) {
+      return { href: base + '/' + s.dataset.view, label: escapeHtml(s.dataset.title), children: childrenOf(s, base + '/' + s.dataset.view) };
+    });
+  }
+  function sharedKids(section, base) {
+    return childrenOf(section, base).filter(function (c) { return c.href !== base + '/'; });
+  }
+  function aboutKids(section) {
+    return Array.prototype.map.call(section.querySelectorAll('h2[id]'), function (h) {
+      return { href: '#/a-propos/' + h.id, label: escapeHtml(h.textContent.trim()) };
+    });
+  }
+  // Credits of a draft kata stay hidden until it is published
+  function dropDraftCredits(manifest, section) {
+    section.querySelectorAll('[data-credits]').forEach(function (block) {
+      var known = manifest.katas.some(function (x) { return x.id === block.dataset.credits; });
+      if (known && !findKata(manifest, block.dataset.credits)) block.remove();
+    });
+  }
+  var menuPrefetched = false;
+  function prefetchMenu(manifest) {
+    if (menuPrefetched) return;
+    menuPrefetched = true;
+    var jobs = Object.keys(PAGES).map(function (id) {
+      return fetchFragment(PAGES[id].url).then(function (f) {
+        var section = f.querySelector('section').cloneNode(true);
+        dropDraftCredits(manifest, section);
+        menuKids['#/' + id] = childrenOf(section, '#/' + id);
+      });
+    });
+    jobs.push(fetchFragment(UNIFORM).then(function (f) {
+      f.querySelectorAll('section[data-view]').forEach(function (s) { menuKids['#/uniforme/' + s.dataset.view] = childrenOf(s, '#/uniforme/' + s.dataset.view); });
+    }));
+    jobs.push(fetchFragment(SHARED).then(function (f) {
+      f.querySelectorAll('section[data-view]').forEach(function (s) {
+        if (s.dataset.view !== 'liste') menuKids['#/kata/' + s.dataset.view] = sharedKids(s, '#/kata/' + s.dataset.view);
+      });
+    }));
+    manifest.katas.filter(function (k) { return k.file && isAvailable(k); }).forEach(function (k) {
+      jobs.push(fetchFragment(localized(k.file)).then(function (f) { menuKids['#/' + k.id] = kataKids(k, f); }));
+    });
+    jobs.push(fetchFragment(ABOUT).then(function (f) { menuKids['#/a-propos'] = aboutKids(f.querySelector('section')); }));
+    Promise.all(jobs.map(function (j) { return j.catch(function () {}); })).then(function () {
+      // Not while the reader is in the menu: rebuilding it would drop their focus. The next page shows the arrows anyway.
+      if (navState && !toc.contains(document.activeElement)) setNav(buildMenu(navState.manifest, navState.ctx), navState.active, true);
+    });
+  }
+  function setNav(tree, activeHref, refresh) {
     tocWeb.hidden = false;
     tocTitle.innerHTML = T('menu-titre', 'Menu');
     function list(items) {
@@ -468,7 +534,7 @@
       }).join('');
     }
     toc.innerHTML = list(tree);
-    if (narrow.matches) details.removeAttribute('open');  // close the phone menu after navigating
+    if (narrow.matches && !refresh) details.removeAttribute('open');  // close the phone menu after navigating
   }
   function syncMenuToWidth() {
     if (narrow.matches) details.removeAttribute('open'); else details.setAttribute('open', '');
@@ -482,6 +548,7 @@
     btn.setAttribute('aria-expanded', String(open));
     btn.setAttribute('aria-label', plain(open ? T('menu-replier', 'Replier') : T('menu-deplier', 'Déplier')));
     toggled[btn.dataset.key] = open;
+    store('kohai-menu', JSON.stringify(toggled));
   });
 
   function setCrumb(text) {
@@ -525,11 +592,18 @@
     view.focus({ preventScroll: true });
   }
 
-  function renderHome(manifest, anchor) {
+  function renderHome(manifest) {
     printTarget = 'tout'; updatePrint();
     setCrumb('');
-    setNav(buildMenu(manifest, { home: true }), anchor ? '#/accueil/' + anchor : '#/');
+    nav(manifest, {}, '#/');
     document.title = plain(T('onglet-accueil', 'Kohai · Fiches d’étude des katas'));
+    return fetchFragment(HOME).then(function (frag) {
+      show(frag.cloneNode(true));
+    });
+  }
+
+  // Kata cards by family (the « Katas » list, #/kata): fills [data-kata-groups] and [data-ready-count]
+  function fillKataList(manifest, wrap) {
     function belt(k) {
       // "marron:2" = brown belt with 2 stripes (kyu); "noire:1" = black belt with 1 bar (dan)
       var name = L(k.belt);
@@ -559,15 +633,11 @@
         '<p class="group-desc">' + escapeHtml(L(g.description)) + '</p>' +
         '<ul class="kata-list">' + list.map(card).join('') + '</ul></section>';
     }).join('');
+    var slot = wrap.querySelector('[data-kata-groups]');
+    if (slot) slot.outerHTML = groups;
     var ready = manifest.katas.filter(function (k) { return k.file && !isDraft(k); }).length;
-    return fetchFragment(HOME).then(function (frag) {
-      var wrap = frag.cloneNode(true);
-      var slot = wrap.querySelector('[data-kata-groups]');
-      if (slot) slot.outerHTML = groups;
-      var count = wrap.querySelector('[data-ready-count]');
-      if (count) count.innerHTML = ready + ' ' + (ready > 1 ? T('carte-disponibles', 'disponibles') : T('carte-disponible', 'disponible'));
-      show(wrap, anchor);
-    });
+    var count = wrap.querySelector('[data-ready-count]');
+    if (count) count.innerHTML = ready + ' ' + (ready > 1 ? T('carte-disponibles', 'disponibles') : T('carte-disponible', 'disponible'));
   }
 
   function childrenOf(section, base) {
@@ -580,10 +650,12 @@
 
   function renderPage(manifest, id, anchor) {
     return fetchFragment(PAGES[id].url).then(function (frag) {
-      printTarget = id; updatePrint();
+      printTarget = PAGES[id].noPrint ? null : id; updatePrint();
       setCrumb(plain(PAGES[id].crumb ? T('fil-' + id, PAGES[id].crumb) : pageName(id)));
       var section = frag.querySelector('section').cloneNode(true);
-      setNav(buildMenu(manifest, { page: id, pageItems: childrenOf(section, '#/' + id) }), anchor ? '#/' + id + '/' + anchor : '#/' + id);
+      dropDraftCredits(manifest, section);
+      menuKids['#/' + id] = childrenOf(section, '#/' + id);
+      nav(manifest, {}, anchor ? '#/' + id + '/' + anchor : '#/' + id);
       document.title = plain(pageName(id)) + ' · ' + plain(T('site-nom', 'Kohai'));
       show(section, anchor);
     });
@@ -598,7 +670,8 @@
       printTarget = 'uniforme'; updatePrint();
       setCrumb(plain(T('menu-uniforme', 'Uniforme de karaté (Dogi)')));
       var base = '#/uniforme/' + section.dataset.view;
-      setNav(buildMenu(manifest, { uniformView: section.dataset.view, uniformItems: childrenOf(section, base) }), anchor ? base + '/' + anchor : base);
+      menuKids[base] = childrenOf(section, base);
+      nav(manifest, {}, anchor ? base + '/' + anchor : base);
       document.title = section.dataset.title + ' · ' + plain(T('site-nom', 'Kohai'));
       show(section, anchor);
     });
@@ -610,38 +683,58 @@
       printTarget = null; updatePrint();
       setCrumb(plain(T('menu-a-propos', 'À propos')));
       var section = frag.querySelector('section').cloneNode(true);
-      // Credits of a draft kata stay hidden until it is published
-      section.querySelectorAll('[data-credits]').forEach(function (block) {
-        var known = manifest.katas.some(function (x) { return x.id === block.dataset.credits; });
-        if (known && !findKata(manifest, block.dataset.credits)) block.remove();
-      });
       var slot = section.querySelector('[data-changelog]');
       if (slot && changelog) slot.replaceWith(changelog.cloneNode(true));
-      var items = Array.prototype.map.call(section.querySelectorAll('h2[id]'), function (h) {
-        return { href: '#/a-propos/' + h.id, label: escapeHtml(h.textContent.trim()) };
-      });
-      setNav(buildMenu(manifest, { aboutItems: items }), anchor ? '#/a-propos/' + anchor : '#/a-propos');
+      menuKids['#/a-propos'] = aboutKids(section);
+      nav(manifest, {}, anchor ? '#/a-propos/' + anchor : '#/a-propos');
       document.title = plain(T('menu-a-propos', 'À propos')) + ' · ' + plain(T('site-nom', 'Kohai'));
       show(section, anchor);
     });
   }
 
+  // #/kata: the kata cards, under a foldable « Qu’est-ce qu’un kata ? » (#/kata/definition[/anchor] opens it;
+  // the old #/kata/esprit lands on its « L’esprit du kata » part); #/kata/<view>: another shared page
+  var KATA_FOLDS = ['definition'];
   function renderShared(manifest, viewId, anchor) {
     return fetchFragment(SHARED).then(function (frag) {
+      if (viewId === 'esprit') { viewId = 'definition'; anchor = anchor === 'annonce' ? anchor : 'esprit'; }
+      var openFold = KATA_FOLDS.indexOf(viewId) >= 0 ? viewId : null;
+      if (openFold) viewId = 'liste';
       var section = frag.querySelector('[data-view="' + viewId + '"]');
       if (!section) { location.hash = '#/'; return; }
       section = section.cloneNode(true);
       printTarget = 'kata'; updatePrint();
       setCrumb(section.dataset.title);
       var base = '#/kata/' + viewId;
-      setNav(buildMenu(manifest, { sharedView: viewId, sharedItems: childrenOf(section, base).filter(function (c) { return c.href !== base + '/'; }) }),
-        anchor ? base + '/' + anchor : base);
+      if (viewId === 'liste') {
+        fillKataList(manifest, section);
+        var after = section.querySelector('h2');
+        KATA_FOLDS.forEach(function (id) {
+          var src = frag.querySelector('[data-view="' + id + '"]');
+          if (!src) return;
+          src = src.cloneNode(true);
+          var fold = document.createElement('details');
+          fold.className = 'fold';
+          fold.id = id;
+          fold.open = openFold === id;
+          var title = src.querySelector('h2');
+          fold.innerHTML = '<summary>' + (title ? title.innerHTML : escapeHtml(src.dataset.title)) + '</summary>';
+          if (title) title.remove();
+          while (src.firstChild) fold.appendChild(src.firstChild);
+          if (after) after.insertAdjacentElement('afterend', fold); else section.prepend(fold);
+          after = fold;
+        });
+        nav(manifest, { sharedView: viewId }, openFold ? '#/kata/' + openFold + (anchor ? '/' + anchor : '') : anchor ? base + '/' + anchor : '#/kata');
+      } else {
+        menuKids[base] = sharedKids(section, base);
+        nav(manifest, { sharedView: viewId }, anchor ? base + '/' + anchor : base);
+      }
       document.title = section.dataset.title + ' · ' + plain(T('site-nom', 'Kohai'));
       var wrap = document.createElement('div');
       wrap.className = 'kata-view';
-      wrap.insertAdjacentHTML('beforeend', '<p class="eyebrow"><a href="#/accueil/kata-title">' + T('menu-kata', 'Katas') + '</a></p>');
+      if (viewId !== 'liste') wrap.insertAdjacentHTML('beforeend', '<p class="eyebrow"><a href="#/kata">' + T('menu-kata', 'Katas') + '</a></p>');
       wrap.appendChild(section);
-      show(wrap, anchor);
+      show(wrap, anchor || openFold);
     });
   }
 
@@ -651,13 +744,10 @@
 
       var base = '#/' + kata.id;
       var current = sections.filter(function (s) { return s.dataset.view === viewId; })[0] || sections[0];
-      var items = sections.map(function (s) {
-        return { href: base + '/' + s.dataset.view, label: escapeHtml(s.dataset.title),
-          children: s === current ? childrenOf(s, base + '/' + s.dataset.view) : null };
-      });
+      menuKids[base] = kataKids(kata, frag);
       printTarget = kata.id; updatePrint();
       setCrumb(L(kata.name));
-      setNav(buildMenu(manifest, { kataId: kata.id, kataItems: items }), base + '/' + current.dataset.view + (anchor ? '/' + anchor : ''));
+      nav(manifest, {}, base + '/' + current.dataset.view + (anchor ? '/' + anchor : ''));
       document.title = current.dataset.title + ' · ' + L(kata.name) + ' · ' + plain(T('site-nom', 'Kohai'));
 
       var idx = sections.indexOf(current);
@@ -703,6 +793,12 @@
   fetch(MANIFEST, { method: 'HEAD', cache: 'no-cache' })
     .then(function (r) { var lm = r.headers.get('Last-Modified'); if (lm) showLastUpdate(lm); })
     .catch(function () {});  // no date shown if the header is missing
+  // Links into the old home page (its kata list and « Qu’est-ce qu’un kata ? ») now live in the Katas section
+  function oldHomeLink(anchor) {
+    if (anchor === 'about') return '#/kata/definition';
+    if (/^g-/.test(anchor)) return '#/kata/liste/' + anchor;
+    return '#/kata';
+  }
   var routeToken = 0;
   function route() {
     updateLangLink();
@@ -715,11 +811,13 @@
       return (url ? fetchText(url) : Promise.resolve()).then(function () { return manifest; });
     }).then(function (manifest) {
       if (token !== routeToken) return;  // the user already navigated somewhere else
-      if (!r.page || r.page === 'accueil') return renderHome(manifest, r.view);
+      setTimeout(function () { prefetchMenu(manifest); }, 0);
+      if (r.page === 'accueil' && r.view) { location.replace(oldHomeLink(r.view)); return; }
+      if (!r.page || r.page === 'accueil') return renderHome(manifest);
       if (PAGES[r.page]) return renderPage(manifest, r.page, r.view);
       if (r.page === 'uniforme') return renderUniform(manifest, r.view, r.anchor);
       if (r.page === 'a-propos') return renderAbout(manifest, r.view);
-      if (r.page === 'kata') return renderShared(manifest, r.view || 'esprit', r.anchor);
+      if (r.page === 'kata') return renderShared(manifest, r.view || 'liste', r.anchor);
       var kata = findKata(manifest, r.page);
       if (!kata) { location.hash = '#/'; return; }
       return renderKata(manifest, kata, r.view, r.anchor);

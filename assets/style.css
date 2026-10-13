@@ -248,7 +248,6 @@ main:focus { outline: none; }
 
 /* Home */
 .home-head { padding: 24px 0 8px; }
-.home h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin: 32px 0 12px; }
 .kata-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 16px; }
 .kata-card {
   display: grid; gap: 2px; height: 100%; padding: 18px 20px 16px; border: 1px solid var(--line); border-radius: 10px;
@@ -274,9 +273,13 @@ main:focus { outline: none; }
 /* Home, kata families */
 .home { max-width: 960px; }
 .home-head .lead { font-size: 1.2rem; color: var(--fg); margin: 4px 0 12px; max-width: 65ch; }
-.home-head p, .about-kata p { max-width: 70ch; }
-.home h2 { font-size: 1.3rem; text-transform: none; letter-spacing: 0; color: var(--fg); margin: 44px 0 8px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.home h3 { font-size: 1.05rem; margin: 28px 0 2px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.home-head p { max-width: 70ch; }
+/* Foldable block (Katas page: « Qu’est-ce qu’un kata ? ») */
+.fold { margin: 8px 0 28px; border: 1px solid var(--line); border-radius: 8px; padding: 0 16px; }
+.fold > summary { cursor: pointer; padding: 12px 0; font-weight: 600; font-size: 1.05rem; }
+.fold > summary .jp { color: var(--accent); }
+.fold[open] > summary { border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+.kata-group h3 { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .home .jp { font-family: var(--font-jp); color: var(--accent); font-weight: 500; }
 .count { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .group-desc { color: var(--muted); font-size: 0.95rem; margin-bottom: 12px; max-width: 70ch; }
@@ -301,6 +304,8 @@ main:focus { outline: none; }
 .belt-noire { background: #111111; border-color: rgba(255, 255, 255, 0.35); }
 .kata-card.is-soon .kata-card-belt { color: var(--muted); }
 .kata-card.is-soon .belt { opacity: 0.7; }
+.belts td { vertical-align: middle; }
+.belt-cell { display: inline-flex; width: 56px; margin-right: 10px; vertical-align: middle; }
 .belt { display: flex; justify-content: flex-end; align-items: stretch; gap: 3px; padding-right: 8px; }
 .belt b { width: 5px; background: #f4f1ea; }
 .belt-noire b { background: #d4a72c; }
@@ -321,11 +326,9 @@ main:focus { outline: none; }
 .toc ol ol a { font-size: 0.84rem; }
 .toc > li > .row > a { font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { .tw::before { transition: none; } }
-.see-also { font-size: 0.95rem; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--stripe); }
 
 h2 .jp, h3 .jp, td .jp { font-family: var(--font-jp); color: var(--accent); font-weight: 500; }
 td .jp { font-size: 0.95em; }
-.home h2#about { display: block; }
 p .jp, li .jp { font-family: var(--font-jp); color: var(--accent); }
 .legend .jp { font-family: var(--font-jp); color: var(--accent); }
 .legend .seg-y { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 2 3; }
