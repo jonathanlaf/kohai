@@ -1,0 +1,109 @@
+<!-- Tekki Shodan (BROUILLON). Each <section data-view> is one screen in the web app; print joins them in order.
+     Elements with class="todo" mark what is left to write. -->
+<article class="kata" data-kata="tekki-shodan">
+<section data-view="presentation" data-title="Présentation" class="kata-intro">
+  <header class="cover">
+  <h1>Tekki Shodan <span class="jp">鉄騎初段</span></h1>
+  <p class="sub">Cavalier de fer, premier niveau</p>
+  <p>Tekki Shodan, le premier des trois katas Tekki, compte 29 mouvements, avec deux Kiai&nbsp;: au 15<sup>e</sup> et au 29<sup>e</sup> mouvement. Il est requis pour l’examen de la ceinture marron, 2<sup>e</sup> kyu. Son embusen est une simple ligne droite, parcourue de côté.</p>
+  </header>
+  <p class="see-also">À lire aussi, commun à tous les katas&nbsp;: <a href="#/kata/esprit">L'esprit du kata</a> et <a href="#/kata/erreurs">Erreurs fréquentes</a>.</p>
+  <h2 id="decomposition" data-toc="Décomposition du kata">Décomposition du kata <span class="jp" lang="ja">型</span>, étape par étape</h2>
+  <p>Tout le kata se fait en Kiba Dachi (posture du cavalier), sauf les trois pas croisés (Kosa Dachi), sur une seule ligne&nbsp;: on ne va jamais vers l’avant ni vers l’arrière. C’est aussi le premier kata qui ne commence pas dans la position Yoi habituelle&nbsp;: les pieds sont joints, la main gauche ouverte posée sur la main droite. Les rotations de la tête comptent comme des mouvements et doivent être nettes. On y apprend le blocage crochet (kake uke), le coup de poing en crochet (kagi zuki), le coup de poing court (ura zuki) et le retour de vague du pied (nami gaeshi), qui n’existe que dans les katas Tekki. La seconde moitié du kata (16 à 29) reprend la première de l’autre côté.</p>
+</section>
+<section data-view="embusen" data-title="Embusen">
+  <h2 id="embusen" class="pb" data-toc="Embusen">Embusen <span class="jp" lang="ja">演武線</span> (ligne de déplacement)</h2>
+  <p>Le kata suit une seule ligne droite. On part vers la droite par un pas croisé (1) et on s’arrête au bout droit (2 à 6). On revient vers la gauche par un autre pas croisé (7) jusqu’au bout gauche, où se font les mouvements 8 à 20 (Kiai au 15<sup>e</sup>). Un dernier pas croisé (21) ramène au bout droit (22 à 29, Kiai au 29<sup>e</sup>). Avec Yame, on ramène lentement le pied droit et on revient au point de départ.</p>
+  <figure class="embusen">
+    <svg viewBox="90 50 430 190" role="img" aria-label="Embusen de Tekki Shodan">
+      <defs><marker id="arr-t1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+      <line class="bar" x1="110" y1="150" x2="490" y2="150"/>
+      <circle class="node" cx="300" cy="100" r="14"/><text class="num" x="300" y="100">0</text>
+      <path class="seg" fill="none" d="M314,100 L359,100" marker-end="url(#arr-t1)"/>
+      <circle class="node" cx="375" cy="100" r="14" stroke-dasharray="4 3"/><text class="num" x="375" y="100">1</text>
+      <path class="seg" fill="none" d="M391,100 L419,100" marker-end="url(#arr-t1)"/>
+      <polygon class="node" points="421,100 430,86 480,86 489,100 480,114 430,114"/>
+      <text class="num" x="455" y="100">2 à 6</text>
+      <path class="seg" fill="none" d="M445,114 C428,150 340,150 316,150" marker-end="url(#arr-t1)"/>
+      <circle class="node" cx="300" cy="150" r="14" stroke-dasharray="4 3"/><text class="num" x="300" y="150">7</text>
+      <path class="seg" fill="none" d="M284,150 L181,150" marker-end="url(#arr-t1)"/>
+      <polygon class="node" points="111,150 120,136 170,136 179,150 170,164 120,164"/>
+      <text class="num" x="145" y="150">8 à 15</text>
+      <path class="seg" fill="none" d="M145,164 L145,184" marker-end="url(#arr-t1)"/>
+      <polygon class="node" points="109,200 118,186 172,186 181,200 172,214 118,214"/>
+      <text class="num" x="145" y="200">16 à 20</text>
+      <path class="seg" fill="none" d="M183,200 L284,200" marker-end="url(#arr-t1)"/>
+      <circle class="node" cx="300" cy="200" r="14" stroke-dasharray="4 3"/><text class="num" x="300" y="200">21</text>
+      <path class="seg" fill="none" d="M316,200 L419,200" marker-end="url(#arr-t1)"/>
+      <polygon class="node" points="419,200 428,186 482,186 491,200 482,214 428,214"/>
+      <text class="num" x="455" y="200">22 à 29</text>
+      <text class="kiai-l" x="145" y="124">KIAI 15</text>
+      <text class="kiai-l" x="455" y="228">KIAI 29</text>
+      <text class="kiai-l" x="300" y="72">DÉPART = FIN</text>
+      </svg>
+    <figcaption>Tracé de Tekki Shodan, vu de dos&nbsp;: tout se fait sur une seule ligne, face à l’avant. Les trois rangées montrent les trois passages sur la ligne.</figcaption>
+  </figure>
+  <p class="legend">
+    <span><svg width="22" height="16" viewBox="0 0 22 16"><polygon points="1,8 6,1 16,1 21,8 16,15 6,15" class="node"/></svg> Kiba Dachi <span class="jp" lang="ja">騎馬立ち</span> (posture du cavalier)</span>
+    <span><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" class="node" stroke-dasharray="3 2"/></svg> Kosa Dachi <span class="jp" lang="ja">交差立ち</span> (pas croisé)</span>
+  </p>
+</section>
+<section data-view="illustrations" data-title="Mouvements illustrés">
+  <h2 id="illustrations" class="pb">Les mouvements illustrés</h2>
+  <p class="todo">À compléter&nbsp;: illustration des mouvements (images dans img/tekki-shodan/).</p>
+</section>
+<section data-view="tutoriel" data-title="Tutoriel du kata">
+  <h2 id="tutoriel" class="pb" data-toc="Tutoriel du kata">Tutoriel du kata Tekki Shodan <span class="jp" lang="ja">鉄騎初段</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Mouvement</th><th>Technique</th><th>Posture</th><th>Direction</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Rei <span class="jp" lang="ja">礼</span> (salut)</td><td>Salut debout (Ritsurei)</td><td>Musubi Dachi (posture d'attention)</td><td>Talons joints, pieds ouverts à 45°, mains à plat le long du corps. Effectuez un salut debout en inclinant le haut du corps vers l'avant, le regard porté environ deux mètres devant vous. Le sensei annonce le kata&nbsp;: répondez «&nbsp;Tekki Shodan&nbsp;!&nbsp;» d'une voix forte.</td></tr>
+      <tr><td>Yoi <span class="jp" lang="ja">用意</span> (départ)</td><td>Position prêt propre aux katas Tekki</td><td>Heisoku Dachi (pieds joints)</td><td>Pieds joints, la main gauche ouverte posée sur la main droite, devant le bas-ventre. Regard droit devant.</td></tr>
+      <tr><td>1. Ichi <span class="jp" lang="ja">一</span> (un)</td><td>Tournez la tête vers la droite (kao migi muki)</td><td>Kosa Dachi (pieds croisés)</td><td>Croisez le pied gauche devant le pied droit, sans bouger le haut du corps (jotai sono mama).</td></tr>
+      <tr><td>2. Ni <span class="jp" lang="ja">二</span> (deux)</td><td>Blocage crochet de la main droite ouverte (kake uke), chudan, vers la droite</td><td>Kiba Dachi (posture du cavalier)</td><td>Montez le genou droit haut et écrasez le pied droit vers la droite (fumikomi).</td></tr>
+      <tr><td>3. San <span class="jp" lang="ja">三</span> (trois)</td><td>Coup de coude gauche (empi uchi) dans la paume droite, chudan</td><td>Kiba Dachi (posture du cavalier)</td><td>Sur place, vers la droite.</td></tr>
+      <tr><td>4. Shi <span class="jp" lang="ja">四</span> (quatre)</td><td>Poings à la hanche droite (ryoken koshi kamae), le poing gauche posé sur le droit</td><td>Kiba Dachi (posture du cavalier)</td><td>Tournez la tête vers la gauche (kao hidari muki).</td></tr>
+      <tr><td>5. Go <span class="jp" lang="ja">五</span> (cinq)</td><td>Balayage vers le bas gauche (gedan barai)</td><td>Kiba Dachi (posture du cavalier)</td><td>Sur place, vers la gauche.</td></tr>
+      <tr><td>6. Roku <span class="jp" lang="ja">六</span> (six)</td><td>Coup de poing en crochet droit (kagi zuki), chudan, l’avant-bras horizontal</td><td>Kiba Dachi (posture du cavalier)</td><td>Sur place, vers la gauche.</td></tr>
+      <tr><td>7. Shichi <span class="jp" lang="ja">七</span> (sept)</td><td>Garder le haut du corps en place (jotai sono mama)</td><td>Kosa Dachi (pieds croisés)</td><td>Croisez le pied droit devant le pied gauche.</td></tr>
+      <tr><td>8. Hachi <span class="jp" lang="ja">八</span> (huit)</td><td>Blocage uchi uke droit, chudan</td><td>Kiba Dachi (posture du cavalier)</td><td>Écrasez le pied gauche vers la gauche (fumikomi) et tournez la tête vers l’avant (kao shomen muki).</td></tr>
+      <tr><td>9. Ku <span class="jp" lang="ja">九</span> (neuf)</td><td>Blocage en balayant du dos de l’avant-bras gauche (haiwan nagashi uke), jodan, et gedan barai droit, puis coup de poing court gauche (ura zuki), jodan, le poing droit sous le coude gauche</td><td>Kiba Dachi (posture du cavalier)</td><td>Sur place, enchaîné.</td></tr>
+      <tr><td>10. Ju <span class="jp" lang="ja">十</span> (dix)</td><td>Tournez la tête vers la gauche (kao hidari muki)</td><td>Kiba Dachi (posture du cavalier)</td><td>Sans bouger le haut du corps.</td></tr>
+      <tr><td>11. Ju Ichi <span class="jp" lang="ja">十一</span> (onze)</td><td>Retour de vague du pied gauche (nami gaeshi), puis blocage de l’avant-bras gauche (ude uke), chudan, vers la gauche</td><td>Kiba Dachi (posture du cavalier)</td><td>Remontez le pied gauche vers l’intérieur, puis reposez-le en Kiba Dachi en bloquant.</td></tr>
+      <tr><td>12. Ju Ni <span class="jp" lang="ja">十二</span> (douze)</td><td>Tournez la tête vers la droite (kao migi muki)</td><td>Kiba Dachi (posture du cavalier)</td><td>Sans bouger le haut du corps.</td></tr>
+      <tr><td>13. Ju San <span class="jp" lang="ja">十三</span> (treize)</td><td>Retour de vague du pied droit (nami gaeshi), puis blocage de l’avant-bras gauche (ude uke), chudan, vers la droite</td><td>Kiba Dachi (posture du cavalier)</td><td>Remontez le pied droit vers l’intérieur, puis reposez-le en Kiba Dachi en bloquant.</td></tr>
+      <tr><td>14. Ju Shi <span class="jp" lang="ja">十四</span> (quatorze)</td><td>Poings à la hanche droite (ryoken koshi kamae)</td><td>Kiba Dachi (posture du cavalier)</td><td>Tournez la tête vers la gauche (kao hidari muki).</td></tr>
+      <tr><td>15. Ju Go <span class="jp" lang="ja">十五</span> (quinze)</td><td>Double coup de poing vers la gauche (morote zuki)&nbsp;: poing gauche de côté (sokumen zuki) et poing droit en crochet (kagi zuki), chudan, et 1<sup>er</sup> Kiai</td><td>Kiba Dachi (posture du cavalier)</td><td>Sur place, vers la gauche.</td></tr>
+      <tr><td>16. Ju Roku <span class="jp" lang="ja">十六</span> (seize)</td><td>Blocage crochet de la main gauche ouverte (kake uke), chudan, vers la gauche, lentement</td><td>Kiba Dachi (posture du cavalier)</td><td>Sur place&nbsp;; le poing droit revient à la hanche.</td></tr>
+      <tr><td>17. Ju Shichi <span class="jp" lang="ja">十七</span> (dix-sept)</td><td>Coup de coude droit (empi uchi) dans la paume gauche, chudan</td><td>Kiba Dachi (posture du cavalier)</td><td>Sur place, vers la gauche.</td></tr>
+      <tr><td>18. Ju Hachi <span class="jp" lang="ja">十八</span> (dix-huit)</td><td>Poings à la hanche gauche (ryoken koshi kamae)</td><td>Kiba Dachi (posture du cavalier)</td><td>Tournez la tête vers la droite (kao migi muki).</td></tr>
+      <tr><td>19. Ju Ku <span class="jp" lang="ja">十九</span> (dix-neuf)</td><td>Balayage vers le bas droit (gedan barai)</td><td>Kiba Dachi (posture du cavalier)</td><td>Sur place, vers la droite.</td></tr>
+      <tr><td>20. Ni Ju <span class="jp" lang="ja">二十</span> (vingt)</td><td>Coup de poing en crochet gauche (kagi zuki), chudan, l’avant-bras horizontal</td><td>Kiba Dachi (posture du cavalier)</td><td>Sur place, vers la droite.</td></tr>
+      <tr><td>21. Ni Ju Ichi <span class="jp" lang="ja">二十一</span> (vingt et un)</td><td>Garder le haut du corps en place (jotai sono mama)</td><td>Kosa Dachi (pieds croisés)</td><td>Croisez le pied gauche devant le pied droit.</td></tr>
+      <tr><td>22. Ni Ju Ni <span class="jp" lang="ja">二十二</span> (vingt-deux)</td><td>Blocage uchi uke gauche, chudan</td><td>Kiba Dachi (posture du cavalier)</td><td>Écrasez le pied droit vers la droite (fumikomi) et tournez la tête vers l’avant (kao shomen muki).</td></tr>
+      <tr><td>23. Ni Ju San <span class="jp" lang="ja">二十三</span> (vingt-trois)</td><td>Blocage en balayant du dos de l’avant-bras droit (haiwan nagashi uke), jodan, et gedan barai gauche, puis coup de poing court droit (ura zuki), jodan</td><td>Kiba Dachi (posture du cavalier)</td><td>Sur place, enchaîné.</td></tr>
+      <tr><td>24. Ni Ju Shi <span class="jp" lang="ja">二十四</span> (vingt-quatre)</td><td>Tournez la tête vers la droite (kao migi muki)</td><td>Kiba Dachi (posture du cavalier)</td><td>Sans bouger le haut du corps.</td></tr>
+      <tr><td>25. Ni Ju Go <span class="jp" lang="ja">二十五</span> (vingt-cinq)</td><td>Retour de vague du pied droit (nami gaeshi), puis blocage de l’avant-bras droit (ude uke), chudan, vers la droite</td><td>Kiba Dachi (posture du cavalier)</td><td>Remontez le pied droit vers l’intérieur, puis reposez-le en Kiba Dachi en bloquant.</td></tr>
+      <tr><td>26. Ni Ju Roku <span class="jp" lang="ja">二十六</span> (vingt-six)</td><td>Tournez la tête vers la gauche (kao hidari muki)</td><td>Kiba Dachi (posture du cavalier)</td><td>Sans bouger le haut du corps.</td></tr>
+      <tr><td>27. Ni Ju Shichi <span class="jp" lang="ja">二十七</span> (vingt-sept)</td><td>Retour de vague du pied gauche (nami gaeshi), puis blocage de l’avant-bras droit (ude uke), chudan, vers la gauche</td><td>Kiba Dachi (posture du cavalier)</td><td>Remontez le pied gauche vers l’intérieur, puis reposez-le en Kiba Dachi en bloquant.</td></tr>
+      <tr><td>28. Ni Ju Hachi <span class="jp" lang="ja">二十八</span> (vingt-huit)</td><td>Poings à la hanche gauche (ryoken koshi kamae)</td><td>Kiba Dachi (posture du cavalier)</td><td>Tournez la tête vers la droite (kao migi muki).</td></tr>
+      <tr><td>29. Ni Ju Ku <span class="jp" lang="ja">二十九</span> (vingt-neuf)</td><td>Double coup de poing vers la droite (morote zuki)&nbsp;: poing droit de côté (sokumen zuki) et poing gauche en crochet (kagi zuki), chudan, et 2<sup>e</sup> Kiai</td><td>Kiba Dachi (posture du cavalier)</td><td>Sur place, vers la droite.</td></tr>
+      <tr><td>Yame <span class="jp" lang="ja">止め</span> (fin)</td><td>Retour en position prêt</td><td>Heisoku Dachi (pieds joints)</td><td>Ramenez lentement le pied droit contre le pied gauche et revenez en position prêt, la main gauche sur la main droite, au point de départ.</td></tr>
+      <tr><td>Rei <span class="jp" lang="ja">礼</span> (salut)</td><td>Salut debout (Ritsurei)</td><td>Musubi Dachi (posture d'attention)</td><td>Ouvrez les pieds en Musubi Dachi, les mains le long du corps. Effectuez un salut debout en inclinant le haut du corps vers l'avant, le regard porté environ deux mètres devant vous.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+<section data-view="video" data-title="Tutoriel vidéo">
+  <h2 id="video">Tutoriel vidéo</h2>
+  <figure class="video">
+    <div class="video-frame">
+      <iframe src="https://www.youtube-nocookie.com/embed/uifXvEXd_NU" title="Tekki Shodan, Tekki Nidan &amp; Tekki Sandan (FULL TUTORIAL) (ULTIMATE KARATE)" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <figcaption><span class="screen-only">Tekki Shodan, Tekki Nidan &amp; Tekki Sandan (FULL TUTORIAL), par ULTIMATE KARATE (YouTube). Tekki Shodan est le premier des trois katas de la vidéo.</span><span class="print-only">Regardez le tutoriel vidéo «&nbsp;Tekki Shodan, Tekki Nidan &amp; Tekki Sandan (FULL TUTORIAL)&nbsp;» (ULTIMATE KARATE)&nbsp;: <span class="url">https://www.youtube.com/watch?v=uifXvEXd_NU</span></span></figcaption>
+  </figure>
+</section>
+</article>
