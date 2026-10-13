@@ -27,7 +27,7 @@
           }
           localStorage.setItem('kohai-lang', lang);
         }
-        if (lang === 'en' && (location.hash === '' || location.hash === '#/')) location.replace('en/' + location.hash);
+        if (lang === 'en' && (location.hash === '' || location.hash === '#/')) location.replace('en/' + location.search + location.hash);
       }
     } catch (e) {}
   })();

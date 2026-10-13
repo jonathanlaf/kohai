@@ -74,7 +74,9 @@ The hook enforces this once enabled with `git config core.hooksPath .githooks` (
 
 In `katas/katas.json`, `"statut": "brouillon"` keeps a kata visible only on localhost (card badge + banner);
 `"statut": "publie"` (or no `statut`) publishes it. A draft's files are still public in the repo and on the site
-if someone knows the URL: drafts are hidden, not secret.
+if someone knows the URL: drafts are hidden, not secret. To show a draft to someone, share any page URL with
+`?apercu=<kata-id>` (comma-separated for several): that draft appears on the public site with a preview banner, `noindex`,
+and the parameter follows navigation, the language link and printing.
 
 ## Writing conventions
 

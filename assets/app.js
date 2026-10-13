@@ -88,7 +88,11 @@
   var LOCAL = /^(localhost|0\.0\.0\.0|127\.\d+\.\d+\.\d+|\[::1\]|::1|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)$/.test(location.hostname) ||
     /\.local$/.test(location.hostname);
   function isDraft(k) { return k.statut === 'brouillon'; }
-  function isAvailable(k) { return !!k.file && (!isDraft(k) || LOCAL); }
+  // ?apercu=<kata-id>[,<kata-id>…] shows those drafts on the public site too, to share them before they are published
+  var PREVIEW = (params.get('apercu') || '').split(',').filter(Boolean);
+  if (PREVIEW.length) document.head.insertAdjacentHTML('beforeend', '<meta name="robots" content="noindex">');
+  function isPreview(k) { return PREVIEW.indexOf(k.id) >= 0; }
+  function isAvailable(k) { return !!k.file && (!isDraft(k) || LOCAL || isPreview(k)); }
   function findKata(manifest, id) {
     return manifest.katas.filter(function (k) { return k.id === id && isAvailable(k); })[0];
   }
@@ -352,7 +356,7 @@
   // Language link: the same page in the other language (both shells use the same routes)
   var langLink = document.getElementById('lang-link');
   function updateLangLink() {
-    if (langLink) langLink.href = (LANG === 'fr' ? 'en/' : '../') + location.hash;
+    if (langLink) langLink.href = (LANG === 'fr' ? 'en/' : '../') + location.search + location.hash;  // keeps ?apercu=
   }
   function chooseOtherLang() {
     updateLangLink();  // current hash, even if it changed without a route
@@ -370,7 +374,7 @@
   function updatePrint() {
     printTools.hidden = !printTarget;
     if (!printTarget) return;
-    printLink.href = '?print=' + paper.value + '&chapitre=' + encodeURIComponent(printTarget);
+    printLink.href = '?print=' + paper.value + '&chapitre=' + encodeURIComponent(printTarget) + (PREVIEW.length ? '&apercu=' + encodeURIComponent(PREVIEW.join(',')) : '');
     printLink.innerHTML = printTarget === 'tout' ? T('imprimer-tout', 'Tout imprimer') : printLabel;
   }
   paper.addEventListener('change', function () { store('kohai-paper', paper.value); updatePrint(); });
@@ -634,7 +638,8 @@
       }
       if (isDraft(kata)) {
         wrap.insertAdjacentHTML('afterbegin', '<p class="draft-banner">' +
-          T('brouillon-bandeau', 'Brouillon&nbsp;: ce kata n’est visible qu’en local. Mettez «&nbsp;statut&nbsp;» à «&nbsp;publie&nbsp;» dans katas/katas.json pour le publier.') + '</p>');
+          (LOCAL ? T('brouillon-bandeau', 'Brouillon&nbsp;: ce kata n’est visible qu’en local. Mettez «&nbsp;statut&nbsp;» à «&nbsp;publie&nbsp;» dans katas/katas.json pour le publier.')
+            : T('brouillon-apercu', 'Aperçu&nbsp;: ce kata n’est pas encore publié. Le contenu peut encore changer.')) + '</p>');
       }
       wrap.appendChild(current.cloneNode(true));
       var prev = sections[idx - 1], next = sections[idx + 1];
