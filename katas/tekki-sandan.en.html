@@ -1,0 +1,114 @@
+<!-- Tekki Sandan (DRAFT). Each <section data-view> is one screen in the web app; print joins them in order.
+     Elements with class="todo" mark what is left to write. -->
+<article class="kata" data-kata="tekki-sandan">
+<section data-view="presentation" data-title="Introduction" class="kata-intro">
+  <header class="cover">
+  <h1>Tekki Sandan <span class="jp">鉄騎三段</span></h1>
+  <p class="sub">Iron horseman, third level</p>
+  <p>Tekki Sandan, the third and last Tekki kata, has 36 moves, with two Kiai: on the 16th and the 36th move. It is the longest of the three. It is required for the black belt grading, 3rd dan. Like the other Tekki, it is done on a single line, sideways.</p>
+  </header>
+  <p class="see-also">Also read, common to every kata: <a href="#/kata/esprit">The spirit of the kata</a> and <a href="#/kata/erreurs">Common mistakes</a>.</p>
+  <h2 id="decomposition" data-toc="Breaking down the kata">Breaking down the kata <span class="jp" lang="ja">型</span>, step by step</h2>
+  <p>The whole kata is done in Kiba Dachi, except for the four crossing steps (Kosa Dachi). Unlike Tekki Shodan and Tekki Nidan, it starts with eight moves in place, a fast series of linked blocks: that is its trademark. It introduces the downward forearm strike (uchi otoshi), the forearm twist (zenwan hineri) and the large circular swing (gedan furisute). It needs a very stable horse stance and blocks that follow each other without a pause.</p>
+</section>
+<section data-view="embusen" data-title="Embusen">
+  <h2 id="embusen" class="pb" data-toc="Embusen">Embusen <span class="jp" lang="ja">演武線</span> (floor pattern)</h2>
+  <p>The kata follows a single straight line. Moves 1 to 8 are at the starting point. A crossing step takes you to the right (9 to 17, Kiai on the 16th), another brings you back to the starting point (18 to 25), a third takes you to the left (26 to 32), and a last one brings you back to the starting point (33 to 36, Kiai on the 36th).</p>
+  <figure class="embusen">
+    <svg viewBox="100 40 400 205" role="img" aria-label="Tekki Sandan embusen">
+      <defs><marker id="arr-t3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+      <line class="bar" x1="110" y1="140" x2="490" y2="140"/>
+      <polygon class="node" points="257,80 266,66 334,66 343,80 334,94 266,94"/><text class="num" x="300" y="80">0 · 1 to 8</text>
+      <path class="seg" fill="none" d="M343,80 L359,80" marker-end="url(#arr-t3)"/>
+      <circle class="node" cx="375" cy="80" r="14" stroke-dasharray="4 3"/><text class="num" x="375" y="80">9</text>
+      <path class="seg" fill="none" d="M391,80 L411,80" marker-end="url(#arr-t3)"/>
+      <polygon class="node" points="413,80 422,66 478,66 487,80 478,94 422,94"/><text class="num" x="450" y="80">10 to 17</text>
+      <path class="seg" fill="none" d="M450,94 C450,125 420,140 391,140" marker-end="url(#arr-t3)"/>
+      <circle class="node" cx="375" cy="140" r="14" stroke-dasharray="4 3"/><text class="num" x="375" y="140">18</text>
+      <path class="seg" fill="none" d="M359,140 L339,140" marker-end="url(#arr-t3)"/>
+      <polygon class="node" points="263,140 272,126 328,126 337,140 328,154 272,154"/><text class="num" x="300" y="140">19 to 25</text>
+      <path class="seg" fill="none" d="M263,140 L241,140" marker-end="url(#arr-t3)"/>
+      <circle class="node" cx="225" cy="140" r="14" stroke-dasharray="4 3"/><text class="num" x="225" y="140">26</text>
+      <path class="seg" fill="none" d="M209,140 L189,140" marker-end="url(#arr-t3)"/>
+      <polygon class="node" points="113,140 122,126 178,126 187,140 178,154 122,154"/><text class="num" x="150" y="140">27 to 32</text>
+      <path class="seg" fill="none" d="M150,154 C150,185 180,200 209,200" marker-end="url(#arr-t3)"/>
+      <circle class="node" cx="225" cy="200" r="14" stroke-dasharray="4 3"/><text class="num" x="225" y="200">33</text>
+      <path class="seg" fill="none" d="M241,200 L261,200" marker-end="url(#arr-t3)"/>
+      <polygon class="node" points="263,200 272,186 328,186 337,200 328,214 272,214"/><text class="num" x="300" y="200">34 to 36</text>
+      <text class="kiai-l" x="450" y="58">KIAI 16</text>
+      <text class="kiai-l" x="300" y="228">KIAI 36</text>
+      <text class="kiai-l" x="300" y="58">START = END</text>
+      </svg>
+    <figcaption>Tekki Sandan floor pattern, seen from behind: everything is on a single line, facing the front. Each row shows one pass along the line.</figcaption>
+  </figure>
+  <p class="legend">
+    <span><svg width="22" height="16" viewBox="0 0 22 16"><polygon points="1,8 6,1 16,1 21,8 16,15 6,15" class="node"/></svg> Kiba Dachi <span class="jp" lang="ja">騎馬立ち</span> (horse stance)</span>
+    <span><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" class="node" stroke-dasharray="3 2"/></svg> Kosa Dachi <span class="jp" lang="ja">交差立ち</span> (crossing step)</span>
+  </p>
+</section>
+<section data-view="illustrations" data-title="Illustrated moves">
+  <h2 id="illustrations" class="pb">Illustrated moves</h2>
+  <p class="todo">To do: illustrations of the moves (images in img/tekki-sandan/).</p>
+</section>
+<section data-view="tutoriel" data-title="Kata tutorial">
+  <h2 id="tutoriel" class="pb" data-toc="Kata tutorial">Tekki Sandan <span class="jp" lang="ja">鉄騎三段</span> kata tutorial</h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Move</th><th>Technique</th><th>Stance</th><th>Direction</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Rei <span class="jp" lang="ja">礼</span> (bow)</td><td>Standing bow (Ritsurei)</td><td>Musubi Dachi (attention stance)</td><td>Heels together, feet open at 45°, hands flat along the body. Bow by tilting the upper body forward, eyes on the floor about two metres ahead. The sensei announces the kata: answer “Tekki Sandan!” in a strong voice.</td></tr>
+      <tr><td>Yoi <span class="jp" lang="ja">用意</span> (start)</td><td>Ready position</td><td>Hachiji Dachi (open feet)</td><td>From Musubi Dachi, open the left foot then the right foot to shoulder width, closed fists in front of the body. Eyes straight ahead.</td></tr>
+      <tr><td>1. Ichi <span class="jp" lang="ja">一</span> (one)</td><td>Left uchi uke, chudan</td><td>Kiba Dachi (horse stance)</td><td>Open the feet into Kiba Dachi as you block.</td></tr>
+      <tr><td>2. Ni <span class="jp" lang="ja">二</span> (two)</td><td>Right uchi uke, chudan, and left downward block (gedan uke), at the same time</td><td>Kiba Dachi (horse stance)</td><td>In place.</td></tr>
+      <tr><td>3. San <span class="jp" lang="ja">三</span> (three)</td><td>Left forearm pressing block (osae uke), chudan, and right downward forearm strike (uchi otoshi), chudan, right elbow on the left forearm</td><td>Kiba Dachi (horse stance)</td><td>In place.</td></tr>
+      <tr><td>4. Shi <span class="jp" lang="ja">四</span> (four)</td><td>Right back-forearm sweeping block (haiwan nagashi uke), jodan</td><td>Kiba Dachi (horse stance)</td><td>In place.</td></tr>
+      <tr><td>5. Go <span class="jp" lang="ja">五</span> (five)</td><td>Right back-fist strike (uraken uchi), jodan</td><td>Kiba Dachi (horse stance)</td><td>In place.</td></tr>
+      <tr><td>6. Roku <span class="jp" lang="ja">六</span> (six)</td><td>Right fist at the right hip, left hand resting on it</td><td>Kiba Dachi (horse stance)</td><td>In place.</td></tr>
+      <tr><td>7. Shichi <span class="jp" lang="ja">七</span> (seven)</td><td>Right punch (choku zuki), chudan, left hand by the right elbow</td><td>Kiba Dachi (horse stance)</td><td>In place, to the front.</td></tr>
+      <tr><td>8. Hachi <span class="jp" lang="ja">八</span> (eight)</td><td>Right forearm twist (zenwan hineri)</td><td>Kiba Dachi (horse stance)</td><td>Turn your head to the right as you bend the elbow and turn the forearm.</td></tr>
+      <tr><td>9. Ku <span class="jp" lang="ja">九</span> (nine)</td><td>Keep the upper body in place (jotai sono mama)</td><td>Kosa Dachi (crossed feet)</td><td>Cross the left foot in front of the right foot, slowly.</td></tr>
+      <tr><td>10. Ju <span class="jp" lang="ja">十</span> (ten)</td><td>Right forearm low block to the side (gedan uke), to the right</td><td>Kiba Dachi (horse stance)</td><td>Step the right foot to the right.</td></tr>
+      <tr><td>11. Ju Ichi <span class="jp" lang="ja">十一</span> (eleven)</td><td>Right forearm low circular swing (gedan furisute), to the right</td><td>Kiba Dachi (horse stance)</td><td>In place: a large circle with the arm.</td></tr>
+      <tr><td>12. Ju Ni <span class="jp" lang="ja">十二</span> (twelve)</td><td>Right fist at the right hip, left hand resting on it</td><td>Kiba Dachi (horse stance)</td><td>Turn your head to the front.</td></tr>
+      <tr><td>13. Ju San <span class="jp" lang="ja">十三</span> (thirteen)</td><td>Right punch (choku zuki), chudan, left hand by the right elbow</td><td>Kiba Dachi (horse stance)</td><td>In place, to the front.</td></tr>
+      <tr><td>14. Ju Shi <span class="jp" lang="ja">十四</span> (fourteen)</td><td>Right uchi uke, chudan</td><td>Kiba Dachi (horse stance)</td><td>In place.</td></tr>
+      <tr><td>15. Ju Go <span class="jp" lang="ja">十五</span> (fifteen)</td><td>Left uchi uke, chudan, and right gedan uke, at the same time</td><td>Kiba Dachi (horse stance)</td><td>In place.</td></tr>
+      <tr><td>16. Ju Roku <span class="jp" lang="ja">十六</span> (sixteen)</td><td>Left back-forearm sweeping block (haiwan nagashi uke), then left back-fist strike (uraken uchi), jodan, right forearm level in front of the chest, and 1st Kiai</td><td>Kiba Dachi (horse stance)</td><td>In place, linked.</td></tr>
+      <tr><td>17. Ju Shichi <span class="jp" lang="ja">十七</span> (seventeen)</td><td>Turn your head to the left (kao hidari muki)</td><td>Kiba Dachi (horse stance)</td><td>Without moving the upper body.</td></tr>
+      <tr><td>18. Ju Hachi <span class="jp" lang="ja">十八</span> (eighteen)</td><td>Keep the upper body in place (jotai sono mama)</td><td>Kosa Dachi (crossed feet)</td><td>Cross the right foot in front of the left foot, slowly.</td></tr>
+      <tr><td>19. Ju Ku <span class="jp" lang="ja">十九</span> (nineteen)</td><td>Left foot stamp (fumikomi)</td><td>Kiba Dachi (horse stance)</td><td>Stamp the left foot down to the left and turn your head to the front: you are at the starting point.</td></tr>
+      <tr><td>20. Ni Ju <span class="jp" lang="ja">二十</span> (twenty)</td><td>Left downward forearm strike (uchi otoshi), chudan</td><td>Kiba Dachi (horse stance)</td><td>In place.</td></tr>
+      <tr><td>21. Ni Ju Ichi <span class="jp" lang="ja">二十一</span> (twenty-one)</td><td>Left back-forearm sweeping block (haiwan nagashi uke), jodan</td><td>Kiba Dachi (horse stance)</td><td>In place.</td></tr>
+      <tr><td>22. Ni Ju Ni <span class="jp" lang="ja">二十二</span> (twenty-two)</td><td>Left back-fist strike (uraken uchi), jodan</td><td>Kiba Dachi (horse stance)</td><td>In place.</td></tr>
+      <tr><td>23. Ni Ju San <span class="jp" lang="ja">二十三</span> (twenty-three)</td><td>Left fist at the left hip, right hand resting on it</td><td>Kiba Dachi (horse stance)</td><td>In place.</td></tr>
+      <tr><td>24. Ni Ju Shi <span class="jp" lang="ja">二十四</span> (twenty-four)</td><td>Left punch (choku zuki), chudan, right hand by the left elbow</td><td>Kiba Dachi (horse stance)</td><td>In place, to the front.</td></tr>
+      <tr><td>25. Ni Ju Go <span class="jp" lang="ja">二十五</span> (twenty-five)</td><td>Left forearm twist (zenwan hineri)</td><td>Kiba Dachi (horse stance)</td><td>Turn your head to the left as you bend the elbow and turn the forearm.</td></tr>
+      <tr><td>26. Ni Ju Roku <span class="jp" lang="ja">二十六</span> (twenty-six)</td><td>Keep the upper body in place (jotai sono mama)</td><td>Kosa Dachi (crossed feet)</td><td>Cross the right foot in front of the left foot, slowly.</td></tr>
+      <tr><td>27. Ni Ju Shichi <span class="jp" lang="ja">二十七</span> (twenty-seven)</td><td>Left forearm low block to the side (gedan uke), to the left</td><td>Kiba Dachi (horse stance)</td><td>Step the left foot to the left.</td></tr>
+      <tr><td>28. Ni Ju Hachi <span class="jp" lang="ja">二十八</span> (twenty-eight)</td><td>Left forearm low circular swing (gedan furisute), to the left</td><td>Kiba Dachi (horse stance)</td><td>In place: a large circle with the arm.</td></tr>
+      <tr><td>29. Ni Ju Ku <span class="jp" lang="ja">二十九</span> (twenty-nine)</td><td>Left fist at the left hip, right hand resting on it</td><td>Kiba Dachi (horse stance)</td><td>Turn your head to the front.</td></tr>
+      <tr><td>30. San Ju <span class="jp" lang="ja">三十</span> (thirty)</td><td>Left punch (choku zuki), chudan, right hand by the left elbow</td><td>Kiba Dachi (horse stance)</td><td>In place, to the front.</td></tr>
+      <tr><td>31. San Ju Ichi <span class="jp" lang="ja">三十一</span> (thirty-one)</td><td>Right grasping block (tsukami uke), chudan, to the right, left fist at the hip</td><td>Kiba Dachi (horse stance)</td><td>Turn your head to the right. Slow move.</td></tr>
+      <tr><td>32. San Ju Ni <span class="jp" lang="ja">三十二</span> (thirty-two)</td><td>Left hook punch (kagi zuki), chudan, to the right, right fist at the hip</td><td>Kiba Dachi (horse stance)</td><td>In place.</td></tr>
+      <tr><td>33. San Ju San <span class="jp" lang="ja">三十三</span> (thirty-three)</td><td>Keep the upper body in place (jotai sono mama)</td><td>Kosa Dachi (crossed feet)</td><td>Cross the left foot in front of the right foot, slowly.</td></tr>
+      <tr><td>34. San Ju Shi <span class="jp" lang="ja">三十四</span> (thirty-four)</td><td>Left uchi uke, chudan</td><td>Kiba Dachi (horse stance)</td><td>Stamp the right foot down to the right (fumikomi) and turn your head to the front: you are at the starting point.</td></tr>
+      <tr><td>35. San Ju Go <span class="jp" lang="ja">三十五</span> (thirty-five)</td><td>Right uchi uke, chudan, and left gedan uke, at the same time</td><td>Kiba Dachi (horse stance)</td><td>In place.</td></tr>
+      <tr><td>36. San Ju Roku <span class="jp" lang="ja">三十六</span> (thirty-six)</td><td>Right back-forearm sweeping block (haiwan nagashi uke), then right back-fist strike (uraken uchi), jodan, left forearm level in front of the chest, and 2nd Kiai</td><td>Kiba Dachi (horse stance)</td><td>In place, linked.</td></tr>
+      <tr><td>Yame <span class="jp" lang="ja">止め</span> (end)</td><td>Back to the ready position</td><td>Hachiji Dachi (open feet)</td><td>Bring the feet back to the ready position, closed fists in front of the body, at the starting point.</td></tr>
+      <tr><td>Rei <span class="jp" lang="ja">礼</span> (bow)</td><td>Standing bow (Ritsurei)</td><td>Musubi Dachi (attention stance)</td><td>From Yoi, bring the feet together into Musubi Dachi. Bow by tilting the upper body forward, eyes on the floor about two metres ahead.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+<section data-view="video" data-title="Video tutorial">
+  <h2 id="video">Video tutorial</h2>
+  <figure class="video">
+    <div class="video-frame">
+      <iframe src="https://www.youtube-nocookie.com/embed/uifXvEXd_NU?start=504" title="Tekki Shodan, Tekki Nidan &amp; Tekki Sandan (FULL TUTORIAL) (ULTIMATE KARATE)" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <figcaption><span class="screen-only">Tekki Shodan, Tekki Nidan &amp; Tekki Sandan (FULL TUTORIAL), by ULTIMATE KARATE (YouTube). The video starts at Tekki Sandan (8:24).</span><span class="print-only">Watch the video tutorial “Tekki Shodan, Tekki Nidan &amp; Tekki Sandan (FULL TUTORIAL)” (ULTIMATE KARATE), from 8:24: <span class="url">https://www.youtube.com/watch?v=uifXvEXd_NU&amp;t=504s</span></span></figcaption>
+  </figure>
+</section>
+</article>
