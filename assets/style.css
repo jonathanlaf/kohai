@@ -325,5 +325,5 @@ p .jp, li .jp { font-family: var(--font-jp); color: var(--accent); }
 @media (max-width: 560px) { .changelog li { grid-template-columns: minmax(0, 1fr); gap: 0; } }
 .todo { color: var(--accent); font-style: italic; }
 .todo::before { content: "✎ "; font-style: normal; }
-.embusen .bar { stroke: var(--line); stroke-width: 6; stroke-linecap: round; }
+.embusen .bar { stroke: color-mix(in srgb, var(--muted) 40%, transparent); stroke-width: 6; stroke-linecap: round; }  /* the shape of the floor pattern, visible in both themes */
 .embusen .side { fill: var(--muted); font-size: 12px; }
