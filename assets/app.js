@@ -605,11 +605,12 @@
     else window.scrollTo(0, 0);
     view.focus({ preventScroll: true });
   }
-  // What every page sets around its content: print button, top-bar label, menu, tab title
+  // What every page sets around its content: print button, top-bar label, menu, tab title.
+  // page: the page without its anchor (a link inside the page keeps the menu as the reader left it)
   function frame(manifest, o) {
     setPrint(o.print || null);
     setCrumb(o.crumb);
-    nav(manifest, o.ctx || {}, o.active);
+    nav(manifest, o.active, o.page || o.active);
     document.title = o.title;
   }
   // A view under Katas or a kata: an optional banner, a link back up, then the content
@@ -630,9 +631,9 @@
     return { page: parts[0] || '', view: parts[1] || '', anchor: parts[2] || '' };
   }
 
-  // Branches the reader opened or closed by hand, remembered across visits (kohai-menu).
-  // The other branches are closed, except the one holding the current page.
-  var toggled = (function () { try { return JSON.parse(load('kohai-menu')) || {}; } catch (e) { return {}; } })();
+  // Branches the reader opened or closed by hand, until the next page: then the menu closes again, except the path
+  // to the page shown.
+  var toggled = {};
   function contains(node, link) {
     return node.href === link || (node.children || []).some(function (c) { return contains(c, link); });
   }
@@ -641,37 +642,37 @@
   var menuKids = {};
   function item(link, label) { return { href: link, label: label, children: menuKids[link] && menuKids[link].length ? menuKids[link] : null }; }
   function pageItem(id) { return item('#/' + id, pageName(id)); }
-  function familyMenu(available, ctx, g) {
+  function familyMenu(available, g) {
     var ready = available.filter(function (k) { return k.group === g.id; });
-    return { href: '#/kata/liste/' + g.id, label: escapeHtml(L(g.name)), open: ctx.sharedView === 'liste' && ready.length > 0,
+    return { href: '#/kata/liste/' + g.id, label: escapeHtml(L(g.name)),
       children: ready.map(function (k) { return item('#/' + k.id, escapeHtml(L(k.name))); }) };
   }
-  function kataMenu(manifest, ctx) {
+  function kataMenu(manifest) {
     var available = availableKatas(manifest);
     return { href: '#/kata', label: T('menu-kata', 'Katas'), children: [
       item('#/kata/qu-est-ce-qu-un-kata', T('menu-qu-est-ce-qu-un-kata', 'Qu’est-ce qu’un kata ?')),
       item('#/kata/erreurs-frequentes', T('menu-erreurs', 'Erreurs fréquentes'))
-    ].concat(manifest.groups.map(function (g) { return familyMenu(available, ctx, g); })) };
+    ].concat(manifest.groups.map(function (g) { return familyMenu(available, g); })) };
   }
   // Kohai's games: one entry per game
   function gamesMenu() {
     return { href: '#/jeux', label: T('menu-jeux', 'Les jeux du Kohai'), children: (menuKids['#/jeux'] || []).map(function (g) { return item(g.href, g.label); }) };
   }
-  function sectionMenu(manifest, ctx, id) {
+  function sectionMenu(manifest, id) {
     if (id === 'uniforme') return item('#/uniforme', T('menu-uniforme', 'Uniforme de karaté (Dogi)'));
-    if (id === 'kata') return kataMenu(manifest, ctx);
+    if (id === 'kata') return kataMenu(manifest);
     return pageItem(id);
   }
-  function buildMenu(manifest, ctx) {
+  function buildMenu(manifest) {
     return [item('#/', T('menu-accueil', 'Accueil'))]
-      .concat(SECTIONS.map(function (id) { return sectionMenu(manifest, ctx, id); }))
+      .concat(SECTIONS.map(function (id) { return sectionMenu(manifest, id); }))
       .concat([gamesMenu(), item('#/a-propos', T('menu-a-propos', 'À propos')), pageItem('credits')]);
   }
 
   function toggleLabel(open) { return plain(open ? T('menu-replier', 'Replier') : T('menu-deplier', 'Déplier')); }
   function menuHtml(items, activeHref) {
     return items.map(function (it) {
-      var open = toggled.hasOwnProperty(it.href) ? toggled[it.href] : (it.open || contains(it, activeHref));
+      var open = toggled.hasOwnProperty(it.href) ? toggled[it.href] : contains(it, activeHref);
       var a = '<a href="' + link(it.href) + '"' + (it.href === activeHref ? ' class="active" aria-current="page"' : '') + '>' + it.label + '</a>';
       if (!(it.children && it.children.length)) return '<li><div class="row"><span class="tw-space"></span>' + a + '</div></li>';
       return '<li class="node' + (open ? ' open' : '') + '"><div class="row">' +
@@ -686,13 +687,14 @@
     if (narrow.matches && !refresh) details.removeAttribute('open');  // close the phone menu after navigating
   }
   var navState = null;
-  function nav(manifest, ctx, activeHref) {
-    navState = { manifest: manifest, ctx: ctx, active: activeHref };
-    setNav(buildMenu(manifest, ctx), activeHref);
+  function nav(manifest, activeHref, page) {
+    if (!navState || navState.page !== page) toggled = {};  // a new page: back to the path to it
+    navState = { manifest: manifest, active: activeHref, page: page };
+    setNav(buildMenu(manifest), activeHref);
   }
   // Not while the reader is in the menu: rebuilding it would drop their focus. The next page shows the arrows anyway.
   function refreshMenu() {
-    if (navState && !toc.contains(document.activeElement)) setNav(buildMenu(navState.manifest, navState.ctx), navState.active, true);
+    if (navState && !toc.contains(document.activeElement)) setNav(buildMenu(navState.manifest), navState.active, true);
   }
   function syncMenuToWidth() {
     if (narrow.matches) details.removeAttribute('open'); else details.setAttribute('open', '');
@@ -704,7 +706,6 @@
     btn.setAttribute('aria-expanded', String(open));
     btn.setAttribute('aria-label', toggleLabel(open));
     toggled[btn.dataset.key] = open;
-    store('kohai-menu', JSON.stringify(toggled));
   });
 
   // ---------- Web app: views (each one returns what it shows and records its menu sub-entries) ----------
@@ -787,7 +788,7 @@
     return pageFragment(id).then(function (frag) {
       var section = pageView(manifest, id, frag);
       frame(manifest, { print: PAGES[id].noPrint ? null : id, crumb: plain(PAGES[id].crumb ? T('fil-' + id, PAGES[id].crumb) : pageName(id)),
-        active: href('#/' + id, anchor), title: tabTitle(plain(pageName(id))) });
+        active: href('#/' + id, anchor), page: '#/' + id, title: tabTitle(plain(pageName(id))) });
       show(section, anchor);
     });
   }
@@ -798,7 +799,7 @@
       var section = sections.filter(function (s) { return s.dataset.view === viewId; })[0];
       if (!section) { location.replace(sections.length ? '#/uniforme/' + sections[0].dataset.view : '#/'); return; }
       frame(manifest, { print: 'uniforme', crumb: plain(T('menu-uniforme', 'Uniforme de karaté (Dogi)')),
-        active: href('#/uniforme/' + viewId, anchor), title: tabTitle(section.dataset.title) });
+        active: href('#/uniforme/' + viewId, anchor), page: '#/uniforme/' + viewId, title: tabTitle(section.dataset.title) });
       show(section.cloneNode(true), anchor);
     });
   }
@@ -808,7 +809,7 @@
       var section = aboutView(res[0]);
       var slot = section.querySelector('[data-changelog]');
       if (slot && res[1]) slot.replaceWith(res[1].cloneNode(true));
-      frame(manifest, { crumb: plain(T('menu-a-propos', 'À propos')), active: href('#/a-propos', anchor), title: tabTitle(plain(T('menu-a-propos', 'À propos'))) });
+      frame(manifest, { crumb: plain(T('menu-a-propos', 'À propos')), active: href('#/a-propos', anchor), page: '#/a-propos', title: tabTitle(plain(T('menu-a-propos', 'À propos'))) });
       show(section, anchor);
     });
   }
@@ -883,15 +884,15 @@
       if (after) after.insertAdjacentElement('afterend', fold); else list.prepend(fold);
       after = fold;
     });
-    frame(manifest, { print: 'kata', crumb: list.dataset.title, ctx: { sharedView: 'liste' },
-      active: openFold ? href('#/kata/' + openFold, anchor) : anchor ? href('#/kata/liste', anchor) : '#/kata',
+    frame(manifest, { print: 'kata', crumb: list.dataset.title,
+      active: openFold ? href('#/kata/' + openFold, anchor) : anchor ? href('#/kata/liste', anchor) : '#/kata', page: '#/kata',
       title: tabTitle(list.dataset.title) });
     show(viewWrap(null, '', list), anchor || openFold);
   }
   function renderSharedPage(manifest, sections, viewId, anchor) {
     var section = sections.filter(function (s) { return s.dataset.view === viewId; })[0];
     if (!section) { location.replace('#/'); return; }
-    frame(manifest, { print: 'kata', crumb: section.dataset.title, ctx: { sharedView: viewId }, active: href('#/kata/' + viewId, anchor), title: tabTitle(section.dataset.title) });
+    frame(manifest, { print: 'kata', crumb: section.dataset.title, active: href('#/kata/' + viewId, anchor), page: '#/kata/' + viewId, title: tabTitle(section.dataset.title) });
     show(viewWrap('#/kata', T('menu-kata', 'Katas'), section.cloneNode(true)), anchor);
   }
   // The old #/kata/esprit[/annonce] (now read as esprit-du-kata) is a part of « Qu’est-ce qu’un kata ? »
@@ -926,7 +927,7 @@
       var base = '#/' + kata.id, sections = kataViews(kata, frag);
       var current = sections.filter(function (s) { return s.dataset.view === viewId; })[0] || sections[0];
       var idx = sections.indexOf(current);
-      frame(manifest, { print: kata.id, crumb: L(kata.name), active: href(base + '/' + current.dataset.view, anchor),
+      frame(manifest, { print: kata.id, crumb: L(kata.name), active: href(base + '/' + current.dataset.view, anchor), page: base + '/' + current.dataset.view,
         title: tabTitle(current.dataset.title, L(kata.name)) });
       var up = current.dataset.view === 'presentation' ? null : base + '/presentation';
       var wrap = viewWrap(up, escapeHtml(L(kata.name)), current.cloneNode(true));

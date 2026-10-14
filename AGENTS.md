@@ -77,7 +77,7 @@ Every page exists in French and in English; a content commit is refused unless b
   Run it by hand anytime from anywhere in the repo.
 - The root shell sends the home page (`/`, `/#/`) to `/en/` when the reader's language is English: their saved choice,
   else their browser's. Deep links keep their language; print URLs and crawlers are never redirected.
-  Preferences live in `localStorage` (`kohai-theme`, `kohai-paper`, `kohai-lang`, `kohai-menu`: menu branches opened or closed by hand, `kohai-jeux`: best game score per section, as [score, cards]); the site sets no cookies.
+  Preferences live in `localStorage` (`kohai-theme`, `kohai-paper`, `kohai-lang`, `kohai-jeux`: best game score per section, as [score, cards]); the site sets no cookies.
 
 ## Readable URLs
 
