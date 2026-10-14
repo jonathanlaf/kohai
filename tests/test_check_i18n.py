@@ -11,6 +11,8 @@ spec = importlib.util.spec_from_file_location('check_i18n', SCRIPT)
 ci = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ci)
 
+VOCAB = {'sections': [{'id': 'lex-dojo', 'kanji': '道場', 'title': {'fr': 'Au dojo', 'en': 'In the dojo'},
+                        'words': [{'jp': 'Rei', 'kanji': '礼', 'pron': {'fr': 'ré-i', 'en': 'ray'}, 'meaning': {'fr': 'Salut', 'en': 'Bow'}}]}]}
 MANIFEST = {
     'groups': [{'id': 'heian', 'name': {'fr': 'Heian', 'en': 'Heian'}, 'kanji': '平安',
                 'description': {'fr': 'Les cinq kata.', 'en': 'The five kata.'}}],
@@ -49,6 +51,34 @@ class Pure(unittest.TestCase):
         bad = json.loads(json.dumps(MANIFEST))
         bad['katas'][0]['belt'] = {'fr': 'Blanche', 'en': None}
         self.assertEqual(len(ci.manifest_problems(bad)), 1)
+
+    def test_vocabulary_ok(self):
+        self.assertEqual(ci.vocabulary_problems(VOCAB), [])
+
+    def test_vocabulary_missing_language(self):
+        bad = json.loads(json.dumps(VOCAB))
+        bad['sections'][0]['words'][0]['meaning'] = {'fr': 'Salut', 'en': ''}
+        bad['sections'][0]['title'] = 'Au dojo'
+        self.assertEqual(len(ci.vocabulary_problems(bad)), 2)
+
+    def test_vocabulary_duplicate_id(self):
+        bad = json.loads(json.dumps(VOCAB))
+        bad['sections'].append(bad['sections'][0])
+        self.assertEqual(len(ci.vocabulary_problems(bad)), 1)
+
+    def test_vocabulary_bad_shapes_reported_not_raised(self):
+        self.assertEqual(len(ci.vocabulary_problems({'sections': ['oops']})), 1)
+        bad = json.loads(json.dumps(VOCAB))
+        bad['sections'][0]['words'] = {}
+        self.assertEqual(len(ci.vocabulary_problems(bad)), 1)
+
+    def test_vocabulary_missing_kanji(self):
+        bad = json.loads(json.dumps(VOCAB))
+        del bad['sections'][0]['words'][0]['kanji']
+        self.assertEqual(len(ci.vocabulary_problems(bad)), 1)
+
+    def test_vocabulary_not_a_list(self):
+        self.assertEqual(len(ci.vocabulary_problems({'sections': {}})), 1)
 
     def test_manifest_not_an_object(self):
         self.assertEqual(len(ci.manifest_problems([])), 1)

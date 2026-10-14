@@ -1,0 +1,226 @@
+{
+  "sections": [
+    {
+      "id": "lex-dojo", "kanji": "道場",
+      "title": {"fr": "Au dojo", "en": "In the dojo"},
+      "words": [
+        {"jp": "Dojo", "kanji": "道場", "pron": {"fr": "do-djo", "en": "doh-joh"}, "meaning": {"fr": "Lieu de pratique", "en": "Training hall"}},
+        {"jp": "Shomen", "kanji": "正面", "pron": {"fr": "cho-mèn", "en": "shoh-men"}, "meaning": {"fr": "L’avant du dojo, le mur d’honneur", "en": "The front of the dojo, the place of honour"}},
+        {"jp": "Rei", "kanji": "礼", "pron": {"fr": "ré-i", "en": "ray"}, "meaning": {"fr": "Salut", "en": "Bow"}},
+        {"jp": "Ritsurei", "kanji": "立礼", "pron": {"fr": "ri-tsou-ré", "en": "ree-tsoo-ray"}, "meaning": {"fr": "Salut debout", "en": "Standing bow"}},
+        {"jp": "Zarei", "kanji": "座礼", "pron": {"fr": "za-ré", "en": "zah-ray"}, "meaning": {"fr": "Salut à genoux, depuis seiza", "en": "Kneeling bow, from seiza"}},
+        {"jp": "Seiza", "kanji": "正座", "pron": {"fr": "sé-za", "en": "say-zah"}, "meaning": {"fr": "Position assise à genoux", "en": "Kneeling sitting position"}},
+        {"jp": "Anza", "kanji": "安座", "pron": {"fr": "ann-za", "en": "ahn-zah"}, "meaning": {"fr": "Assis en tailleur, quand le sensei le permet", "en": "Sitting cross-legged, when the sensei allows it"}},
+        {"jp": "Mokuso", "kanji": "黙想", "pron": {"fr": "mok-so", "en": "moke-soh"}, "meaning": {"fr": "Méditation, yeux fermés, avant et après le cours", "en": "Meditation, eyes closed, before and after class"}},
+        {"jp": "Shomen ni rei", "kanji": "正面に礼", "pron": {"fr": "cho-mèn ni ré", "en": "shoh-men nee ray"}, "meaning": {"fr": "Salut vers l’avant du dojo", "en": "Bow to the front of the dojo"}},
+        {"jp": "Sensei ni rei", "kanji": "先生に礼", "pron": {"fr": "sèn-sé ni ré", "en": "sen-say nee ray"}, "meaning": {"fr": "Salut au sensei", "en": "Bow to the sensei"}},
+        {"jp": "Otagai ni rei", "kanji": "お互いに礼", "pron": {"fr": "o-ta-gaï ni ré", "en": "oh-tah-guy nee ray"}, "meaning": {"fr": "Salut entre élèves", "en": "Bow to each other"}},
+        {"jp": "Yoi", "kanji": "用意", "pron": {"fr": "yo-i", "en": "yoh-ee"}, "meaning": {"fr": "Prêt", "en": "Ready"}},
+        {"jp": "Hajime", "kanji": "始め", "pron": {"fr": "ha-dji-mé", "en": "hah-jee-meh"}, "meaning": {"fr": "Commencez", "en": "Begin"}},
+        {"jp": "Yame", "kanji": "止め", "pron": {"fr": "ya-mé", "en": "yah-meh"}, "meaning": {"fr": "Arrêtez, fin", "en": "Stop, finish"}},
+        {"jp": "Mawatte", "kanji": "回って", "pron": {"fr": "ma-wat-té", "en": "mah-waht-teh"}, "meaning": {"fr": "Tournez (demi-tour)", "en": "Turn (about-face)"}},
+        {"jp": "Naore", "kanji": "直れ", "pron": {"fr": "na-o-ré", "en": "nah-oh-reh"}, "meaning": {"fr": "Revenez en position (Yoi)", "en": "Return to position (Yoi)"}},
+        {"jp": "Kiai", "kanji": "気合", "pron": {"fr": "ki-aï", "en": "kee-eye"}, "meaning": {"fr": "Cri qui accompagne une technique décisive", "en": "Shout that goes with a decisive technique"}},
+        {"jp": "Oss (Osu)", "kanji": "押忍", "pron": {"fr": "oss", "en": "oss"}, "meaning": {"fr": "Oui, compris, merci — marque de respect", "en": "Yes, understood, thank you — a sign of respect"}},
+        {"jp": "Soji", "kanji": "掃除", "pron": {"fr": "so-dji", "en": "soh-jee"}, "meaning": {"fr": "Nettoyage du dojo, fait ensemble", "en": "Cleaning the dojo, done together"}}
+      ]
+    },
+    {
+      "id": "lex-personnes", "kanji": "先生・先輩",
+      "title": {"fr": "Personnes et titres", "en": "People and titles"},
+      "words": [
+        {"jp": "Sensei", "kanji": "先生", "pron": {"fr": "sèn-sé", "en": "sen-say"}, "meaning": {"fr": "Professeur", "en": "Teacher"}},
+        {"jp": "Senpai", "kanji": "先輩", "pron": {"fr": "sèm-paï", "en": "sem-pie"}, "meaning": {"fr": "Élève plus avancé", "en": "More advanced student"}},
+        {"jp": "Kōhai", "kanji": "後輩", "pron": {"fr": "ko-haï", "en": "koh-hie"}, "meaning": {"fr": "Élève plus jeune ou moins gradé (l'inverse de Senpai)", "en": "Younger or lower-ranked student (the opposite of Senpai)"}},
+        {"jp": "Deshi", "kanji": "弟子", "pron": {"fr": "dé-chi", "en": "deh-shee"}, "meaning": {"fr": "Élève, disciple d'un sensei", "en": "Student, disciple of a sensei"}},
+        {"jp": "Karatéka", "kanji": "空手家", "pron": {"fr": "ka-ra-té-ka", "en": "kah-rah-teh-kah"}, "meaning": {"fr": "Pratiquant de karaté", "en": "Karate practitioner"}},
+        {"jp": "Shihan", "kanji": "師範", "pron": {"fr": "chi-hann", "en": "shee-hahn"}, "meaning": {"fr": "Maître-instructeur, haut gradé qui forme les enseignants", "en": "Master instructor, a senior rank who trains teachers"}},
+        {"jp": "Renshi", "kanji": "錬士", "pron": {"fr": "rèn-chi", "en": "ren-shee"}, "meaning": {"fr": "Titre d’enseignant, le premier des trois", "en": "Teaching title, the first of three"}},
+        {"jp": "Kyoshi", "kanji": "教士", "pron": {"fr": "kyo-chi", "en": "kyoh-shee"}, "meaning": {"fr": "Titre d’enseignant expert, décerné à un haut gradé", "en": "Expert teacher title, awarded to a senior rank"}},
+        {"jp": "Hanshi", "kanji": "範士", "pron": {"fr": "hann-chi", "en": "hahn-shee"}, "meaning": {"fr": "Titre d’enseignant le plus élevé", "en": "Highest teaching title"}}
+      ]
+    },
+    {
+      "id": "lex-tenue", "kanji": "道着・帯",
+      "title": {"fr": "Tenue et grades", "en": "Uniform and ranks"},
+      "words": [
+        {"jp": "Dogi", "kanji": "道着", "pron": {"fr": "do-gui", "en": "doh-ghee"}, "meaning": {"fr": "Tenue d’entraînement («&nbsp;vêtement de la voie&nbsp;»)", "en": "Training uniform (“clothing of the way”)"}},
+        {"jp": "Karategi", "kanji": "空手着", "pron": {"fr": "ka-ra-té-gui", "en": "kah-rah-teh-ghee"}, "meaning": {"fr": "Tenue de karaté", "en": "Karate uniform"}},
+        {"jp": "Keikogi", "kanji": "稽古着", "pron": {"fr": "ké-ko-gui", "en": "kay-koh-ghee"}, "meaning": {"fr": "Tenue d’entraînement, tous arts martiaux", "en": "Training uniform, any martial art"}},
+        {"jp": "Gi", "kanji": "着", "pron": {"fr": "gui", "en": "ghee"}, "meaning": {"fr": "«&nbsp;Vêtement&nbsp;», seul&nbsp;: dites plutôt dogi", "en": "“Clothing” on its own: say dogi instead"}},
+        {"jp": "Obi", "kanji": "帯", "pron": {"fr": "o-bi", "en": "oh-bee"}, "meaning": {"fr": "Ceinture", "en": "Belt"}},
+        {"jp": "Kyu / Dan", "kanji": "級 / 段", "pron": {"fr": "kyou / dann", "en": "kyoo / dahn"}, "meaning": {"fr": "Grade de ceinture de couleur / de ceinture noire", "en": "Coloured-belt rank / black-belt rank"}},
+        {"jp": "Shodan", "kanji": "初段", "pron": {"fr": "cho-dann", "en": "shoh-dahn"}, "meaning": {"fr": "Premier dan, la première ceinture noire", "en": "First dan, the first black belt"}}
+      ]
+    },
+    {
+      "id": "lex-compter", "kanji": "数え方",
+      "title": {"fr": "Compter", "en": "Counting"},
+      "words": [
+        {"jp": "Ichi", "kanji": "一", "pron": {"fr": "i-tchi", "en": "ee-chee"}, "meaning": {"fr": "1", "en": "1"}},
+        {"jp": "Ni", "kanji": "二", "pron": {"fr": "ni", "en": "nee"}, "meaning": {"fr": "2", "en": "2"}},
+        {"jp": "San", "kanji": "三", "pron": {"fr": "sann", "en": "sahn"}, "meaning": {"fr": "3", "en": "3"}},
+        {"jp": "Shi (Yon)", "kanji": "四", "pron": {"fr": "chi (yonn)", "en": "shee (yohn)"}, "meaning": {"fr": "4", "en": "4"}},
+        {"jp": "Go", "kanji": "五", "pron": {"fr": "go", "en": "goh"}, "meaning": {"fr": "5", "en": "5"}},
+        {"jp": "Roku", "kanji": "六", "pron": {"fr": "ro-kou", "en": "roh-koo"}, "meaning": {"fr": "6", "en": "6"}},
+        {"jp": "Shichi (Nana)", "kanji": "七", "pron": {"fr": "chi-tchi (na-na)", "en": "shee-chee (nah-nah)"}, "meaning": {"fr": "7", "en": "7"}},
+        {"jp": "Hachi", "kanji": "八", "pron": {"fr": "ha-tchi", "en": "hah-chee"}, "meaning": {"fr": "8", "en": "8"}},
+        {"jp": "Ku (Kyu)", "kanji": "九", "pron": {"fr": "kou (kiou)", "en": "koo (kyoo)"}, "meaning": {"fr": "9", "en": "9"}},
+        {"jp": "Ju", "kanji": "十", "pron": {"fr": "djou", "en": "joo"}, "meaning": {"fr": "10", "en": "10"}},
+        {"jp": "Ju Ichi", "kanji": "十一", "pron": {"fr": "djou i-tchi", "en": "joo ee-chee"}, "meaning": {"fr": "11 (10 + 1)", "en": "11 (10 + 1)"}},
+        {"jp": "Ni Ju", "kanji": "二十", "pron": {"fr": "ni djou", "en": "nee joo"}, "meaning": {"fr": "20 (2 × 10)", "en": "20 (2 × 10)"}}
+      ]
+    },
+    {
+      "id": "lex-niveaux", "kanji": "上段・中段・下段",
+      "title": {"fr": "Niveaux", "en": "Levels"},
+      "note": {"fr": "(hauteur de la technique)", "en": "(height of the technique)"},
+      "words": [
+        {"jp": "Jodan", "kanji": "上段", "pron": {"fr": "djo-dann", "en": "joh-dahn"}, "meaning": {"fr": "Niveau haut&nbsp;: visage, tête", "en": "Upper level: face, head"}},
+        {"jp": "Chudan", "kanji": "中段", "pron": {"fr": "tchou-dann", "en": "choo-dahn"}, "meaning": {"fr": "Niveau moyen&nbsp;: tronc, plexus", "en": "Middle level: torso, solar plexus"}},
+        {"jp": "Gedan", "kanji": "下段", "pron": {"fr": "gué-dann", "en": "geh-dahn"}, "meaning": {"fr": "Niveau bas&nbsp;: sous la ceinture", "en": "Lower level: below the belt"}}
+      ]
+    },
+    {
+      "id": "lex-directions", "kanji": "方向",
+      "title": {"fr": "Directions et côtés", "en": "Directions and sides"},
+      "words": [
+        {"jp": "Migi / Hidari", "kanji": "右 / 左", "pron": {"fr": "mi-gui / hi-da-ri", "en": "mee-ghee / hee-dah-ree"}, "meaning": {"fr": "Droite / Gauche", "en": "Right / Left"}},
+        {"jp": "Mae", "kanji": "前", "pron": {"fr": "ma-é", "en": "mah-eh"}, "meaning": {"fr": "Avant, devant", "en": "Front, forward"}},
+        {"jp": "Yoko", "kanji": "横", "pron": {"fr": "yo-ko", "en": "yoh-koh"}, "meaning": {"fr": "Côté", "en": "Side"}},
+        {"jp": "Ushiro", "kanji": "後ろ", "pron": {"fr": "ou-chi-ro", "en": "oo-shee-roh"}, "meaning": {"fr": "Arrière, derrière", "en": "Back, behind"}},
+        {"jp": "Tate", "kanji": "縦", "pron": {"fr": "ta-té", "en": "tah-teh"}, "meaning": {"fr": "Vertical", "en": "Vertical"}},
+        {"jp": "Sokumen", "kanji": "側面", "pron": {"fr": "so-kou-mèn", "en": "soh-koo-men"}, "meaning": {"fr": "Sur le côté, latéral", "en": "To the side, lateral"}},
+        {"jp": "Mawashi", "kanji": "回し", "pron": {"fr": "ma-wa-chi", "en": "mah-wah-shee"}, "meaning": {"fr": "Circulaire", "en": "Circular"}},
+        {"jp": "Ura", "kanji": "裏", "pron": {"fr": "ou-ra", "en": "oo-rah"}, "meaning": {"fr": "Revers, envers", "en": "Reverse, back side"}}
+      ]
+    },
+    {
+      "id": "lex-postures", "kanji": "立ち",
+      "title": {"fr": "Postures (Dachi)", "en": "Stances (Dachi)"},
+      "words": [
+        {"jp": "Musubi Dachi", "kanji": "結び立ち", "pron": {"fr": "mou-sou-bi da-tchi", "en": "moo-soo-bee dah-chee"}, "meaning": {"fr": "Talons joints, pieds ouverts à 45° (salut)", "en": "Heels together, feet open at 45° (bow)"}},
+        {"jp": "Heisoku Dachi", "kanji": "閉足立ち", "pron": {"fr": "hé-so-kou da-tchi", "en": "hay-soh-koo dah-chee"}, "meaning": {"fr": "Pieds joints, parallèles", "en": "Feet together, parallel"}},
+        {"jp": "Heiko Dachi", "kanji": "平行立ち", "pron": {"fr": "hé-ko da-tchi", "en": "hay-koh dah-chee"}, "meaning": {"fr": "Pieds parallèles, écartés à la largeur des épaules", "en": "Feet parallel, shoulder-width apart"}},
+        {"jp": "Hachiji Dachi", "kanji": "八字立ち", "pron": {"fr": "ha-tchi-dji da-tchi", "en": "hah-chee-jee dah-chee"}, "meaning": {"fr": "Pieds écartés, orteils légèrement ouverts", "en": "Feet apart, toes turned slightly out"}},
+        {"jp": "Shizentai", "kanji": "自然体", "pron": {"fr": "chi-zèn-taï", "en": "shee-zen-tie"}, "meaning": {"fr": "Posture naturelle (famille de Heiko et Hachiji Dachi)", "en": "Natural stance (family of Heiko and Hachiji Dachi)"}},
+        {"jp": "Renoji Dachi", "kanji": "レの字立ち", "pron": {"fr": "ré-no-dji da-tchi", "en": "reh-noh-jee dah-chee"}, "meaning": {"fr": "Pieds en L (la lettre レ)", "en": "Feet in an L (the letter レ)"}},
+        {"jp": "Zenkutsu Dachi", "kanji": "前屈立ち", "pron": {"fr": "zèn-kout-sou da-tchi", "en": "zen-koot-soo dah-chee"}, "meaning": {"fr": "Posture avant, poids surtout sur la jambe avant", "en": "Front stance, weight mostly on the front leg"}},
+        {"jp": "Moto Dachi", "kanji": "基立ち", "pron": {"fr": "mo-to da-tchi", "en": "moh-toh dah-chee"}, "meaning": {"fr": "Posture avant courte, plus haute que Zenkutsu Dachi", "en": "Short front stance, higher than Zenkutsu Dachi"}},
+        {"jp": "Kokutsu Dachi", "kanji": "後屈立ち", "pron": {"fr": "ko-kout-sou da-tchi", "en": "koh-koot-soo dah-chee"}, "meaning": {"fr": "Posture arrière, poids surtout sur la jambe arrière", "en": "Back stance, weight mostly on the back leg"}},
+        {"jp": "Kiba Dachi", "kanji": "騎馬立ち", "pron": {"fr": "ki-ba da-tchi", "en": "kee-bah dah-chee"}, "meaning": {"fr": "Posture du cavalier, pieds parallèles et larges", "en": "Horse-riding stance, feet parallel and wide"}},
+        {"jp": "Kosa Dachi", "kanji": "交差立ち", "pron": {"fr": "ko-sa da-tchi", "en": "koh-sah dah-chee"}, "meaning": {"fr": "Posture jambes croisées", "en": "Crossed-legs stance"}},
+        {"jp": "Kamae", "kanji": "構え", "pron": {"fr": "ka-ma-é", "en": "kah-mah-eh"}, "meaning": {"fr": "Garde, position de préparation", "en": "Guard, ready position"}},
+        {"jp": "Koshi Kamae", "kanji": "腰構え", "pron": {"fr": "ko-chi ka-ma-é", "en": "koh-shee kah-mah-eh"}, "meaning": {"fr": "Poings superposés à la hanche, prêts à frapper", "en": "Fists stacked at the hip, ready to strike"}}
+      ]
+    },
+    {
+      "id": "lex-armes", "kanji": "部位",
+      "title": {"fr": "Parties du corps", "en": "Parts of the body"},
+      "words": [
+        {"jp": "Seiken", "kanji": "正拳", "pron": {"fr": "sé-kèn", "en": "say-ken"}, "meaning": {"fr": "Poing fermé&nbsp;: les deux premières jointures", "en": "Closed fist: the first two knuckles"}},
+        {"jp": "Uraken", "kanji": "裏拳", "pron": {"fr": "ou-ra-kèn", "en": "oo-rah-ken"}, "meaning": {"fr": "Revers du poing", "en": "Back of the fist"}},
+        {"jp": "Tettsui", "kanji": "鉄槌", "pron": {"fr": "tèt-tsou-i", "en": "tet-tsoo-ee"}, "meaning": {"fr": "Poing-marteau (tranchant du poing fermé)", "en": "Hammer fist (edge of the closed fist)"}},
+        {"jp": "Shuto", "kanji": "手刀", "pron": {"fr": "chou-to", "en": "shoo-toh"}, "meaning": {"fr": "Main-sabre&nbsp;: tranchant de la main ouverte", "en": "Knife hand: edge of the open hand"}},
+        {"jp": "Nukite", "kanji": "貫手", "pron": {"fr": "nou-ki-té", "en": "noo-kee-teh"}, "meaning": {"fr": "Main-lance&nbsp;: bout des doigts tendus", "en": "Spear hand: tips of the straight fingers"}},
+        {"jp": "Haishu", "kanji": "背手", "pron": {"fr": "haï-chou", "en": "high-shoo"}, "meaning": {"fr": "Dos de la main ouverte", "en": "Back of the open hand"}},
+        {"jp": "Empi", "kanji": "猿臂", "pron": {"fr": "èm-pi", "en": "em-pee"}, "meaning": {"fr": "Coude", "en": "Elbow"}},
+        {"jp": "Zenwan", "kanji": "前腕", "pron": {"fr": "zèn-wann", "en": "zen-wahn"}, "meaning": {"fr": "Avant-bras", "en": "Forearm"}},
+        {"jp": "Haiwan", "kanji": "背腕", "pron": {"fr": "haï-wann", "en": "high-wahn"}, "meaning": {"fr": "Dos de l’avant-bras", "en": "Back of the forearm"}},
+        {"jp": "Koshi", "kanji": "虎趾", "pron": {"fr": "ko-chi", "en": "koh-shee"}, "meaning": {"fr": "Bol du pied, orteils relevés (mae geri)", "en": "Ball of the foot, toes pulled back (mae geri)"}},
+        {"jp": "Hiza", "kanji": "膝", "pron": {"fr": "hi-za", "en": "hee-zah"}, "meaning": {"fr": "Genou", "en": "Knee"}}
+      ]
+    },
+    {
+      "id": "lex-tsuki", "kanji": "突き・打ち",
+      "title": {"fr": "Coups de poing et frappes", "en": "Punches and strikes"},
+      "words": [
+        {"jp": "Zuki (Tsuki)", "kanji": "突き", "pron": {"fr": "zou-ki (tsou-ki)", "en": "zoo-kee (tsoo-kee)"}, "meaning": {"fr": "Coup de poing direct", "en": "Straight punch"}},
+        {"jp": "Choku Zuki", "kanji": "直突き", "pron": {"fr": "tcho-kou zou-ki", "en": "choh-koo zoo-kee"}, "meaning": {"fr": "Coup de poing direct, sur place", "en": "Straight punch, on the spot"}},
+        {"jp": "Oi Zuki", "kanji": "追い突き", "pron": {"fr": "o-i zou-ki", "en": "oh-ee zoo-kee"}, "meaning": {"fr": "Coup de poing en avançant (même côté que la jambe avant)", "en": "Stepping punch (same side as the front leg)"}},
+        {"jp": "Gyaku Zuki", "kanji": "逆突き", "pron": {"fr": "guia-kou zou-ki", "en": "gyah-koo zoo-kee"}, "meaning": {"fr": "Coup de poing inversé (côté opposé à la jambe avant)", "en": "Reverse punch (opposite side to the front leg)"}},
+        {"jp": "Kagi Zuki", "kanji": "鉤突き", "pron": {"fr": "ka-gui zou-ki", "en": "kah-ghee zoo-kee"}, "meaning": {"fr": "Coup de poing en crochet, devant le corps", "en": "Hook punch, across the body"}},
+        {"jp": "Ura Zuki", "kanji": "裏突き", "pron": {"fr": "ou-ra zou-ki", "en": "oo-rah zoo-kee"}, "meaning": {"fr": "Coup de poing court, paume vers soi", "en": "Short punch, palm facing you"}},
+        {"jp": "Tate Zuki", "kanji": "縦突き", "pron": {"fr": "ta-té zou-ki", "en": "tah-teh zoo-kee"}, "meaning": {"fr": "Coup de poing vertical", "en": "Vertical-fist punch"}},
+        {"jp": "Morote Zuki", "kanji": "諸手突き", "pron": {"fr": "mo-ro-té zou-ki", "en": "moh-roh-teh zoo-kee"}, "meaning": {"fr": "Coup de poing des deux mains", "en": "Two-handed punch"}},
+        {"jp": "Uchi", "kanji": "打ち", "pron": {"fr": "ou-tchi", "en": "oo-chee"}, "meaning": {"fr": "Frappe", "en": "Strike"}},
+        {"jp": "Uraken Uchi", "kanji": "裏拳打ち", "pron": {"fr": "ou-ra-kèn ou-tchi", "en": "oo-rah-ken oo-chee"}, "meaning": {"fr": "Frappe du revers du poing", "en": "Back-fist strike"}},
+        {"jp": "Empi Uchi", "kanji": "猿臂打ち", "pron": {"fr": "èm-pi ou-tchi", "en": "em-pee oo-chee"}, "meaning": {"fr": "Frappe du coude", "en": "Elbow strike"}},
+        {"jp": "Shuto Uchi", "kanji": "手刀打ち", "pron": {"fr": "chou-to ou-tchi", "en": "shoo-toh oo-chee"}, "meaning": {"fr": "Frappe main-sabre", "en": "Knife-hand strike"}},
+        {"jp": "Tettsui Uchi", "kanji": "鉄槌打ち", "pron": {"fr": "tèt-tsou-i ou-tchi", "en": "tet-tsoo-ee oo-chee"}, "meaning": {"fr": "Frappe du poing-marteau", "en": "Hammer-fist strike"}}
+      ]
+    },
+    {
+      "id": "lex-uke", "kanji": "受け",
+      "title": {"fr": "Blocages", "en": "Blocks"},
+      "words": [
+        {"jp": "Uke", "kanji": "受け", "pron": {"fr": "ou-ké", "en": "oo-keh"}, "meaning": {"fr": "Blocage", "en": "Block"}},
+        {"jp": "Harai (Barai)", "kanji": "払い", "pron": {"fr": "ha-raï (ba-raï)", "en": "hah-rye (bah-rye)"}, "meaning": {"fr": "Balayage&nbsp;: écarter l'attaque d'un geste qui balaie", "en": "Sweep: pushing the attack aside with a sweeping motion"}},
+        {"jp": "Gedan Barai", "kanji": "下段払い", "pron": {"fr": "gué-dann ba-raï", "en": "geh-dahn bah-rye"}, "meaning": {"fr": "Balayage bas", "en": "Downward sweep"}},
+        {"jp": "Age Uke", "kanji": "上げ受け", "pron": {"fr": "a-gué ou-ké", "en": "ah-geh oo-keh"}, "meaning": {"fr": "Blocage haut, en remontant", "en": "Rising block"}},
+        {"jp": "Soto Uke", "kanji": "外受け", "pron": {"fr": "so-to ou-ké", "en": "soh-toh oo-keh"}, "meaning": {"fr": "Blocage de l'extérieur vers l'intérieur", "en": "Block from outside to inside"}},
+        {"jp": "Uchi Uke", "kanji": "内受け", "pron": {"fr": "ou-tchi ou-ké", "en": "oo-chee oo-keh"}, "meaning": {"fr": "Blocage de l'intérieur vers l'extérieur", "en": "Block from inside to outside"}},
+        {"jp": "Shuto Uke", "kanji": "手刀受け", "pron": {"fr": "chou-to ou-ké", "en": "shoo-toh oo-keh"}, "meaning": {"fr": "Blocage main-sabre", "en": "Knife-hand block"}},
+        {"jp": "Morote Uke", "kanji": "諸手受け", "pron": {"fr": "mo-ro-té ou-ké", "en": "moh-roh-teh oo-keh"}, "meaning": {"fr": "Blocage renforcé par l’autre bras", "en": "Block reinforced by the other arm"}},
+        {"jp": "Juji Uke", "kanji": "十字受け", "pron": {"fr": "djou-dji ou-ké", "en": "joo-jee oo-keh"}, "meaning": {"fr": "Blocage en X, poignets croisés", "en": "X-block, wrists crossed"}},
+        {"jp": "Osae Uke", "kanji": "押さえ受け", "pron": {"fr": "o-sa-é ou-ké", "en": "oh-sah-eh oo-keh"}, "meaning": {"fr": "Blocage en appuyant vers le bas", "en": "Pressing block, downward"}},
+        {"jp": "Nagashi Uke", "kanji": "流し受け", "pron": {"fr": "na-ga-chi ou-ké", "en": "nah-gah-shee oo-keh"}, "meaning": {"fr": "Blocage qui dévie l’attaque", "en": "Block that deflects the attack"}},
+        {"jp": "Kake Uke", "kanji": "掛け受け", "pron": {"fr": "ka-ké ou-ké", "en": "kah-keh oo-keh"}, "meaning": {"fr": "Blocage en crochet", "en": "Hooking block"}},
+        {"jp": "Kakiwake Uke", "kanji": "掻き分け受け", "pron": {"fr": "ka-ki-wa-ké ou-ké", "en": "kah-kee-wah-keh oo-keh"}, "meaning": {"fr": "Blocage des deux bras qui écartent", "en": "Two-arm block that pushes apart"}},
+        {"jp": "Tsukami Uke", "kanji": "掴み受け", "pron": {"fr": "tsou-ka-mi ou-ké", "en": "tsoo-kah-mee oo-keh"}, "meaning": {"fr": "Blocage en saisissant", "en": "Grasping block"}},
+        {"jp": "Haishu Uke", "kanji": "背手受け", "pron": {"fr": "haï-chou ou-ké", "en": "high-shoo oo-keh"}, "meaning": {"fr": "Blocage du dos de la main", "en": "Back-hand block"}}
+      ]
+    },
+    {
+      "id": "lex-geri", "kanji": "蹴り",
+      "title": {"fr": "Coups de pied", "en": "Kicks"},
+      "words": [
+        {"jp": "Geri (Keri)", "kanji": "蹴り", "pron": {"fr": "gué-ri (ké-ri)", "en": "geh-ree (keh-ree)"}, "meaning": {"fr": "Coup de pied", "en": "Kick"}},
+        {"jp": "Keage", "kanji": "蹴上げ", "pron": {"fr": "ké-a-gué", "en": "keh-ah-geh"}, "meaning": {"fr": "Fouetté vers le haut&nbsp;: la jambe revient aussitôt", "en": "Snapping upward: the leg comes straight back"}},
+        {"jp": "Mae Geri", "kanji": "前蹴り", "pron": {"fr": "ma-é gué-ri", "en": "mah-eh geh-ree"}, "meaning": {"fr": "Coup de pied de face", "en": "Front kick"}},
+        {"jp": "Mae Geri Keage", "kanji": "前蹴り蹴上げ", "pron": {"fr": "ma-é gué-ri ké-a-gué", "en": "mah-eh geh-ree keh-ah-geh"}, "meaning": {"fr": "Coup de pied de face fouetté (le pied revient aussitôt)", "en": "Front snap kick (the foot comes straight back)"}},
+        {"jp": "Yoko Geri Keage", "kanji": "横蹴り蹴上げ", "pron": {"fr": "yo-ko gué-ri ké-a-gué", "en": "yoh-koh geh-ree keh-ah-geh"}, "meaning": {"fr": "Coup de pied de côté, fouetté", "en": "Side snap kick"}},
+        {"jp": "Mikazuki Geri", "kanji": "三日月蹴り", "pron": {"fr": "mi-ka-zou-ki gué-ri", "en": "mee-kah-zoo-kee geh-ree"}, "meaning": {"fr": "Coup de pied en croissant de lune", "en": "Crescent kick"}},
+        {"jp": "Hiza Geri", "kanji": "膝蹴り", "pron": {"fr": "hi-za gué-ri", "en": "hee-zah geh-ree"}, "meaning": {"fr": "Coup de genou", "en": "Knee strike"}},
+        {"jp": "Fumikomi", "kanji": "踏み込み", "pron": {"fr": "fou-mi-ko-mi", "en": "foo-mee-koh-mee"}, "meaning": {"fr": "Pied qui écrase vers le bas", "en": "Stamping kick, downward"}}
+      ]
+    },
+    {
+      "id": "lex-kumite", "kanji": "組手",
+      "title": {"fr": "Kumite", "en": "Kumite"},
+      "words": [
+        {"jp": "Gohon Kumite", "kanji": "五本組手", "pron": {"fr": "go-honn kou-mi-té", "en": "goh-hohn koo-mee-teh"}, "meaning": {"fr": "Combat en cinq pas&nbsp;: cinq attaques annoncées, cinq blocages, une contre-attaque", "en": "Five-step sparring: five announced attacks, five blocks, one counter"}},
+        {"jp": "Sanbon Kumite", "kanji": "三本組手", "pron": {"fr": "sann-bonn kou-mi-té", "en": "sahn-bohn koo-mee-teh"}, "meaning": {"fr": "Combat en trois pas", "en": "Three-step sparring"}},
+        {"jp": "Kihon Ippon Kumite", "kanji": "基本一本組手", "pron": {"fr": "ki-honn ip-ponn kou-mi-té", "en": "kee-hohn eep-pohn koo-mee-teh"}, "meaning": {"fr": "Combat en un pas&nbsp;: une attaque annoncée, un blocage, une contre-attaque", "en": "One-step sparring: one announced attack, one block, one counter"}},
+        {"jp": "Kaeshi Ippon Kumite", "kanji": "返し一本組手", "pron": {"fr": "ka-é-chi ip-ponn kou-mi-té", "en": "kah-eh-shee eep-pohn koo-mee-teh"}, "meaning": {"fr": "Combat en un pas avec échange des rôles", "en": "One-step sparring with the roles switched"}},
+        {"jp": "Jiyu Ippon Kumite", "kanji": "自由一本組手", "pron": {"fr": "dji-you ip-ponn kou-mi-té", "en": "jee-yoo eep-pohn koo-mee-teh"}, "meaning": {"fr": "Combat en un pas, en mouvement libre", "en": "One-step sparring, moving freely"}},
+        {"jp": "Jiyu Kumite", "kanji": "自由組手", "pron": {"fr": "dji-you kou-mi-té", "en": "jee-yoo koo-mee-teh"}, "meaning": {"fr": "Combat libre", "en": "Free sparring"}}
+      ]
+    },
+    {
+      "id": "lex-notions", "kanji": "概念",
+      "title": {"fr": "Notions et esprit", "en": "Concepts and spirit"},
+      "words": [
+        {"jp": "Karate-dō", "kanji": "空手道", "pron": {"fr": "ka-ra-té-do", "en": "kah-rah-teh-doh"}, "meaning": {"fr": "La voie de la main vide", "en": "The way of the empty hand"}},
+        {"jp": "Dō", "kanji": "道", "pron": {"fr": "do", "en": "doh"}, "meaning": {"fr": "Voie, chemin", "en": "Way, path"}},
+        {"jp": "Kata", "kanji": "型", "pron": {"fr": "ka-ta", "en": "kah-tah"}, "meaning": {"fr": "Enchaînement codifié, combat imaginaire", "en": "Set sequence, imaginary fight"}},
+        {"jp": "Heian", "kanji": "平安", "pron": {"fr": "hé-ann", "en": "hay-ahn"}, "meaning": {"fr": "Paix, tranquillité (la série des cinq premiers katas)", "en": "Peace, tranquillity (the series of the first five katas)"}},
+        {"jp": "Kihon", "kanji": "基本", "pron": {"fr": "ki-honn", "en": "kee-hohn"}, "meaning": {"fr": "Techniques de base", "en": "Basic techniques"}},
+        {"jp": "Kumite", "kanji": "組手", "pron": {"fr": "kou-mi-té", "en": "koo-mee-teh"}, "meaning": {"fr": "Combat avec partenaire", "en": "Sparring with a partner"}},
+        {"jp": "Bunkai", "kanji": "分解", "pron": {"fr": "bounn-kaï", "en": "boon-kye"}, "meaning": {"fr": "Analyse d’un kata&nbsp;: ce que fait chaque mouvement", "en": "Analysis of a kata: what each move does"}},
+        {"jp": "Goshin Jutsu", "kanji": "護身術", "pron": {"fr": "go-chinn djout-sou", "en": "goh-sheen joot-soo"}, "meaning": {"fr": "Autodéfense", "en": "Self-defence"}},
+        {"jp": "Embusen", "kanji": "演武線", "pron": {"fr": "èm-bou-sèn", "en": "em-boo-sen"}, "meaning": {"fr": "Tracé au sol suivi par le kata", "en": "Floor pattern followed by the kata"}},
+        {"jp": "Hikite", "kanji": "引き手", "pron": {"fr": "hi-ki-té", "en": "hee-kee-teh"}, "meaning": {"fr": "Main qui revient à la hanche pendant la technique", "en": "Hand that pulls back to the hip during the technique"}},
+        {"jp": "Shomen", "kanji": "正面", "pron": {"fr": "cho-mèn", "en": "shoh-men"}, "meaning": {"fr": "Hanches de face", "en": "Hips facing forward"}},
+        {"jp": "Hanmi", "kanji": "半身", "pron": {"fr": "hann-mi", "en": "hahn-mee"}, "meaning": {"fr": "Hanches de profil (à 45°)", "en": "Hips turned sideways (at 45°)"}},
+        {"jp": "Kime", "kanji": "決め", "pron": {"fr": "ki-mé", "en": "kee-meh"}, "meaning": {"fr": "Concentration de la puissance à l'impact", "en": "Focus of power at impact"}},
+        {"jp": "Kihaku", "kanji": "気迫", "pron": {"fr": "ki-ha-kou", "en": "kee-hah-koo"}, "meaning": {"fr": "Intensité, force d’esprit", "en": "Intensity, strength of spirit"}},
+        {"jp": "Zanshin", "kanji": "残心", "pron": {"fr": "zann-chinn", "en": "zahn-sheen"}, "meaning": {"fr": "Vigilance qui demeure après la technique", "en": "Awareness that remains after the technique"}},
+        {"jp": "Mushin", "kanji": "無心", "pron": {"fr": "mou-chinn", "en": "moo-sheen"}, "meaning": {"fr": "«&nbsp;Esprit vide&nbsp;»&nbsp;: absorbé dans le geste, sans pensée parasite", "en": "“No-mind”: absorbed in the movement, with no stray thought"}},
+        {"jp": "Reigi", "kanji": "礼儀", "pron": {"fr": "ré-gui", "en": "ray-ghee"}, "meaning": {"fr": "Étiquette, courtoisie", "en": "Etiquette, courtesy"}},
+        {"jp": "Dojo Kun", "kanji": "道場訓", "pron": {"fr": "do-djo kounn", "en": "doh-joh koon"}, "meaning": {"fr": "Les cinq préceptes du dojo", "en": "The five precepts of the dojo"}},
+        {"jp": "Hitotsu", "kanji": "一つ", "pron": {"fr": "hi-to-tsou", "en": "hee-toh-tsoo"}, "meaning": {"fr": "«&nbsp;Un&nbsp;»&nbsp;: début de chaque précepte", "en": "“One”: the start of every precept"}}
+      ]
+    }
+  ]
+}

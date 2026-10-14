@@ -23,7 +23,7 @@ Pages are loaded with `fetch`, so test through a local server (`python3 -m http.
 
 - `index.html` — French app shell: top bar, menu, `<main id="view">`, footer.
 - `en/index.html` — English app shell (`lang="en" data-root="../"`), same `app.js`. A change to one shell is made in the other.
-- `assets/app.js` — hash router (`#/`, `#/<kata-id>/<section>`, `#/kata` (kata cards under a foldable « Qu'est-ce qu'un kata ? »), `#/kata/definition|erreurs`, `#/uniforme/<view>`, `#/histoire`, `#/dojo-kun`, `#/etiquette`, `#/ceintures`, `#/kihon`, `#/lexique`, `#/a-propos`, `#/credits`;
+- `assets/app.js` — hash router (`#/`, `#/<kata-id>/<section>`, `#/kata` (kata cards under a foldable « Qu'est-ce qu'un kata ? »), `#/kata/definition|erreurs`, `#/uniforme/<view>`, `#/histoire`, `#/dojo-kun`, `#/etiquette`, `#/ceintures`, `#/kihon`, `#/lexique`, `#/jeux[/langue[/<lex-section>]]`, `#/a-propos`, `#/credits`;
   identical in both languages), menu, theme, language link, print mode (Paged.js). Logic only: user-facing text lives in the HTML files below.
 - `assets/style.css` (screen, light/dark tokens), `assets/print.css` (print), `assets/paged.css` (Paged.js only).
   The shells load them (and `app.js`) with one shared `?v=YYYYMMDD<letter>` (e.g. `20261013g`; next letter for another change the same day):
@@ -38,9 +38,16 @@ Pages are loaded with `fetch`, so test through a local server (`python3 -m http.
   `shared/libelles.html` (menu and interface labels), `shared/impression.html` (print-only texts).
 - One-page sections, listed in `PAGES` in `app.js` (menu label `menu-<id>`, print cover `<id>-titre` / `<id>-sous-titre`, credits `data-credits="<id>"`):
   `shared/histoire.html` (Histoire du Shotokan), `shared/dojo-kun.html` (Dojo Kun, one `.kun` card per precept),
-  `shared/etiquette.html` (Étiquette au dojo), `shared/ceintures.html` (Ceintures et grades: belt order, kyu and dan), `shared/kihon.html` (Les bases, one `.fiche` card per technique), `shared/lexique.html` (every Japanese term of the site, by topic),
+  `shared/etiquette.html` (Étiquette au dojo), `shared/ceintures.html` (Ceintures et grades: belt order, kyu and dan), `shared/kihon.html` (Les bases, one `.fiche` card per technique), `shared/lexique.html` (the vocabulary page: its introduction;
+  the words come from `shared/lexique.json`),
   `shared/credits.html` (Sources et crédits: one `data-credits="<id>"` block per chapter, also printed at the end of that chapter; no print button).
 - `shared/uniforme.html` — Uniforme de karaté (Dogi): one `<section data-view>` per page (`#/uniforme/<view>`): its menu entries are read from the file (`data-title`).
+- `shared/lexique.json` — every Japanese term of the site, by topic, in both languages: the one source of the vocabulary page
+  (drawn into `[data-vocabulary]`, on screen and in print) and of the language game. A section has `id`, `kanji`, `title`
+  (and an optional `note`), each word `jp`, `kanji`, `pron` and `meaning`; `title`, `note`, `pron` and `meaning` are
+  `{"fr", "en"}`. Text fields are HTML (`&nbsp;` before French punctuation). Add a word or a section here, never in the HTML.
+- `shared/jeux.html` — Les jeux du Kohai: the hub and one `<section data-view>` per game (`#/jeux/<view>`). The language game
+  (`langue`) plays the vocabulary: each section of `lexique.json` with 3 words or more is a deck, each word a card.
 - `img/<kata-id>/` — images of each kata.
 - Every `.html` under `katas/` and `shared/` has an English twin next to it: `x.html` + `x.en.html`.
 - `.githooks/pre-commit` runs `.githooks/check-i18n.py --staged` (see « Two languages »).
@@ -62,13 +69,13 @@ Every page exists in French and in English; a content commit is refused unless b
 - Each `.html` under `katas/` and `shared/` has an `.en.html` twin. The twin keeps the French ids: `data-view`,
   `h2`/`h3` ids, anchors, `data-credits`, `data-text` keys. Only visible text, `data-title` and `data-toc` change,
   so the language link lands on the same page and anchor.
-- `katas.json` text fields are `{"fr", "en"}`, both non-empty.
+- `katas.json` and `shared/lexique.json` text fields are `{"fr", "en"}`, both non-empty.
 - Both shells (`index.html`, `en/index.html`) change together.
-- `.githooks/check-i18n.py` checks all of this (twins, label keys, `data-view` lists, `katas.json`, both changelogs).
+- `.githooks/check-i18n.py` checks all of this (twins, label keys, `data-view` lists, `katas.json`, `lexique.json`, both changelogs).
   Run it by hand anytime from anywhere in the repo.
 - The root shell sends the home page (`/`, `/#/`) to `/en/` when the reader's language is English: their saved choice,
   else their browser's. Deep links keep their language; print URLs and crawlers are never redirected.
-  Preferences live in `localStorage` (`kohai-theme`, `kohai-paper`, `kohai-lang`, `kohai-menu`: menu branches opened or closed by hand); the site sets no cookies.
+  Preferences live in `localStorage` (`kohai-theme`, `kohai-paper`, `kohai-lang`, `kohai-menu`: menu branches opened or closed by hand, `kohai-jeux`: best game score per section, as [score, cards]); the site sets no cookies.
 
 ## Editable texts
 

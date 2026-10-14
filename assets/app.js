@@ -12,15 +12,18 @@
   function L(v) { return v && typeof v === 'object' ? (v[LANG] || v.fr || '') : v; }
 
   var MANIFEST = ROOT + 'katas/katas.json';
+  var VOCABULARY = ROOT + 'shared/lexique.json';  // the words of the vocabulary page and of the language game
   var HOME = localized('shared/accueil.html');
   var SHARED = localized('shared/kata.html');
   var ABOUT = localized('shared/about.html');
   var UNIFORM = localized('shared/uniforme.html');
+  var GAMES = localized('shared/jeux.html');
   var CHANGELOG = localized('shared/changelog.html');
   var LABELS = localized('shared/libelles.html');    // menu and interface labels
   var PRINT_TEXTS = localized('shared/impression.html');  // texts used only in print
   // One-page sections (#/<id>[/anchor]): file, menu label and print cover, with their French fallbacks.
   // crumb: a shorter top-bar label (fil-<id>); noHeading: the printed chapter drops the page's h2, already on the cover;
+  // vocabulary: the page draws shared/lexique.json into its [data-vocabulary];
   // noPrint: no print button (the credits are printed with each chapter instead).
   var PAGES = {
     'histoire': { url: localized('shared/histoire.html'), name: 'Histoire du Shotokan', sub: 'Funakoshi Gichin et la naissance du style' },
@@ -28,7 +31,7 @@
     'etiquette': { url: localized('shared/etiquette.html'), name: 'Étiquette au dojo (Reigi)', sub: 'Le salut, le cours et les titres' },
     'ceintures': { url: localized('shared/ceintures.html'), name: 'Ceintures et grades (Obi)', sub: 'L’ordre des ceintures, les kyu et les dan' },
     'kihon': { url: localized('shared/kihon.html'), name: 'Les bases (Kihon)', sub: 'Les techniques de base et le passage de grade' },
-    'lexique': { url: localized('shared/lexique.html'), name: 'Lexique du karatéka', sub: 'Kohai · les notes d’un élève', crumb: 'Lexique', noHeading: true },
+    'lexique': { url: localized('shared/lexique.html'), name: 'Lexique du karatéka', sub: 'Kohai · les notes d’un élève', crumb: 'Lexique', noHeading: true, vocabulary: true },
     'credits': { url: localized('shared/credits.html'), name: 'Sources et crédits', sub: '', noPrint: true }
   };
   // Print covers of the two other chapters made of shared files
@@ -98,6 +101,7 @@
   }
   var manifest$ = {};
   function getManifest() { return once(manifest$, 'm', function () { return fetchText(MANIFEST).then(JSON.parse); }); }
+  function getVocabulary() { return once(manifest$, 'v', function () { return fetchText(VOCABULARY).then(JSON.parse); }); }
 
   // Editable texts: [data-text="key"] elements from shared/libelles.html and shared/impression.html
   var texts = {};
@@ -132,6 +136,33 @@
   function dropDraftCredits(manifest, node) {
     node.querySelectorAll('[data-credits]').forEach(function (block) { if (isHiddenCredit(manifest, block)) block.remove(); });
   }
+  // ---------- Vocabulary (shared/lexique.json; its text fields are HTML) ----------
+  function vocabularyHead() {
+    return '<thead><tr>' + [['lexique-japonais', 'Japonais'], ['lexique-prononciation', 'Prononciation'], ['lexique-kanji', 'Kanji'], ['lexique-signification', 'Signification']]
+      .map(function (c) { return '<th>' + T(c[0], c[1]) + '</th>'; }).join('') + '</tr></thead>';
+  }
+  function wordRow(w) {
+    return '<tr><td>' + w.jp + '</td><td class="pron">' + L(w.pron) + '</td><td class="kanji">' + w.kanji + '</td><td>' + L(w.meaning) + '</td></tr>';
+  }
+  function vocabularySection(sec, head) {
+    var title = L(sec.title);
+    return '<section><h3 id="' + sec.id + '" data-toc="' + escapeHtml(plain(title)) + '">' + title + ' <span class="jp" lang="ja">' + sec.kanji + '</span>' +
+      (sec.note ? ' ' + L(sec.note) : '') + '</h3><div class="table-wrap"><table>' + head + '<tbody>' + sec.words.map(wordRow).join('') + '</tbody></table></div></section>';
+  }
+  // Draws the vocabulary tables into [data-vocabulary], if the page has one
+  function fillVocabulary(node, vocab) {
+    var slot = node.querySelector('[data-vocabulary]');
+    var head = vocabularyHead();
+    if (slot) slot.innerHTML = vocab.sections.map(function (sec) { return vocabularySection(sec, head); }).join('');
+  }
+  // A one-page section's file, with its vocabulary drawn in when it has some
+  function pageFragment(id) {
+    return Promise.all([fetchFragment(PAGES[id].url), PAGES[id].vocabulary ? getVocabulary() : null]).then(function (res) {
+      if (res[1]) fillVocabulary(res[0], res[1]);
+      return res[0];
+    });
+  }
+
   // Every second move of a tutorial is shaded. Marked once in the markup rather than with :nth-of-type,
   // which would restart on each page when Paged.js splits a long table.
   function markStripes(node) {
@@ -176,9 +207,9 @@
     unwrapInto(doc, sections);
     return appendCredits(doc, creditsId).then(function () { return { doc: doc, title: title }; });
   }
-  // A chapter made of shared files: pick(frag) gives its sections, prepare(section) adjusts each one for print
-  function sharedChapter(id, url, pick, prepare) {
-    return fetchFragment(url).then(function (frag) {
+  // A chapter made of shared files: load() gives the file, pick(frag) its sections, prepare(section) adjusts each one for print
+  function sharedChapter(id, load, pick, prepare) {
+    return load().then(function (frag) {
       var sections = pick(frag).map(function (s) { return s.cloneNode(true); });
       if (prepare) sections.forEach(prepare);
       var c = coverOf(id);
@@ -191,9 +222,9 @@
     });
   }
   function buildChapter(manifest, id) {
-    if (PAGES[id]) return sharedChapter(id, PAGES[id].url, function (f) { return [f.querySelector('section')]; }, PAGES[id].noHeading ? dropHeading : null);
-    if (id === 'uniforme') return sharedChapter(id, UNIFORM, views);
-    if (id === 'kata') return sharedChapter(id, SHARED, function (f) { return views(f).filter(function (s) { return s.dataset.view !== 'liste'; }); });  // the kata cards are for the screen
+    if (PAGES[id]) return sharedChapter(id, function () { return pageFragment(id); }, function (f) { return [f.querySelector('section')]; }, PAGES[id].noHeading ? dropHeading : null);
+    if (id === 'uniforme') return sharedChapter(id, function () { return fetchFragment(UNIFORM); }, views);
+    if (id === 'kata') return sharedChapter(id, function () { return fetchFragment(SHARED); }, function (f) { return views(f).filter(function (s) { return s.dataset.view !== 'liste'; }); });  // the kata cards are for the screen
     var kata = findKata(manifest, id);
     if (!kata) return Promise.reject(new Error(plain(T('erreur-kata-introuvable', 'kata introuvable')) + ' (' + id + ')'));
     return kataChapter(kata);
@@ -542,6 +573,10 @@
       item('#/kata/erreurs', T('menu-erreurs', 'Erreurs fréquentes'))
     ].concat(manifest.groups.map(function (g) { return familyMenu(available, ctx, g); })) };
   }
+  // Kohai's games: one entry per game, each with its own sub-entries (the vocabulary sections for the language game)
+  function gamesMenu() {
+    return { href: '#/jeux', label: T('menu-jeux', 'Les jeux du Kohai'), children: (menuKids['#/jeux'] || []).map(function (g) { return item(g.href, g.label); }) };
+  }
   function sectionMenu(manifest, ctx, id) {
     if (id === 'uniforme') return item('#/uniforme', T('menu-uniforme', 'Uniforme de karaté (Dogi)'));
     if (id === 'kata') return kataMenu(manifest, ctx);
@@ -550,7 +585,7 @@
   function buildMenu(manifest, ctx) {
     return [item('#/', T('menu-accueil', 'Accueil'))]
       .concat(SECTIONS.map(function (id) { return sectionMenu(manifest, ctx, id); }))
-      .concat([item('#/a-propos', T('menu-a-propos', 'À propos')), pageItem('credits')]);
+      .concat([gamesMenu(), item('#/a-propos', T('menu-a-propos', 'À propos')), pageItem('credits')]);
   }
 
   function toggleLabel(open) { return plain(open ? T('menu-replier', 'Replier') : T('menu-deplier', 'Déplier')); }
@@ -644,12 +679,23 @@
     aboutKids(frag);
     return frag.querySelector('section').cloneNode(true);
   }
+  function gameViews(frag) {
+    var sections = views(frag);
+    menuKids['#/jeux'] = sections.filter(function (s) { return s.dataset.view !== 'jeux'; }).map(function (s) {
+      return { href: '#/jeux/' + s.dataset.view, label: escapeHtml(s.dataset.title) };
+    });
+    return sections;
+  }
+  function languageKids(decks) {
+    menuKids['#/jeux/langue'] = decks.map(function (d) { return { href: '#/jeux/langue/' + d.id, label: escapeHtml(d.label) }; });
+  }
   var menuPrefetched = false;
   function prefetchMenu(manifest) {
     if (menuPrefetched) return;
     menuPrefetched = true;
-    var jobs = Object.keys(PAGES).map(function (id) { return fetchFragment(PAGES[id].url).then(function (f) { pageKids(manifest, id, f); }); })
+    var jobs = Object.keys(PAGES).map(function (id) { return pageFragment(id).then(function (f) { pageKids(manifest, id, f); }); })
       .concat([fetchFragment(UNIFORM).then(uniformViews), fetchFragment(SHARED).then(sharedViews), fetchFragment(ABOUT).then(aboutKids)])
+      .concat([fetchFragment(GAMES).then(gameViews), getDecks().then(languageKids)])
       .concat(availableKatas(manifest).map(function (k) { return fetchFragment(localized(k.file)).then(function (f) { kataViews(k, f); }); }));
     settle(jobs).then(refreshMenu);
   }
@@ -661,7 +707,7 @@
   }
 
   function renderPage(manifest, id, anchor) {
-    return fetchFragment(PAGES[id].url).then(function (frag) {
+    return pageFragment(id).then(function (frag) {
       var section = pageView(manifest, id, frag);
       frame(manifest, { print: PAGES[id].noPrint ? null : id, crumb: plain(PAGES[id].crumb ? T('fil-' + id, PAGES[id].crumb) : pageName(id)),
         active: href('#/' + id, anchor), title: tabTitle(plain(pageName(id))) });
@@ -812,6 +858,118 @@
     });
   }
 
+  // ---------- Web app: Kohai's games ----------
+  // Language game: each vocabulary section is a deck, each word a card
+  var ROUND = 10;  // cards per game
+  function cardOf(w) { return { term: w.jp, pron: L(w.pron), kanji: w.kanji, meaning: L(w.meaning) }; }
+  var decks$ = {};
+  function getDecks() { return once(decks$, 'd', function () { return getVocabulary().then(vocabularyDecks); }); }
+  function vocabularyDecks(vocab) {
+    return vocab.sections.map(function (sec) {
+      return { id: sec.id, label: plain(L(sec.title)), cards: sec.words.map(cardOf) };
+    }).filter(function (d) { return d.cards.length >= 3; });  // three answers to choose from
+  }
+  function shuffle(list) {
+    var a = list.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  // The right meaning and two wrong ones from the same section, in random order
+  function choicesFor(card, deck) {
+    var wrong = deck.cards.map(function (c) { return c.meaning; }).filter(function (m, i, all) { return m !== card.meaning && all.indexOf(m) === i; });
+    return shuffle([card.meaning].concat(shuffle(wrong).slice(0, 2)));
+  }
+  // Best score per section, kept in this browser (kohai-jeux): { "<section>": [score, cards in that game] }
+  function bestScores() { try { return JSON.parse(load('kohai-jeux')) || {}; } catch (e) { return {}; } }
+  function bestOf(best, id) { return Array.isArray(best[id]) ? best[id] : null; }
+  function saveBest(game) {
+    var best = bestScores(), old = bestOf(best, game.deck.id);
+    if (old && old[0] / old[1] >= game.score / game.cards.length) return;
+    best[game.deck.id] = [game.score, game.cards.length];
+    store('kohai-jeux', JSON.stringify(best));
+  }
+  function roundSize(deck) { return Math.min(ROUND, deck.cards.length); }
+
+  function deckCard(deck, best) {
+    var b = bestOf(best, deck.id);
+    var score = b ? '<span class="kata-card-meta">' + T('jeu-meilleur', 'Meilleur score&nbsp;:') + ' ' + b[0] + '/' + b[1] + '</span>' : '';
+    return '<li><a class="kata-card" href="#/jeux/langue/' + deck.id + '"><span class="kata-card-name">' + escapeHtml(deck.label) + '</span>' +
+      '<span class="kata-card-meta">' + deck.cards.length + ' ' + T('jeu-mots', 'mots') + '</span>' + score + '</a></li>';
+  }
+  function deckPickerHtml(decks) {
+    var best = bestScores();
+    return '<ul class="kata-list">' + decks.map(function (d) { return deckCard(d, best); }).join('') + '</ul>';
+  }
+  function questionHtml(game) {
+    var card = game.cards[game.i];
+    return '<div class="flash">' +
+      '<p class="flash-count">' + T('jeu-carte', 'Carte') + ' ' + (game.i + 1) + ' / ' + game.cards.length + ' · ' + T('jeu-score', 'Score&nbsp;:') + ' <span class="flash-score">' + game.score + '</span></p>' +
+      '<p class="flash-question">' + T('jeu-question', 'Que veut dire «&nbsp;{mot}&nbsp;»&nbsp;?').replace('{mot}', '<strong>' + card.term + '</strong>') + '</p>' +
+      '<div class="flash-choices">' + game.choices.map(function (m, n) { return '<button type="button" class="flash-choice" data-choice="' + n + '">' + m + '</button>'; }).join('') + '</div>' +
+      '<p class="flash-feedback" aria-live="polite"></p></div>';
+  }
+  function feedbackHtml(card, right) {
+    return (right ? T('jeu-bravo', 'Bonne réponse&nbsp;!') : T('jeu-rate', 'Pas tout à fait&nbsp;: c’était') + ' «&nbsp;' + card.meaning + '&nbsp;».') +
+      ' <span class="flash-word">' + card.term + ' <span class="jp" lang="ja">' + card.kanji + '</span> · ' + card.pron + '</span>';
+  }
+  function endHtml(game) {
+    return '<div class="flash"><p class="flash-question">' + T('jeu-termine', 'Partie terminée&nbsp;!') + ' ' + T('jeu-score', 'Score&nbsp;:') + ' <strong>' + game.score + ' / ' + game.cards.length + '</strong></p>' +
+      '<p class="flash-actions"><button type="button" class="flash-next" data-again>' + T('jeu-rejouer', 'Rejouer') + '</button> ' +
+      '<a href="#/jeux/langue">' + T('jeu-sections', 'Choisir une autre section') + '</a></p></div>';
+  }
+  function showQuestion(slot, game) {
+    game.choices = choicesFor(game.cards[game.i], game.deck);
+    slot.innerHTML = questionHtml(game);
+    slot.querySelectorAll('.flash-choice').forEach(function (btn) { btn.addEventListener('click', function () { answer(slot, game, btn); }); });
+  }
+  // Marks the answer, shows the right one and the word, then offers the next card
+  function answer(slot, game, picked) {
+    var card = game.cards[game.i], right = game.choices[picked.dataset.choice] === card.meaning;
+    if (right) game.score++;
+    slot.querySelector('.flash-score').textContent = game.score;  // the score counts this card as soon as it is answered
+    slot.querySelectorAll('.flash-choice').forEach(function (btn) {
+      btn.disabled = true;
+      if (game.choices[btn.dataset.choice] === card.meaning) btn.classList.add('is-right');
+      else if (btn === picked) btn.classList.add('is-wrong');
+    });
+    var next = document.createElement('button');
+    next.type = 'button';
+    next.className = 'flash-next';
+    next.innerHTML = game.i + 1 < game.cards.length ? T('jeu-suivant', 'Carte suivante') : T('jeu-fin', 'Voir le score');
+    next.addEventListener('click', function () { nextCard(slot, game); });
+    var feedback = slot.querySelector('.flash-feedback');
+    feedback.innerHTML = feedbackHtml(card, right);
+    feedback.insertAdjacentElement('afterend', next);
+    next.focus();
+  }
+  function nextCard(slot, game) {
+    game.i++;
+    if (game.i < game.cards.length) return showQuestion(slot, game);
+    saveBest(game);
+    slot.innerHTML = endHtml(game);
+    slot.querySelector('[data-again]').addEventListener('click', function () { playDeck(slot, game.deck); });
+  }
+  function playDeck(slot, deck) {
+    showQuestion(slot, { deck: deck, cards: shuffle(deck.cards).slice(0, roundSize(deck)), i: 0, score: 0 });
+  }
+  // #/jeux: the games · #/jeux/langue: pick a section · #/jeux/langue/<section>: play it
+  function renderGames(manifest, viewId, deckId) {
+    return Promise.all([fetchFragment(GAMES), getDecks()]).then(function (res) {
+      var sections = gameViews(res[0]), decks = res[1];
+      languageKids(decks);
+      var section = sections.filter(function (s) { return s.dataset.view === (viewId || 'jeux'); })[0];
+      if (!section) { location.replace('#/jeux'); return; }
+      var deck = decks.filter(function (d) { return d.id === deckId; })[0];
+      frame(manifest, { crumb: plain(T('menu-jeux', 'Les jeux du Kohai')), active: viewId ? href('#/jeux/' + viewId, deck && deck.id) : '#/jeux',
+        title: tabTitle(deck ? deck.label : section.dataset.title) });
+      section = section.cloneNode(true);
+      var slot = section.querySelector('[data-flashcards]');
+      if (slot && deck) playDeck(slot, deck);
+      else if (slot) slot.innerHTML = deckPickerHtml(decks);
+      show(viewWrap(viewId ? '#/jeux' : null, T('menu-jeux', 'Les jeux du Kohai'), section));
+    });
+  }
+
   // ---------- Web app: footer date ----------
   var labelsReady = loadTexts(LABELS);
   // When the site was last published, in Montreal time ("17 h 05 @ 7 octobre 2026").
@@ -847,10 +1005,11 @@
   function resolveRoute(manifest, r) {
     if (r.page === 'accueil' && r.view) return { redirect: oldHomeLink(r.view) };
     if (!r.page || r.page === 'accueil') return { file: HOME, show: function () { return renderHome(manifest); } };
-    if (PAGES[r.page]) return { file: PAGES[r.page].url, show: function () { return renderPage(manifest, r.page, r.view); } };
+    if (PAGES[r.page]) return { file: PAGES[r.page].url, vocabulary: PAGES[r.page].vocabulary, show: function () { return renderPage(manifest, r.page, r.view); } };
     if (r.page === 'uniforme') return { file: UNIFORM, show: function () { return renderUniform(manifest, r.view, r.anchor); } };
     if (r.page === 'a-propos') return { file: ABOUT, show: function () { return renderAbout(manifest, r.view); } };
     if (r.page === 'kata') return { file: SHARED, show: function () { return renderShared(manifest, r.view, r.anchor); } };
+    if (r.page === 'jeux') return { file: GAMES, vocabulary: true, show: function () { return renderGames(manifest, r.view, r.anchor); } };
     var kata = findKata(manifest, r.page);
     if (kata) return { file: localized(kata.file), show: function () { return renderKata(manifest, kata, r.view, r.anchor); } };
     return { redirect: '#/' };
@@ -865,7 +1024,9 @@
     var r = parseRoute(), token = ++routeToken;
     Promise.all([getManifest(), labelsReady]).then(function (res) {
       var manifest = res[0], target = resolveRoute(manifest, r);
-      return (target.file ? fetchText(target.file) : Promise.resolve()).then(function () { return { manifest: manifest, target: target }; });
+      // Everything the page needs is loaded before the check below, so a late answer never draws over a newer page
+      return Promise.all([target.file ? fetchText(target.file) : null, target.vocabulary ? getVocabulary() : null])
+        .then(function () { return { manifest: manifest, target: target }; });
     }).then(function (x) {
       if (token !== routeToken) return;  // the user already navigated somewhere else
       setTimeout(function () { prefetchMenu(x.manifest); }, 0);

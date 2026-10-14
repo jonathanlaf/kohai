@@ -1,0 +1,18 @@
+<!-- Kohai's games (#/jeux): the hub, then one <section data-view> per game (#/jeux/<view>). The language game plays the words of shared/lexique.json, into [data-flashcards]. -->
+<section data-view="jeux" data-title="Les jeux du Kohai">
+  <h2 id="jeux">Les jeux du Kohai <span class="jp" lang="ja">遊び</span></h2>
+  <p>Réviser en jouant&nbsp;: de petits jeux pour retenir ce qu’on apprend au dojo, entre deux cours. Vos meilleurs scores restent dans votre navigateur.</p>
+  <ul class="kata-list">
+    <li><a class="kata-card" href="#/jeux/langue">
+      <span class="kata-card-jp" lang="ja">言葉</span>
+      <span class="kata-card-name">Apprendre la langue</span>
+      <span class="kata-card-meaning">Des cartes par section du lexique&nbsp;: trouvez la signification de chaque mot japonais parmi trois réponses.</span>
+    </a></li>
+  </ul>
+</section>
+
+<section data-view="langue" data-title="Apprendre la langue">
+  <h2 id="langue">Apprendre la langue <span class="jp" lang="ja">言葉</span></h2>
+  <p>Choisissez une section du lexique. Chaque carte montre un mot japonais&nbsp;: trouvez sa signification parmi trois réponses. Jusqu’à dix cartes par partie, tirées au hasard.</p>
+  <div data-flashcards></div>
+</section>

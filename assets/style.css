@@ -1,7 +1,7 @@
 /* Layout: sticky top bar, table of contents in a left column on wide screens, single reading column below. */
 :root {
   --bg: #ffffff; --fg: #141312; --muted: #5c5752; --line: #d6d1cb;
-  --head: #efece8; --head-fg: #141312; --stripe: #f8f6f3; --accent: #a3271f;
+  --head: #efece8; --head-fg: #141312; --stripe: #f8f6f3; --accent: #a3271f; --ok: #2e8b3e;
   --bar: rgba(255, 255, 255, 0.92); --chip: #f1eeea; --paper: transparent;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-jp: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
@@ -10,14 +10,14 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #161514; --fg: #ece8e3; --muted: #a59e96; --line: #36332f;
-    --head: #24221f; --head-fg: #ece8e3; --stripe: #1c1b19; --accent: #e36a5f;
+    --head: #24221f; --head-fg: #ece8e3; --stripe: #1c1b19; --accent: #e36a5f; --ok: #5cb874;
     --bar: rgba(22, 21, 20, 0.92); --chip: #26241f; --paper: #f6f4f1;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #161514; --fg: #ece8e3; --muted: #a59e96; --line: #36332f;
-  --head: #24221f; --head-fg: #ece8e3; --stripe: #1c1b19; --accent: #e36a5f;
+  --head: #24221f; --head-fg: #ece8e3; --stripe: #1c1b19; --accent: #e36a5f; --ok: #5cb874;
   --bar: rgba(22, 21, 20, 0.92); --chip: #26241f; --paper: #f6f4f1;
   color-scheme: dark;
 }
@@ -269,6 +269,20 @@ main:focus { outline: none; }
 .home { max-width: 960px; }
 .home-head .lead { font-size: 1.2rem; color: var(--fg); margin: 4px 0 12px; max-width: 65ch; }
 .home-head p { max-width: 70ch; }
+/* Kohai's games: one flash card at a time */
+.flash { max-width: 640px; margin: 16px 0 24px; padding: 18px 20px; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; }
+.flash p { margin: 0 0 12px; }
+.flash-count { color: var(--muted); font-size: 0.9rem; }
+.flash-question { font-size: 1.25rem; }
+.flash-choices { display: grid; gap: 8px; margin-bottom: 12px; }
+.flash-choice { text-align: left; font: inherit; color: var(--fg); background: var(--stripe); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer; }
+.flash-choice:hover:not(:disabled) { border-color: var(--accent); }
+.flash-choice:disabled { cursor: default; }
+.flash-choice.is-right { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 18%, transparent); font-weight: 600; }
+.flash-choice.is-wrong { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); }
+.flash-word { display: block; margin-top: 4px; color: var(--muted); }
+.flash-next { font: inherit; font-weight: 600; color: #fff; background: var(--accent); border: 0; border-radius: 8px; padding: 9px 16px; cursor: pointer; }
+
 /* Foldable block (Katas page: « Qu’est-ce qu’un kata ? ») */
 .fold { margin: 8px 0 28px; border: 1px solid var(--line); border-radius: 8px; padding: 0 16px; }
 .fold > summary { cursor: pointer; padding: 12px 0; font-weight: 600; font-size: 1.05rem; }

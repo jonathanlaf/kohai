@@ -15,6 +15,7 @@ TWINNED = ('katas/', 'shared/')
 LABEL_FILES = ('shared/libelles.html', 'shared/impression.html')
 CHANGELOGS = ('shared/changelog.html', 'shared/changelog.en.html')
 MANIFEST = 'katas/katas.json'
+VOCABULARY = 'shared/lexique.json'
 TRANSLATED = {'groups': ('name', 'description'), 'katas': ('name', 'meaning', 'belt')}
 
 
@@ -40,6 +41,45 @@ def view_ids(html):
     return re.findall(r'<section\b[^>]*\bdata-view(?:="([^"]*)")?', strip_comments(html))
 
 
+def both(v):
+    return isinstance(v, dict) and all(isinstance(v.get(l), str) and v[l].strip() for l in ('fr', 'en'))
+
+
+def text(v):
+    return isinstance(v, str) and v.strip() != ''
+
+
+def word_problems(w):
+    if not isinstance(w, dict):
+        return ['{} has a word that is not an object'.format(VOCABULARY)]
+    problems = ['{} word {} needs a non-empty "{}"'.format(VOCABULARY, w.get('jp'), f) for f in ('jp', 'kanji') if not text(w.get(f))]
+    return problems + ['{} word {} "{}" needs non-empty "fr" and "en"'.format(VOCABULARY, w.get('jp'), f)
+                       for f in ('pron', 'meaning') if not both(w.get(f))]
+
+
+def section_problems(sec):
+    if not isinstance(sec, dict):
+        return ['{} has a section that is not an object'.format(VOCABULARY)]
+    name = sec.get('id')
+    problems = ['{} section {} needs a non-empty "{}"'.format(VOCABULARY, name, f) for f in ('id', 'kanji') if not text(sec.get(f))]
+    problems += ['{} section {} "{}" needs non-empty "fr" and "en"'.format(VOCABULARY, name, f)
+                 for f in ('title',) + (('note',) if 'note' in sec else ()) if not both(sec.get(f))]
+    words = sec.get('words')
+    if not isinstance(words, list) or not words:
+        return problems + ['{} section {} needs a non-empty "words" list'.format(VOCABULARY, name)]
+    return problems + [p for w in words for p in word_problems(w)]
+
+
+def vocabulary_problems(data):
+    """shared/lexique.json: unique section ids; id, kanji, jp and French + English text everywhere a reader sees it."""
+    if not isinstance(data, dict) or not isinstance(data.get('sections'), list):
+        return [VOCABULARY + ' must be an object with a "sections" list']
+    problems = [p for sec in data['sections'] for p in section_problems(sec)]
+    ids = [sec.get('id') for sec in data['sections'] if isinstance(sec, dict)]
+    return problems + ['{} section id {} appears more than once'.format(VOCABULARY, i)
+                       for i in sorted({i for i in ids if ids.count(i) > 1}, key=str)]
+
+
 def manifest_problems(data):
     if not isinstance(data, dict):
         return [MANIFEST + ' must be a JSON object']
@@ -48,7 +88,7 @@ def manifest_problems(data):
         for item in data.get(kind, []):
             for field in fields:
                 v = item.get(field)
-                if not (isinstance(v, dict) and all(isinstance(v.get(l), str) and v[l].strip() for l in ('fr', 'en'))):
+                if not both(v):
                     problems.append('{} {} "{}" needs non-empty "fr" and "en"'.format(MANIFEST, item.get('id'), field))
     return problems
 
@@ -108,14 +148,14 @@ def view_problems(files, read):
     return problems
 
 
-def manifest_file_problems(read):
-    raw = read(MANIFEST)
+def json_file_problems(read, path, check):
+    raw = read(path)
     if raw is None:
         return []
     try:
-        return manifest_problems(json.loads(raw))
+        return check(json.loads(raw))
     except ValueError as e:
-        return ['{} is not valid JSON: {}'.format(MANIFEST, e)]
+        return ['{} is not valid JSON: {}'.format(path, e)]
 
 
 def changelog_problems(read):
@@ -142,7 +182,8 @@ def run(staged):
         return ['--staged needs a git work tree (git rev-parse failed)']
     files, read = reader(staged)
     problems = pair_problems([f for f in files if f.startswith(TWINNED)])
-    problems += label_problems(read) + view_problems(files, read) + manifest_file_problems(read)
+    problems += label_problems(read) + view_problems(files, read)
+    problems += json_file_problems(read, MANIFEST, manifest_problems) + json_file_problems(read, VOCABULARY, vocabulary_problems)
     if staged:
         problems += changelog_problems(read)
     return problems
