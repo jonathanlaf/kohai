@@ -1,7 +1,7 @@
 {
   "sections": [
     {
-      "id": "lex-dojo", "kanji": "道場",
+      "id": "au-dojo", "kanji": "道場",
       "title": {"fr": "Au dojo", "en": "In the dojo"},
       "words": [
         {"jp": "Dojo", "kanji": "道場", "pron": {"fr": "do-djo", "en": "doh-joh"}, "meaning": {"fr": "Lieu de pratique", "en": "Training hall"}},
@@ -26,7 +26,7 @@
       ]
     },
     {
-      "id": "lex-personnes", "kanji": "先生・先輩",
+      "id": "personnes-et-titres", "kanji": "先生・先輩",
       "title": {"fr": "Personnes et titres", "en": "People and titles"},
       "words": [
         {"jp": "Sensei", "kanji": "先生", "pron": {"fr": "sèn-sé", "en": "sen-say"}, "meaning": {"fr": "Professeur", "en": "Teacher"}},
@@ -41,7 +41,7 @@
       ]
     },
     {
-      "id": "lex-tenue", "kanji": "道着・帯",
+      "id": "tenue-et-grades", "kanji": "道着・帯",
       "title": {"fr": "Tenue et grades", "en": "Uniform and ranks"},
       "words": [
         {"jp": "Dogi", "kanji": "道着", "pron": {"fr": "do-gui", "en": "doh-ghee"}, "meaning": {"fr": "Tenue d’entraînement («&nbsp;vêtement de la voie&nbsp;»)", "en": "Training uniform (“clothing of the way”)"}},
@@ -54,7 +54,7 @@
       ]
     },
     {
-      "id": "lex-compter", "kanji": "数え方",
+      "id": "compter", "kanji": "数え方",
       "title": {"fr": "Compter", "en": "Counting"},
       "words": [
         {"jp": "Ichi", "kanji": "一", "pron": {"fr": "i-tchi", "en": "ee-chee"}, "meaning": {"fr": "1", "en": "1"}},
@@ -72,7 +72,7 @@
       ]
     },
     {
-      "id": "lex-niveaux", "kanji": "上段・中段・下段",
+      "id": "niveaux", "kanji": "上段・中段・下段",
       "title": {"fr": "Niveaux", "en": "Levels"},
       "note": {"fr": "(hauteur de la technique)", "en": "(height of the technique)"},
       "words": [
@@ -82,7 +82,7 @@
       ]
     },
     {
-      "id": "lex-directions", "kanji": "方向",
+      "id": "directions-et-cotes", "kanji": "方向",
       "title": {"fr": "Directions et côtés", "en": "Directions and sides"},
       "words": [
         {"jp": "Migi / Hidari", "kanji": "右 / 左", "pron": {"fr": "mi-gui / hi-da-ri", "en": "mee-ghee / hee-dah-ree"}, "meaning": {"fr": "Droite / Gauche", "en": "Right / Left"}},
@@ -96,7 +96,7 @@
       ]
     },
     {
-      "id": "lex-postures", "kanji": "立ち",
+      "id": "postures", "kanji": "立ち",
       "title": {"fr": "Postures (Dachi)", "en": "Stances (Dachi)"},
       "words": [
         {"jp": "Musubi Dachi", "kanji": "結び立ち", "pron": {"fr": "mou-sou-bi da-tchi", "en": "moo-soo-bee dah-chee"}, "meaning": {"fr": "Talons joints, pieds ouverts à 45° (salut)", "en": "Heels together, feet open at 45° (bow)"}},
@@ -115,7 +115,7 @@
       ]
     },
     {
-      "id": "lex-armes", "kanji": "部位",
+      "id": "parties-du-corps", "kanji": "部位",
       "title": {"fr": "Parties du corps", "en": "Parts of the body"},
       "words": [
         {"jp": "Seiken", "kanji": "正拳", "pron": {"fr": "sé-kèn", "en": "say-ken"}, "meaning": {"fr": "Poing fermé&nbsp;: les deux premières jointures", "en": "Closed fist: the first two knuckles"}},
@@ -132,7 +132,7 @@
       ]
     },
     {
-      "id": "lex-tsuki", "kanji": "突き・打ち",
+      "id": "coups-de-poing-et-frappes", "kanji": "突き・打ち",
       "title": {"fr": "Coups de poing et frappes", "en": "Punches and strikes"},
       "words": [
         {"jp": "Zuki (Tsuki)", "kanji": "突き", "pron": {"fr": "zou-ki (tsou-ki)", "en": "zoo-kee (tsoo-kee)"}, "meaning": {"fr": "Coup de poing direct", "en": "Straight punch"}},
@@ -151,7 +151,7 @@
       ]
     },
     {
-      "id": "lex-uke", "kanji": "受け",
+      "id": "blocages", "kanji": "受け",
       "title": {"fr": "Blocages", "en": "Blocks"},
       "words": [
         {"jp": "Uke", "kanji": "受け", "pron": {"fr": "ou-ké", "en": "oo-keh"}, "meaning": {"fr": "Blocage", "en": "Block"}},
@@ -172,7 +172,7 @@
       ]
     },
     {
-      "id": "lex-geri", "kanji": "蹴り",
+      "id": "coups-de-pied", "kanji": "蹴り",
       "title": {"fr": "Coups de pied", "en": "Kicks"},
       "words": [
         {"jp": "Geri (Keri)", "kanji": "蹴り", "pron": {"fr": "gué-ri (ké-ri)", "en": "geh-ree (keh-ree)"}, "meaning": {"fr": "Coup de pied", "en": "Kick"}},
@@ -186,7 +186,7 @@
       ]
     },
     {
-      "id": "lex-kumite", "kanji": "組手",
+      "id": "kumite", "kanji": "組手",
       "title": {"fr": "Kumite", "en": "Kumite"},
       "words": [
         {"jp": "Gohon Kumite", "kanji": "五本組手", "pron": {"fr": "go-honn kou-mi-té", "en": "goh-hohn koo-mee-teh"}, "meaning": {"fr": "Combat en cinq pas&nbsp;: cinq attaques annoncées, cinq blocages, une contre-attaque", "en": "Five-step sparring: five announced attacks, five blocks, one counter"}},
@@ -198,7 +198,7 @@
       ]
     },
     {
-      "id": "lex-notions", "kanji": "概念",
+      "id": "notions-et-esprit", "kanji": "概念",
       "title": {"fr": "Notions et esprit", "en": "Concepts and spirit"},
       "words": [
         {"jp": "Karate-dō", "kanji": "空手道", "pron": {"fr": "ka-ra-té-do", "en": "kah-rah-teh-doh"}, "meaning": {"fr": "La voie de la main vide", "en": "The way of the empty hand"}},

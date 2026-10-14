@@ -1,18 +1,29 @@
-<!-- Kohai's games (#/jeux): the hub, then one <section data-view> per game (#/jeux/<view>). The language game plays the words of shared/lexique.json, into [data-flashcards]. -->
+<!-- Kohai's games (#/jeux; English words from shared/slugs.json): the hub, then one <section data-view> per game (#/jeux/<view>). The language game plays the words of shared/lexique.json, into [data-flashcards]; the kata game plays the moves of each kata's tutorial table, into [data-kata-order]. -->
 <section data-view="jeux" data-title="Kohai’s Games">
   <h2 id="jeux">Kohai’s Games <span class="jp" lang="ja">遊び</span></h2>
   <p>Study by playing: small games to remember what you learn at the dojo, between classes. Your best scores stay in your browser.</p>
   <ul class="kata-list">
-    <li><a class="kata-card" href="#/jeux/langue">
+    <li><a class="kata-card" href="#/jeux/apprendre-la-langue">
       <span class="kata-card-jp" lang="ja">言葉</span>
       <span class="kata-card-name">Learn the language</span>
       <span class="kata-card-meaning">Cards for each vocabulary section: find the meaning of each Japanese word among three answers.</span>
     </a></li>
+    <li><a class="kata-card" href="#/jeux/apprendre-les-katas">
+      <span class="kata-card-jp" lang="ja">型</span>
+      <span class="kata-card-name">Learn the katas</span>
+      <span class="kata-card-meaning">Put the moves of a kata back in order, five at a time, by dragging them.</span>
+    </a></li>
   </ul>
 </section>
 
-<section data-view="langue" data-title="Learn the language">
-  <h2 id="langue">Learn the language <span class="jp" lang="ja">言葉</span></h2>
+<section data-view="apprendre-la-langue" data-title="Learn the language">
+  <h2 id="apprendre-la-langue">Learn the language <span class="jp" lang="ja">言葉</span></h2>
   <p>Pick a vocabulary section. Each card shows a Japanese word: find its meaning among three answers. Up to ten random cards per game.</p>
   <div data-flashcards></div>
+</section>
+
+<section data-view="apprendre-les-katas" data-title="Learn the katas">
+  <h2 id="apprendre-les-katas">Learn the katas <span class="jp" lang="ja">型</span></h2>
+  <p>Pick a kata. Its moves come five at a time, shuffled: drag them (or use the arrows) to put them back in order, then check. A game goes through the whole kata.</p>
+  <div data-kata-order></div>
 </section>

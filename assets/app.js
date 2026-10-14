@@ -65,6 +65,22 @@
     return t.content.textContent.trim();
   }
   function href(base, anchor) { return anchor ? base + '/' + anchor : base; }
+  // URL words (shared/slugs.json): the code and the files use the French word; "en" gives its English word, "aliases" the old
+  // ids that still lead to their page. Either language's word is understood; links are written in the reader's language,
+  // and the language link translates them. Loaded before the first route.
+  var SLUGS = { en: {}, aliases: {} }, SLUGS_BACK = {};
+  function useSlugs(data) {
+    SLUGS = data;
+    Object.keys(data.en).forEach(function (w) { SLUGS_BACK[data.en[w]] = w; });
+  }
+  function slugIn(word, lang) { return lang === 'en' && Object.prototype.hasOwnProperty.call(SLUGS.en, word) ? SLUGS.en[word] : word; }
+  function slugFromAny(word) {
+    if (Object.prototype.hasOwnProperty.call(SLUGS_BACK, word)) return SLUGS_BACK[word];
+    return Object.prototype.hasOwnProperty.call(SLUGS.aliases, word) ? SLUGS.aliases[word] : word;
+  }
+  // '#/jeux/apprendre-la-langue/au-dojo' in the given language (« link » = in the page's language)
+  function pathIn(hash, lang) { return hash.replace(/[^/#]+/g, function (w) { return slugIn(slugFromAny(w), lang); }); }
+  function link(hash) { return pathIn(hash, LANG); }
 
   // ---------- Fetching ----------
   // One request per file and visit; a failure is forgotten so the next navigation retries
@@ -101,6 +117,11 @@
   }
   var manifest$ = {};
   function getManifest() { return once(manifest$, 'm', function () { return fetchText(MANIFEST).then(JSON.parse); }); }
+  function getSlugs() {
+    return once(manifest$, 's', function () {
+      return fetchText(ROOT + 'shared/slugs.json').then(JSON.parse).then(useSlugs).catch(function () {});  // without it, URLs keep their French words
+    });
+  }
   function getVocabulary() { return once(manifest$, 'v', function () { return fetchText(VOCABULARY).then(JSON.parse); }); }
 
   // Editable texts: [data-text="key"] elements from shared/libelles.html and shared/impression.html
@@ -155,6 +176,60 @@
     var head = vocabularyHead();
     if (slot) slot.innerHTML = vocab.sections.map(function (sec) { return vocabularySection(sec, head); }).join('');
   }
+  // ---------- Kata tutorials (katas/<id>.moves.json; its text fields are HTML, {"fr", "en"} where they differ) ----------
+  function movesUrl(kata) { return ROOT + kata.file.replace(/\.html$/, '.moves.json'); }
+  var moves$ = {};
+  function getMoves(kata) { return once(moves$, kata.id, function () { return fetchText(movesUrl(kata)).then(JSON.parse); }); }
+  // The number bubble takes the embusen shape of the stance the move ends in; red for a Kiai
+  var BUBBLES = {
+    zenkutsu: '<circle class="{c}" cx="14" cy="14" r="12"/>',
+    kokutsu: '<rect class="{c}" x="2" y="2" width="24" height="24" rx="5"/>',
+    kosa: '<circle class="{c}" cx="14" cy="14" r="12" stroke-dasharray="4 3"/>',
+    kiba: '<polygon class="{c}" points="1,14 8,2 26,2 33,14 26,26 8,26"/>',
+    other: '<circle class="{c}" cx="14" cy="14" r="12"/>'
+  };
+  function bubbleHtml(step) {
+    var w = step.shape === 'kiba' ? 34 : 28, c = step.kiai ? 'kiai' : step.shape === 'other' ? 'other' : 'node';
+    return '<svg class="step-n" width="' + w + '" height="28" viewBox="0 0 ' + w + ' 28" aria-hidden="true">' + BUBBLES[step.shape].replace('{c}', c) +
+      '<text class="' + (step.kiai ? 'kiai-t' : 'num') + '" x="' + w / 2 + '" y="14">' + step.n + '</text></svg>' +
+      '<span class="visually-hidden">' + step.n + '.</span> ' + step.count + ' <span class="jp" lang="ja">' + step.countKanji + '</span>';
+  }
+  function stepHead(step) {
+    return (step.n ? bubbleHtml(step) : L(step.head)) + (step.img ? '<img class="move-img" loading="lazy" src="' + ROOT + step.img + '" alt="' + L(step.alt) + '">' : '');
+  }
+  function stepTech(step) {
+    var jp = L(step.jp);
+    return (jp ? '<span class="tech-jp">' + jp + '</span><span class="tech-sep"> — </span>' : '') + '<span class="tech-tr">' + L(step.tr) + '</span>' +
+      (step.badges ? '<span class="badges">' + L(step.badges) + '</span>' : '');
+  }
+  function stepLevel(step) { return step.lvl ? '<span class="lvl">' + step.lvl + '</span><small>' + L(step.target) + '</small>' : '—'; }
+  function stepMove(step) {
+    return '<span class="step-label">' + T('tuto-deplacement', 'Déplacement') + '</span>' + L(step.move) +
+      (step.note ? ' <span class="step-note"><span class="step-label">' + T('tuto-note', 'Note') + '</span>' + L(step.note) + '</span>' : '');
+  }
+  function stepHtml(step) {
+    return '<tbody class="step' + (step.kiai ? ' step-kiai' : '') + '">' +
+      '<tr><td class="step-head" rowspan="2">' + stepHead(step) + '</td><td class="step-tech">' + stepTech(step) + '</td>' +
+      '<td class="step-stance">' + L(step.stance) + '</td><td class="step-lvl">' + stepLevel(step) + '</td></tr>' +
+      '<tr><td class="step-move" colspan="3">' + stepMove(step) + '</td></tr></tbody>';
+  }
+  function stepsHead() {
+    return '<thead><tr>' + [['tuto-mouvement', 'Mouvement'], ['tuto-technique', 'Technique'], ['tuto-posture', 'Posture'], ['tuto-niveau', 'Niveau']]
+      .map(function (c) { return '<th>' + T(c[0], c[1]) + '</th>'; }).join('') + '</tr></thead>';
+  }
+  // Draws the tutorial table into [data-steps], if the kata file has one
+  function fillSteps(node, moves) {
+    var slot = node.querySelector('[data-steps]');
+    if (slot) slot.outerHTML = '<table class="steps">' + stepsHead() + moves.steps.map(stepHtml).join('') + '</table>';
+  }
+  // A kata's file, with its tutorial table drawn in
+  function kataFragment(kata) {
+    return Promise.all([fetchFragment(localized(kata.file)), getMoves(kata)]).then(function (res) {
+      fillSteps(res[0], res[1]);
+      return res[0];
+    });
+  }
+
   // A one-page section's file, with its vocabulary drawn in when it has some
   function pageFragment(id) {
     return Promise.all([fetchFragment(PAGES[id].url), PAGES[id].vocabulary ? getVocabulary() : null]).then(function (res) {
@@ -217,7 +292,7 @@
     });
   }
   function kataChapter(kata) {
-    return fetchFragment(localized(kata.file)).then(function (frag) {
+    return kataFragment(kata).then(function (frag) {
       return chapter(toArray(frag.querySelectorAll('section[data-view]')), '', kata.id, L(kata.name));
     });
   }
@@ -451,7 +526,7 @@
   // Language link: the same page in the other language (both shells use the same routes)
   var langLink = document.getElementById('lang-link');
   function updateLangLink() {
-    if (langLink) langLink.href = (LANG === 'fr' ? 'en/' : '../') + location.search + location.hash;  // keeps ?apercu=
+    if (langLink) langLink.href = (LANG === 'fr' ? 'en/' : '../') + location.search + pathIn(location.hash, LANG === 'fr' ? 'en' : 'fr');  // keeps ?apercu=
   }
   function chooseOtherLang() {
     updateLangLink();  // current hash, even if it changed without a route
@@ -514,7 +589,12 @@
     nodes.querySelectorAll('.video-frame iframe').forEach(function (frame) { frame.replaceWith(videoFacade(frame)); });
   }
 
+  // Links inside the site, written in French in the files and the code, in the reader's language
+  function localizeLinks(nodes) {
+    nodes.querySelectorAll('a[href^="#/"]').forEach(function (a) { a.setAttribute('href', link(a.getAttribute('href'))); });
+  }
   function show(nodes, anchorId) {
+    localizeLinks(nodes);
     videoFacades(nodes);
     markStripes(nodes);
     view.innerHTML = '';
@@ -545,7 +625,7 @@
   // Routes: #/  ·  #/<page>[/anchor] (PAGES)  ·  #/uniforme/<view>[/<anchor>]  ·  #/kata[/<view>[/<anchor>]]  ·  #/a-propos[/anchor]  ·  #/<kata>[/<view>[/<anchor>]]
   function parseRoute() {
     var parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(function (p) {
-      try { return decodeURIComponent(p); } catch (e) { return p; }
+      try { return slugFromAny(decodeURIComponent(p)); } catch (e) { return p; }
     });
     return { page: parts[0] || '', view: parts[1] || '', anchor: parts[2] || '' };
   }
@@ -563,17 +643,17 @@
   function pageItem(id) { return item('#/' + id, pageName(id)); }
   function familyMenu(available, ctx, g) {
     var ready = available.filter(function (k) { return k.group === g.id; });
-    return { href: '#/kata/liste/g-' + g.id, label: escapeHtml(L(g.name)), open: ctx.sharedView === 'liste' && ready.length > 0,
+    return { href: '#/kata/liste/' + g.id, label: escapeHtml(L(g.name)), open: ctx.sharedView === 'liste' && ready.length > 0,
       children: ready.map(function (k) { return item('#/' + k.id, escapeHtml(L(k.name))); }) };
   }
   function kataMenu(manifest, ctx) {
     var available = availableKatas(manifest);
     return { href: '#/kata', label: T('menu-kata', 'Katas'), children: [
-      item('#/kata/definition', T('menu-qu-est-ce-qu-un-kata', 'Qu’est-ce qu’un kata ?')),
-      item('#/kata/erreurs', T('menu-erreurs', 'Erreurs fréquentes'))
+      item('#/kata/qu-est-ce-qu-un-kata', T('menu-qu-est-ce-qu-un-kata', 'Qu’est-ce qu’un kata ?')),
+      item('#/kata/erreurs-frequentes', T('menu-erreurs', 'Erreurs fréquentes'))
     ].concat(manifest.groups.map(function (g) { return familyMenu(available, ctx, g); })) };
   }
-  // Kohai's games: one entry per game, each with its own sub-entries (the vocabulary sections for the language game)
+  // Kohai's games: one entry per game
   function gamesMenu() {
     return { href: '#/jeux', label: T('menu-jeux', 'Les jeux du Kohai'), children: (menuKids['#/jeux'] || []).map(function (g) { return item(g.href, g.label); }) };
   }
@@ -592,11 +672,11 @@
   function menuHtml(items, activeHref) {
     return items.map(function (it) {
       var open = toggled.hasOwnProperty(it.href) ? toggled[it.href] : (it.open || contains(it, activeHref));
-      var link = '<a href="' + it.href + '"' + (it.href === activeHref ? ' class="active" aria-current="page"' : '') + '>' + it.label + '</a>';
-      if (!(it.children && it.children.length)) return '<li><div class="row"><span class="tw-space"></span>' + link + '</div></li>';
+      var a = '<a href="' + link(it.href) + '"' + (it.href === activeHref ? ' class="active" aria-current="page"' : '') + '>' + it.label + '</a>';
+      if (!(it.children && it.children.length)) return '<li><div class="row"><span class="tw-space"></span>' + a + '</div></li>';
       return '<li class="node' + (open ? ' open' : '') + '"><div class="row">' +
         '<button type="button" class="tw" data-key="' + it.href + '" aria-expanded="' + open + '" aria-label="' + escapeHtml(toggleLabel(open)) + '"></button>' +
-        link + '</div><ol>' + menuHtml(it.children, activeHref) + '</ol></li>';
+        a + '</div><ol>' + menuHtml(it.children, activeHref) + '</ol></li>';
     }).join('');
   }
   function setNav(tree, activeHref, refresh) {
@@ -686,17 +766,14 @@
     });
     return sections;
   }
-  function languageKids(decks) {
-    menuKids['#/jeux/langue'] = decks.map(function (d) { return { href: '#/jeux/langue/' + d.id, label: escapeHtml(d.label) }; });
-  }
   var menuPrefetched = false;
   function prefetchMenu(manifest) {
     if (menuPrefetched) return;
     menuPrefetched = true;
     var jobs = Object.keys(PAGES).map(function (id) { return pageFragment(id).then(function (f) { pageKids(manifest, id, f); }); })
       .concat([fetchFragment(UNIFORM).then(uniformViews), fetchFragment(SHARED).then(sharedViews), fetchFragment(ABOUT).then(aboutKids)])
-      .concat([fetchFragment(GAMES).then(gameViews), getDecks().then(languageKids)])
-      .concat(availableKatas(manifest).map(function (k) { return fetchFragment(localized(k.file)).then(function (f) { kataViews(k, f); }); }));
+      .concat([fetchFragment(GAMES).then(gameViews)])
+      .concat(availableKatas(manifest).map(function (k) { return fetchFragment(localized(k.file)).then(function (f) { kataViews(k, f); }); }));  // the sections are enough
     settle(jobs).then(refreshMenu);
   }
 
@@ -763,8 +840,8 @@
   }
   function kataGroup(manifest, g) {
     var list = manifest.katas.filter(function (k) { return k.group === g.id; });
-    return '<section class="kata-group" aria-labelledby="g-' + g.id + '">' +
-      '<h3 id="g-' + g.id + '">' + escapeHtml(L(g.name)) + ' <span class="jp" lang="ja">' + escapeHtml(g.kanji) + '</span>' +
+    return '<section class="kata-group" aria-labelledby="' + g.id + '">' +
+      '<h3 id="' + g.id + '">' + escapeHtml(L(g.name)) + ' <span class="jp" lang="ja">' + escapeHtml(g.kanji) + '</span>' +
       '<span class="count">' + list.length + ' ' + T('groupe-kata', 'katas') + '</span></h3>' +
       '<p class="group-desc">' + escapeHtml(L(g.description)) + '</p>' +
       '<ul class="kata-list">' + list.map(kataCard).join('') + '</ul></section>';
@@ -794,7 +871,7 @@
     return fold;
   }
   // #/kata: the kata cards, under the foldable sections (#/kata/<fold>[/anchor] opens one)
-  var KATA_FOLDS = ['definition'];
+  var KATA_FOLDS = ['qu-est-ce-qu-un-kata'];
   function renderKataList(manifest, sections, openFold, anchor) {
     var list = sections.filter(function (s) { return s.dataset.view === 'liste'; })[0];
     if (!list) { location.replace('#/'); return; }
@@ -817,13 +894,14 @@
     frame(manifest, { print: 'kata', crumb: section.dataset.title, ctx: { sharedView: viewId }, active: href('#/kata/' + viewId, anchor), title: tabTitle(section.dataset.title) });
     show(viewWrap('#/kata', T('menu-kata', 'Katas'), section.cloneNode(true)), anchor);
   }
-  // The old #/kata/esprit[/annonce] is now a part of « Qu’est-ce qu’un kata ? »
+  // The old #/kata/esprit[/annonce] (now read as esprit-du-kata) is a part of « Qu’est-ce qu’un kata ? »
   function sharedAlias(viewId, anchor) {
-    return viewId === 'esprit' ? { view: 'definition', anchor: anchor === 'annonce' ? anchor : 'esprit' } : { view: viewId || 'liste', anchor: anchor };
+    return viewId === 'esprit-du-kata' ? { view: 'qu-est-ce-qu-un-kata', anchor: anchor === 'annonce-du-kata' ? anchor : 'esprit-du-kata' } : { view: viewId || 'liste', anchor: anchor };
   }
   function renderShared(manifest, viewId, anchor) {
     return fetchFragment(SHARED).then(function (frag) {
       var r = sharedAlias(viewId, anchor), sections = sharedViews(frag);
+      if (r.view !== (viewId || 'liste')) { location.replace(href('#/kata/' + r.view, r.anchor)); return; }  // the old address becomes the current one
       if (r.view === 'liste') return renderKataList(manifest, sections, null, r.anchor);
       if (KATA_FOLDS.indexOf(r.view) >= 0) return renderKataList(manifest, sections, r.view, r.anchor);
       renderSharedPage(manifest, sections, r.view, r.anchor);
@@ -844,7 +922,7 @@
       pagerLink(base, prev, 'pager-prev', 'page-precedente', 'Précédent') + pagerLink(base, next, 'pager-next', 'page-suivante', 'Suivant') + '</nav>';
   }
   function renderKata(manifest, kata, viewId, anchor) {
-    return fetchFragment(localized(kata.file)).then(function (frag) {
+    return kataFragment(kata).then(function (frag) {
       var base = '#/' + kata.id, sections = kataViews(kata, frag);
       var current = sections.filter(function (s) { return s.dataset.view === viewId; })[0] || sections[0];
       var idx = sections.indexOf(current);
@@ -880,7 +958,13 @@
     return shuffle([card.meaning].concat(shuffle(wrong).slice(0, 2)));
   }
   // Best score per section, kept in this browser (kohai-jeux): { "<section>": [score, cards in that game] }
-  function bestScores() { try { return JSON.parse(load('kohai-jeux')) || {}; } catch (e) { return {}; } }
+  function bestScores() {
+    var saved;
+    try { saved = JSON.parse(load('kohai-jeux')) || {}; } catch (e) { saved = {}; }
+    var best = {};
+    Object.keys(saved).forEach(function (k) { best[slugFromAny(k)] = saved[k]; });  // a score kept under an old id (lex-dojo) is au-dojo's
+    return best;
+  }
   function bestOf(best, id) { return Array.isArray(best[id]) ? best[id] : null; }
   function saveBest(game) {
     var best = bestScores(), old = bestOf(best, game.deck.id);
@@ -893,7 +977,7 @@
   function deckCard(deck, best) {
     var b = bestOf(best, deck.id);
     var score = b ? '<span class="kata-card-meta">' + T('jeu-meilleur', 'Meilleur score&nbsp;:') + ' ' + b[0] + '/' + b[1] + '</span>' : '';
-    return '<li><a class="kata-card" href="#/jeux/langue/' + deck.id + '"><span class="kata-card-name">' + escapeHtml(deck.label) + '</span>' +
+    return '<li><a class="kata-card" href="#/jeux/apprendre-la-langue/' + deck.id + '"><span class="kata-card-name">' + escapeHtml(deck.label) + '</span>' +
       '<span class="kata-card-meta">' + deck.cards.length + ' ' + T('jeu-mots', 'mots') + '</span>' + score + '</a></li>';
   }
   function deckPickerHtml(decks) {
@@ -915,7 +999,7 @@
   function endHtml(game) {
     return '<div class="flash"><p class="flash-question">' + T('jeu-termine', 'Partie terminée&nbsp;!') + ' ' + T('jeu-score', 'Score&nbsp;:') + ' <strong>' + game.score + ' / ' + game.cards.length + '</strong></p>' +
       '<p class="flash-actions"><button type="button" class="flash-next" data-again>' + T('jeu-rejouer', 'Rejouer') + '</button> ' +
-      '<a href="#/jeux/langue">' + T('jeu-sections', 'Choisir une autre section') + '</a></p></div>';
+      '<a href="' + link('#/jeux/apprendre-la-langue') + '">' + T('jeu-sections', 'Choisir une autre section') + '</a></p></div>';
   }
   function showQuestion(slot, game) {
     game.choices = choicesFor(game.cards[game.i], game.deck);
@@ -952,21 +1036,173 @@
   function playDeck(slot, deck) {
     showQuestion(slot, { deck: deck, cards: shuffle(deck.cards).slice(0, roundSize(deck)), i: 0, score: 0 });
   }
-  // #/jeux: the games · #/jeux/langue: pick a section · #/jeux/langue/<section>: play it
-  function renderGames(manifest, viewId, deckId) {
+  // Kata game: a kata's moves, from its tutorial table, come back in blocks of five to put in order
+  var BLOCK = 5;
+  // The stance name(s) without their gloss: « Zenkutsu Dachi puis Kokutsu Dachi »
+  function stanceText(html) {
+    var t = document.createElement('template');
+    t.innerHTML = html;
+    t.content.querySelectorAll('small').forEach(function (x) { x.remove(); });
+    return t.content.textContent.replace(/\s+/g, ' ').trim();
+  }
+  function moveOf(step) {
+    return { n: step.n, jp: L(step.jp) || '', tr: L(step.tr), stance: escapeHtml(stanceText(L(step.stance))), img: step.img ? ROOT + step.img : '' };
+  }
+  function kataMoves(moves) { return moves.steps.filter(function (s) { return s.n; }).map(moveOf); }
+  // Consecutive blocks of BLOCK moves; a last block shorter than 3 joins the one before
+  function blocksOf(moves) {
+    var blocks = [];
+    for (var i = 0; i < moves.length; i += BLOCK) blocks.push(moves.slice(i, i + BLOCK));
+    if (blocks.length > 1 && blocks[blocks.length - 1].length < 3) blocks[blocks.length - 2] = blocks[blocks.length - 2].concat(blocks.pop());
+    return blocks;
+  }
+  // Shuffled, but never already in order
+  function scrambled(block) {
+    var s = shuffle(block);
+    while (block.length > 1 && s.every(function (m, i) { return m === block[i]; })) s = shuffle(block);
+    return s;
+  }
+  function moveCardHtml(m) {
+    return '<li class="order-item" data-n="' + m.n + '">' +
+      '<span class="order-grip" aria-hidden="true" title="' + escapeHtml(plain(T('jeu-glisser', 'Faire glisser'))) + '">⋮⋮</span>' +
+      (m.img ? '<img class="order-img" src="' + m.img + '" alt="">' : '') +
+      '<span class="order-text"><strong>' + (m.jp || m.tr) + '</strong>' + (m.jp && m.tr ? '<span>' + m.tr + '</span>' : '') + '<small>' + m.stance + '</small></span>' +
+      '<span class="order-n" hidden></span>' +
+      '<span class="order-arrows"><button type="button" data-up aria-label="' + escapeHtml(plain(T('jeu-monter', 'Monter'))) + '">↑</button>' +
+      '<button type="button" data-down aria-label="' + escapeHtml(plain(T('jeu-descendre', 'Descendre'))) + '">↓</button></span></li>';
+  }
+  function blockHtml(game) {
+    var block = game.blocks[game.b];
+    return '<div class="flash">' +
+      '<p class="flash-count">' + T('jeu-bloc', 'Mouvements {de} à {a}').replace('{de}', block[0].n).replace('{a}', block[block.length - 1].n) +
+      ' · ' + T('jeu-score', 'Score&nbsp;:') + ' <span class="flash-score">' + game.score + '</span> / ' + game.cards.length + '</p>' +
+      '<p class="flash-question">' + T('jeu-ordre-consigne', 'Remettez ces mouvements dans l’ordre.') + '</p>' +
+      '<ol class="order-list">' + scrambled(block).map(moveCardHtml).join('') + '</ol>' +
+      '<p class="flash-feedback" aria-live="polite"></p>' +
+      '<p class="flash-actions"><button type="button" class="flash-next" data-check>' + T('jeu-verifier', 'Vérifier') + '</button></p></div>';
+  }
+  // Drag by the grip (mouse or finger): the card moves past every card whose middle it crosses
+  function dragItem(list, li, e) {
+    e.preventDefault();
+    try { li.setPointerCapture(e.pointerId); } catch (err) {}  // keeps the moves coming even if the pointer leaves the card
+    li.classList.add('is-dragging');
+    function move(ev) {
+      var after = toArray(list.children).filter(function (c) {
+        var r = c.getBoundingClientRect();
+        return c !== li && ev.clientY < r.top + r.height / 2;
+      })[0];
+      list.insertBefore(li, after || null);
+    }
+    function end() {
+      li.classList.remove('is-dragging');
+      ['pointermove', 'pointerup', 'pointercancel'].forEach(function (t, i) { li.removeEventListener(t, i ? end : move); });
+    }
+    li.addEventListener('pointermove', move);
+    li.addEventListener('pointerup', end);
+    li.addEventListener('pointercancel', end);
+  }
+  // The arrow buttons move a card one place, for the keyboard (and anyone who prefers them)
+  function stepItem(list, li, up) {
+    var other = up ? li.previousElementSibling : li.nextElementSibling;
+    if (other) list.insertBefore(li, up ? other : other.nextElementSibling);
+    li.querySelector(up ? '[data-up]' : '[data-down]').focus();
+  }
+  function makeSortable(list) {
+    list.addEventListener('pointerdown', function (e) {
+      var grip = e.target.closest('.order-grip');
+      if (grip && !list.classList.contains('is-checked')) dragItem(list, grip.closest('li'), e);
+    });
+    list.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-up], [data-down]');
+      if (btn && !list.classList.contains('is-checked')) stepItem(list, btn.closest('li'), btn.hasAttribute('data-up'));
+    });
+  }
+  // Marks each card right or wrong, shows its real number, then offers the next block
+  function checkBlock(slot, game) {
+    var list = slot.querySelector('.order-list'), block = game.blocks[game.b], right = 0;
+    list.classList.add('is-checked');
+    toArray(list.children).forEach(function (li, i) {
+      var ok = Number(li.dataset.n) === block[i].n, num = li.querySelector('.order-n');
+      if (ok) right++;
+      li.classList.add(ok ? 'is-right' : 'is-wrong');
+      num.textContent = li.dataset.n;
+      num.hidden = false;
+      li.querySelectorAll('button').forEach(function (b) { b.disabled = true; });
+    });
+    game.score += right;
+    slot.querySelector('.flash-score').textContent = game.score;
+    slot.querySelector('.flash-feedback').innerHTML = T('jeu-ordre-bilan', '{n} sur {total} à la bonne place.').replace('{n}', right).replace('{total}', block.length);
+    var btn = slot.querySelector('[data-check]');
+    btn.innerHTML = game.b + 1 < game.blocks.length ? T('jeu-bloc-suivant', 'Mouvements suivants') : T('jeu-fin', 'Voir le score');
+    btn.removeAttribute('data-check');
+    btn.addEventListener('click', function () { nextBlock(slot, game); }, { once: true });
+    btn.focus();
+  }
+  function showBlock(slot, game) {
+    slot.innerHTML = blockHtml(game);
+    makeSortable(slot.querySelector('.order-list'));
+    slot.querySelector('[data-check]').addEventListener('click', function () { checkBlock(slot, game); }, { once: true });
+  }
+  function kataEndHtml(game) {
+    return '<div class="flash"><p class="flash-question">' + T('jeu-termine', 'Partie terminée&nbsp;!') + ' ' + T('jeu-score', 'Score&nbsp;:') + ' <strong>' + game.score + ' / ' + game.cards.length + '</strong></p>' +
+      '<p class="flash-actions"><button type="button" class="flash-next" data-again>' + T('jeu-rejouer', 'Rejouer') + '</button> ' +
+      '<a href="' + link('#/jeux/apprendre-les-katas') + '">' + T('jeu-autre-kata', 'Choisir un autre kata') + '</a></p></div>';
+  }
+  function nextBlock(slot, game) {
+    game.b++;
+    if (game.b < game.blocks.length) return showBlock(slot, game);
+    saveBest(game);
+    slot.innerHTML = kataEndHtml(game);
+    slot.querySelector('[data-again]').addEventListener('click', function () { playKata(slot, game.deck, game.cards); });
+  }
+  // deck: { id } for the best score; cards: every move, which the score counts out of
+  function playKata(slot, deck, moves) {
+    showBlock(slot, { deck: deck, cards: moves, blocks: blocksOf(moves), b: 0, score: 0 });
+  }
+  function kataPickCard(k, best) {
+    var b = bestOf(best, k.id);
+    return '<li><a class="kata-card" href="#/jeux/apprendre-les-katas/' + k.id + '"><span class="kata-card-jp" lang="ja">' + escapeHtml(k.kanji) + '</span>' +
+      '<span class="kata-card-name">' + escapeHtml(L(k.name)) + '</span>' +
+      (k.moves ? '<span class="kata-card-meta">' + k.moves + ' ' + T('carte-mouvements', 'mouvements') + '</span>' : '') +
+      (b ? '<span class="kata-card-meta">' + T('jeu-meilleur', 'Meilleur score&nbsp;:') + ' ' + b[0] + '/' + b[1] + '</span>' : '') + '</a></li>';
+  }
+  function kataPickerHtml(manifest) {
+    var best = bestScores();
+    return '<ul class="kata-list">' + availableKatas(manifest).map(function (k) { return kataPickCard(k, best); }).join('') + '</ul>';
+  }
+
+  // The frame of a game page; the game itself fills the section's slot
+  function showGame(manifest, section, viewId, label) {
+    frame(manifest, { crumb: plain(T('menu-jeux', 'Les jeux du Kohai')), active: (viewId ? '#/jeux/' + viewId : '#/jeux'),  // the menu lists the games, not their sections
+      title: tabTitle(label || section.dataset.title) });
+    show(viewWrap(viewId ? '#/jeux' : null, T('menu-jeux', 'Les jeux du Kohai'), section));
+  }
+  function languageGame(manifest, section, decks, deckId) {
+    var deck = decks.filter(function (d) { return d.id === deckId; })[0], slot = section.querySelector('[data-flashcards]');
+    if (deck) playDeck(slot, deck); else slot.innerHTML = deckPickerHtml(decks);
+    showGame(manifest, section, 'apprendre-la-langue', deck && deck.label);
+  }
+  function kataGame(manifest, section, kataId) {
+    var kata = findKata(manifest, kataId), slot = section.querySelector('[data-kata-order]');
+    if (!kata) {
+      slot.innerHTML = kataPickerHtml(manifest);
+      return showGame(manifest, section, 'apprendre-les-katas');
+    }
+    return getMoves(kata).then(function (moves) {
+      playKata(slot, { id: kata.id }, kataMoves(moves));
+      showGame(manifest, section, 'apprendre-les-katas', L(kata.name));
+    });
+  }
+  // #/jeux: the games · #/jeux/apprendre-la-langue[/<section>] · #/jeux/apprendre-les-katas[/<kata>]
+  function renderGames(manifest, viewId, itemId) {
     return Promise.all([fetchFragment(GAMES), getDecks()]).then(function (res) {
-      var sections = gameViews(res[0]), decks = res[1];
-      languageKids(decks);
+      var sections = gameViews(res[0]);
       var section = sections.filter(function (s) { return s.dataset.view === (viewId || 'jeux'); })[0];
       if (!section) { location.replace('#/jeux'); return; }
-      var deck = decks.filter(function (d) { return d.id === deckId; })[0];
-      frame(manifest, { crumb: plain(T('menu-jeux', 'Les jeux du Kohai')), active: viewId ? href('#/jeux/' + viewId, deck && deck.id) : '#/jeux',
-        title: tabTitle(deck ? deck.label : section.dataset.title) });
       section = section.cloneNode(true);
-      var slot = section.querySelector('[data-flashcards]');
-      if (slot && deck) playDeck(slot, deck);
-      else if (slot) slot.innerHTML = deckPickerHtml(decks);
-      show(viewWrap(viewId ? '#/jeux' : null, T('menu-jeux', 'Les jeux du Kohai'), section));
+      if (viewId === 'apprendre-la-langue') return languageGame(manifest, section, res[1], itemId);
+      if (viewId === 'apprendre-les-katas') return kataGame(manifest, section, itemId);
+      showGame(manifest, section, '');
     });
   }
 
@@ -996,22 +1232,25 @@
 
   // ---------- Web app: routing ----------
   // Links into the old home page (its kata list and « Qu’est-ce qu’un kata ? ») now live in the Katas section
-  function oldHomeLink(anchor) {
-    if (anchor === 'about') return '#/kata/definition';
-    if (/^g-/.test(anchor)) return '#/kata/liste/' + anchor;
+  function oldHomeLink(manifest, anchor) {
+    if (anchor === slugFromAny('about')) return '#/kata/qu-est-ce-qu-un-kata';  // « about » is read as « a-propos »
+    if (manifest.groups.some(function (g) { return g.id === anchor; })) return '#/kata/liste/' + anchor;  // a family: g-heian, read as heian
     return '#/kata';
   }
   // What a route needs: the file to load first, then how to show it (or where to send the reader instead)
   function resolveRoute(manifest, r) {
-    if (r.page === 'accueil' && r.view) return { redirect: oldHomeLink(r.view) };
+    if (r.page === 'accueil' && r.view) return { redirect: oldHomeLink(manifest, r.view) };
     if (!r.page || r.page === 'accueil') return { file: HOME, show: function () { return renderHome(manifest); } };
     if (PAGES[r.page]) return { file: PAGES[r.page].url, vocabulary: PAGES[r.page].vocabulary, show: function () { return renderPage(manifest, r.page, r.view); } };
     if (r.page === 'uniforme') return { file: UNIFORM, show: function () { return renderUniform(manifest, r.view, r.anchor); } };
     if (r.page === 'a-propos') return { file: ABOUT, show: function () { return renderAbout(manifest, r.view); } };
     if (r.page === 'kata') return { file: SHARED, show: function () { return renderShared(manifest, r.view, r.anchor); } };
-    if (r.page === 'jeux') return { file: GAMES, vocabulary: true, show: function () { return renderGames(manifest, r.view, r.anchor); } };
+    if (r.page === 'jeux') {
+      var played = r.view === 'apprendre-les-katas' && findKata(manifest, r.anchor);
+      return { file: GAMES, also: played ? movesUrl(played) : null, vocabulary: true, show: function () { return renderGames(manifest, r.view, r.anchor); } };
+    }
     var kata = findKata(manifest, r.page);
-    if (kata) return { file: localized(kata.file), show: function () { return renderKata(manifest, kata, r.view, r.anchor); } };
+    if (kata) return { file: localized(kata.file), also: movesUrl(kata), show: function () { return renderKata(manifest, kata, r.view, r.anchor); } };
     return { redirect: '#/' };
   }
   function showLoadError(err) {
@@ -1020,15 +1259,17 @@
   }
   var routeToken = 0;
   function route() {
-    updateLangLink();
-    var r = parseRoute(), token = ++routeToken;
-    Promise.all([getManifest(), labelsReady]).then(function (res) {
-      var manifest = res[0], target = resolveRoute(manifest, r);
+    var token = ++routeToken;
+    Promise.all([getManifest(), labelsReady, getSlugs()]).then(function (res) {
+      var own = pathIn(location.hash, LANG);  // the address in the reader's language (and old ids made current)
+      if (location.hash && own !== location.hash) { location.replace(own); return null; }
+      updateLangLink();
+      var manifest = res[0], r = parseRoute(), target = resolveRoute(manifest, r);
       // Everything the page needs is loaded before the check below, so a late answer never draws over a newer page
-      return Promise.all([target.file ? fetchText(target.file) : null, target.vocabulary ? getVocabulary() : null])
+      return Promise.all([target.file ? fetchText(target.file) : null, target.also ? fetchText(target.also) : null, target.vocabulary ? getVocabulary() : null])
         .then(function () { return { manifest: manifest, target: target }; });
     }).then(function (x) {
-      if (token !== routeToken) return;  // the user already navigated somewhere else
+      if (!x || token !== routeToken) return;  // the address was rewritten, or the user already navigated somewhere else
       setTimeout(function () { prefetchMenu(x.manifest); }, 0);
       if (x.target.redirect) { location.replace(x.target.redirect); return; }
       return x.target.show();

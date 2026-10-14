@@ -11,6 +11,10 @@ spec = importlib.util.spec_from_file_location('check_i18n', SCRIPT)
 ci = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ci)
 
+STEP = {'tr': {'fr': 'a', 'en': 'a'}, 'stance': {'fr': 's', 'en': 's'}, 'move': {'fr': 'm', 'en': 'm'}}
+MOVES = {'steps': [dict(STEP, jp='Ritsurei', head={'fr': 'Rei', 'en': 'Rei'}),
+                   dict(STEP, n=1, shape='zenkutsu', count='Ichi', countKanji='一', jp='Gedan Barai'),
+                   dict(STEP, n=2, shape='kiba', count='Ni', countKanji='二', kiai=True, lvl='Chudan', target={'fr': 'plexus', 'en': 'plexus'})]}
 VOCAB = {'sections': [{'id': 'lex-dojo', 'kanji': '道場', 'title': {'fr': 'Au dojo', 'en': 'In the dojo'},
                         'words': [{'jp': 'Rei', 'kanji': '礼', 'pron': {'fr': 'ré-i', 'en': 'ray'}, 'meaning': {'fr': 'Salut', 'en': 'Bow'}}]}]}
 MANIFEST = {
@@ -76,6 +80,34 @@ class Pure(unittest.TestCase):
         bad = json.loads(json.dumps(VOCAB))
         del bad['sections'][0]['words'][0]['kanji']
         self.assertEqual(len(ci.vocabulary_problems(bad)), 1)
+
+    def test_moves_ok(self):
+        self.assertEqual(ci.moves_problems('k.moves.json', MOVES, {'moves': 2, 'kiai': [2]}), [])
+
+    def test_moves_count_and_kiai_follow_the_manifest(self):
+        self.assertEqual(len(ci.moves_problems('k.moves.json', MOVES, {'moves': 3, 'kiai': [1]})), 2)
+
+    def test_moves_numbering_and_text(self):
+        bad = json.loads(json.dumps(MOVES))
+        bad['steps'][2]['n'] = 3
+        bad['steps'][1]['tr'] = {'fr': 'Blocage bas', 'en': ''}
+        bad['steps'][1]['shape'] = 'circle'
+        self.assertEqual(len(ci.moves_problems('k.moves.json', bad)), 3)
+
+    def test_moves_bad_shape_reported_not_raised(self):
+        self.assertEqual(len(ci.moves_problems('k.moves.json', {'steps': ['oops']})), 1)
+
+    def test_slugs_ok(self):
+        self.assertEqual(ci.slug_problems({'en': {'histoire': 'history', 'jeux': 'games'}, 'aliases': {'games': 'jeux', 'kun-1': 'caractere'}}), [])
+
+    def test_slugs_problems(self):
+        bad = {'en': {'histoire': 'history', 'recit': 'history', 'kata': 'katas', 'katas': 'kata-game', 'nom': 'Le Nom'},
+               'aliases': {'history': 'jeux'}}
+        self.assertEqual(len(ci.slug_problems(bad)), 4)  # not a URL word, used twice, also a French word, old id elsewhere
+
+    def test_slugs_aliases_no_loop_no_live_id(self):
+        bad = {'en': {}, 'aliases': {'a': 'b', 'b': 'a', 'kumite': 'combat'}}
+        self.assertEqual(len(ci.slug_problems(bad, {'kumite'})), 3)  # a→b and b→a are a loop, kumite is in use
 
     def test_vocabulary_not_a_list(self):
         self.assertEqual(len(ci.vocabulary_problems({'sections': {}})), 1)

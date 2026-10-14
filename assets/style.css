@@ -283,6 +283,22 @@ main:focus { outline: none; }
 .flash-word { display: block; margin-top: 4px; color: var(--muted); }
 .flash-next { font: inherit; font-weight: 600; color: #fff; background: var(--accent); border: 0; border-radius: 8px; padding: 9px 16px; cursor: pointer; }
 
+/* Kata game: cards to put in order (drag by the grip, or the arrows) */
+.order-list { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 8px; }
+.order-item { display: flex; align-items: center; gap: 12px; padding: 8px 10px; background: var(--stripe); border: 1px solid var(--line); border-radius: 8px; }
+.order-item.is-dragging { border-color: var(--accent); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); }
+.order-item.is-right { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 15%, transparent); }
+.order-item.is-wrong { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.order-grip { cursor: grab; touch-action: none; user-select: none; color: var(--muted); font-size: 1.2rem; padding: 6px 2px; }
+.order-list.is-checked .order-grip { cursor: default; opacity: 0.4; }
+.order-img { width: 56px; height: 56px; object-fit: contain; border-radius: 6px; background: var(--paper); }
+.order-text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.order-text small { color: var(--muted); }
+.order-n { font-weight: 700; font-variant-numeric: tabular-nums; min-width: 2ch; text-align: right; }
+.order-arrows { display: flex; flex-direction: column; gap: 2px; }
+.order-arrows button { font: inherit; line-height: 1; color: var(--fg); background: none; border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; cursor: pointer; }
+.order-arrows button:disabled { opacity: 0.3; cursor: default; }
+
 /* Foldable block (Katas page: « Qu’est-ce qu’un kata ? ») */
 .fold { margin: 8px 0 28px; border: 1px solid var(--line); border-radius: 8px; padding: 0 16px; }
 .fold > summary { cursor: pointer; padding: 12px 0; font-weight: 600; font-size: 1.05rem; }

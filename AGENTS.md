@@ -23,8 +23,9 @@ Pages are loaded with `fetch`, so test through a local server (`python3 -m http.
 
 - `index.html` — French app shell: top bar, menu, `<main id="view">`, footer.
 - `en/index.html` — English app shell (`lang="en" data-root="../"`), same `app.js`. A change to one shell is made in the other.
-- `assets/app.js` — hash router (`#/`, `#/<kata-id>/<section>`, `#/kata` (kata cards under a foldable « Qu'est-ce qu'un kata ? »), `#/kata/definition|erreurs`, `#/uniforme/<view>`, `#/histoire`, `#/dojo-kun`, `#/etiquette`, `#/ceintures`, `#/kihon`, `#/lexique`, `#/jeux[/langue[/<lex-section>]]`, `#/a-propos`, `#/credits`;
-  identical in both languages), menu, theme, language link, print mode (Paged.js). Logic only: user-facing text lives in the HTML files below.
+- `assets/app.js` — hash router (`#/`, `#/<kata-id>/<section>`, `#/kata` (kata cards under a foldable « Qu'est-ce qu'un kata ? »), `#/kata/definition|erreurs`, `#/uniforme/<view>`, `#/histoire`, `#/dojo-kun`, `#/etiquette`, `#/ceintures`, `#/kihon`, `#/lexique`, `#/jeux[/apprendre-la-langue[/<section>]|/apprendre-les-katas[/<kata>]]`, `#/a-propos`, `#/credits`;
+  written with French words everywhere in the files and the code; `shared/slugs.json` gives the English word of each one,
+  so English readers see `#/history/why-train`), menu, theme, language link, print mode (Paged.js). Logic only: user-facing text lives in the HTML files below.
 - `assets/style.css` (screen, light/dark tokens), `assets/print.css` (print), `assets/paged.css` (Paged.js only).
   The shells load them (and `app.js`) with one shared `?v=YYYYMMDD<letter>` (e.g. `20261013g`; next letter for another change the same day):
   bump it on all of them in both shells whenever one of these files changes (`app.js` reuses it for the Paged.js stylesheets),
@@ -48,6 +49,7 @@ Pages are loaded with `fetch`, so test through a local server (`python3 -m http.
   `{"fr", "en"}`. Text fields are HTML (`&nbsp;` before French punctuation). Add a word or a section here, never in the HTML.
 - `shared/jeux.html` — Les jeux du Kohai: the hub and one `<section data-view>` per game (`#/jeux/<view>`). The language game
   (`langue`) plays the vocabulary: each section of `lexique.json` with 3 words or more is a deck, each word a card.
+  The kata game (`katas`) plays each available kata's `katas/<id>.moves.json` in blocks of 5 moves to put back in order.
 - `img/<kata-id>/` — images of each kata.
 - Every `.html` under `katas/` and `shared/` has an English twin next to it: `x.html` + `x.en.html`.
 - `.githooks/pre-commit` runs `.githooks/check-i18n.py --staged` (see « Two languages »).
@@ -69,13 +71,23 @@ Every page exists in French and in English; a content commit is refused unless b
 - Each `.html` under `katas/` and `shared/` has an `.en.html` twin. The twin keeps the French ids: `data-view`,
   `h2`/`h3` ids, anchors, `data-credits`, `data-text` keys. Only visible text, `data-title` and `data-toc` change,
   so the language link lands on the same page and anchor.
-- `katas.json` and `shared/lexique.json` text fields are `{"fr", "en"}`, both non-empty.
+- `katas.json`, `shared/lexique.json` and `katas/<id>.moves.json` text fields are `{"fr", "en"}`, both non-empty.
 - Both shells (`index.html`, `en/index.html`) change together.
 - `.githooks/check-i18n.py` checks all of this (twins, label keys, `data-view` lists, `katas.json`, `lexique.json`, both changelogs).
   Run it by hand anytime from anywhere in the repo.
 - The root shell sends the home page (`/`, `/#/`) to `/en/` when the reader's language is English: their saved choice,
   else their browser's. Deep links keep their language; print URLs and crawlers are never redirected.
   Preferences live in `localStorage` (`kohai-theme`, `kohai-paper`, `kohai-lang`, `kohai-menu`: menu branches opened or closed by hand, `kohai-jeux`: best game score per section, as [score, cards]); the site sets no cookies.
+
+## Readable URLs
+
+Every URL word is a real word, taken from the title: a page, a view or an `h2`/`h3` id is `caractere`, `nouer-sa-ceinture`,
+`precipiter-le-compte`, never `kun-1` or `lex-dojo`. Ids are French (both twins keep them, see « Two languages »). For English
+readers, `shared/slugs.json` maps each French word to its English word (`"en"`; a word missing there is the same in both
+languages, like `kiai` or `heian-shodan`), and `app.js` writes every link in the reader's language (`localizeLinks()` and the
+menu) and translates the path on the language link. When an id is renamed, keep the old one in `"aliases"` so shared links
+still land. `check-i18n.py` checks the table: clean words, one English word per French word, no English word that is also a
+French word with another meaning.
 
 ## Editable texts
 
@@ -112,14 +124,22 @@ and the parameter follows navigation, the language link and printing.
 
 ## Kata tutorial table
 
-`<table class="steps">`, one `<tbody class="step">` per move (`step step-kiai` for a Kiai), two rows:
-the first holds `td.step-head` (rowspan 2: number bubble, `.visually-hidden` number for screen readers, Japanese count, image), `td.step-tech`
-(`.tech-jp` Japanese name, `.tech-sep`, `.tech-tr` translation, `.badges`), `td.step-stance` (name + `<small>` gloss)
-and `td.step-lvl` (Jodan/Chudan/Gedan + `<small>` target: the point aimed at for a strike, the zone protected for a block);
-the second holds `td.step-move` (colspan 3: the footwork, then an optional `.step-note`). The number bubble is a small SVG
-with the embusen shape of the stance the move ends in (circle Zenkutsu, square Kokutsu, hexagon Kiba, dashed circle Kosa,
-grey disc for any other stance, red for a Kiai). Every second move is shaded by `.step-alt`, which `markStripes()` in `app.js` sets on screen and before print layout
-(not `:nth-of-type`, which restarts when Paged.js splits a table). An `<aside class="guide">` above the table explains how to read it,
+The moves live in `katas/<id>.moves.json` (one file per kata, both languages), never in the HTML: the kata file only has a
+`<div data-steps></div>` slot in its tutorial section, and `app.js` draws the table there (screen and print). The kata game plays
+the same file. Each entry of `"steps"` is one row:
+
+- a numbered move: `n`, `shape` (the stance the move ends in: `zenkutsu` circle, `kokutsu` square, `kiba` hexagon, `kosa` dashed
+  circle, `other` grey disc), `kiai: true` for a Kiai (red), `count` and `countKanji` (Ichi, 一);
+- or a Rei / Yoi / Yame row, with a `head` instead of a number;
+- then `jp` (the Japanese name; `{"fr", "en"}` only when it holds a translated word), `tr`, optional `badges`, `stance` (name +
+  `<small>` gloss), optional `lvl` + `target` (the point aimed at for a strike, the zone protected for a block), `move` (footwork),
+  optional `note`, optional `img` + `alt`.
+
+Text fields are HTML and `{"fr", "en"}`. `check-i18n.py` checks both languages, the numbering 1 to N, and that the move count and
+the Kiai match `katas.json`. Drawn, the table is one `<tbody class="step">` per row: `td.step-head` (rowspan 2: bubble,
+`.visually-hidden` number, count, image), `td.step-tech`, `td.step-stance`, `td.step-lvl`, then `td.step-move` (colspan 3). Every
+second move is shaded by `.step-alt`, which `markStripes()` sets on screen and before print layout (not `:nth-of-type`, which
+restarts when Paged.js splits a table). An `<aside class="guide">` above the table, in the kata file, explains how to read it,
 with a legend of the shapes the kata uses.
 
 ## Embusen diagrams (SVG in the kata file)

@@ -16,6 +16,7 @@ LABEL_FILES = ('shared/libelles.html', 'shared/impression.html')
 CHANGELOGS = ('shared/changelog.html', 'shared/changelog.en.html')
 MANIFEST = 'katas/katas.json'
 VOCABULARY = 'shared/lexique.json'
+SLUGS = 'shared/slugs.json'
 TRANSLATED = {'groups': ('name', 'description'), 'katas': ('name', 'meaning', 'belt')}
 
 
@@ -78,6 +79,107 @@ def vocabulary_problems(data):
     ids = [sec.get('id') for sec in data['sections'] if isinstance(sec, dict)]
     return problems + ['{} section id {} appears more than once'.format(VOCABULARY, i)
                        for i in sorted({i for i in ids if ids.count(i) > 1}, key=str)]
+
+
+SHAPES = ('zenkutsu', 'kokutsu', 'kosa', 'kiba', 'other')
+
+
+def step_problems(name, step):
+    """One row of a kata tutorial (katas/<id>.moves.json): a numbered move, or a Rei / Yoi / Yame row with its own head."""
+    if not isinstance(step, dict):
+        return ['{} has a step that is not an object'.format(name)]
+    where = '{} step {}'.format(name, step.get('n', step.get('jp', '?')))
+    problems = ['{} "{}" needs non-empty "fr" and "en"'.format(where, f) for f in ('tr', 'stance', 'move') if not both(step.get(f))]
+    problems += ['{} "{}" needs non-empty "fr" and "en"'.format(where, f) for f in ('head', 'alt', 'badges', 'note', 'target')
+                 if f in step and not both(step[f])]
+    if 'jp' in step and not (text(step['jp']) or both(step['jp'])):
+        problems.append(where + ' "jp" needs a name, or non-empty "fr" and "en"')
+    if 'n' in step:
+        if step.get('shape') not in SHAPES:
+            problems.append('{} "shape" must be one of {}'.format(where, ', '.join(SHAPES)))
+        problems += ['{} needs a non-empty "{}"'.format(where, f) for f in ('count', 'countKanji') if not text(step.get(f))]
+    elif not both(step.get('head')):
+        problems.append(where + ' needs a number "n" or a "head"')
+    if 'lvl' in step and 'target' not in step:
+        problems.append(where + ' has a "lvl" but no "target"')
+    return problems
+
+
+def moves_problems(name, data, kata=None):
+    """A kata's tutorial: valid steps, moves numbered 1 to N, and its count and Kiai as katas.json says."""
+    if not isinstance(data, dict) or not isinstance(data.get('steps'), list):
+        return [name + ' must be an object with a "steps" list']
+    problems = [p for step in data['steps'] for p in step_problems(name, step)]
+    numbered = [s for s in data['steps'] if isinstance(s, dict) and 'n' in s]
+    nums = [s['n'] for s in numbered]
+    if nums != list(range(1, len(nums) + 1)):
+        problems.append('{} moves must be numbered 1 to {} in order'.format(name, len(nums)))
+    if kata:
+        if kata.get('moves') is not None and kata['moves'] != len(nums):
+            problems.append('{} has {} moves, katas.json says {}'.format(name, len(nums), kata['moves']))
+        kiai = [s['n'] for s in numbered if s.get('kiai')]
+        if kata.get('kiai') is not None and kata['kiai'] != kiai:
+            problems.append('{} has Kiai on {}, katas.json says {}'.format(name, kiai, kata['kiai']))
+    return problems
+
+
+def tutorial_problems(read):
+    """Every written kata in katas.json needs its katas/<id>.moves.json beside its file."""
+    raw = read(MANIFEST)
+    try:
+        katas = json.loads(raw).get('katas', []) if raw else []
+    except (ValueError, AttributeError):
+        return []  # already reported by the manifest check
+    problems = []
+    for kata in katas:
+        if not isinstance(kata, dict) or not kata.get('file'):
+            continue
+        name = re.sub(r'\.html$', '.moves.json', kata['file'])
+        body = read(name)
+        if body is None:
+            problems.append('{} has no {}'.format(kata.get('id'), name))
+            continue
+        try:
+            problems += moves_problems(name, json.loads(body), kata)
+        except ValueError as e:
+            problems.append('{} is not valid JSON: {}'.format(name, e))
+    return problems
+
+
+def slug_problems(data, live=frozenset()):
+    """shared/slugs.json: clean URL words; one English word per French word; an English word never also a French word
+    with another meaning, and an old id never leading somewhere else than its English twin."""
+    if not isinstance(data, dict) or not all(isinstance(data.get(k), dict) for k in ('en', 'aliases')):
+        return [SLUGS + ' must be an object with "en" and "aliases" objects']
+    en, aliases = data['en'], data['aliases']
+    problems = ['{} "{}": "{}" is not a URL word (a-z, 0-9, -)'.format(SLUGS, k, v) for k, v in list(en.items()) + list(aliases.items())
+                if not (isinstance(v, str) and re.fullmatch(r'[a-z0-9]+(-[a-z0-9]+)*', v))]
+    values = list(en.values())
+    problems += ['{} English word "{}" is used for more than one French word'.format(SLUGS, v) for v in sorted({v for v in values if values.count(v) > 1}, key=str)]
+    back = {v: k for k, v in en.items()}
+    problems += ['{} English word "{}" (for "{}") is also a French word'.format(SLUGS, v, k) for k, v in en.items()
+                 if v != k and v in en and en[v] != v]
+    problems += ['{} old id "{}" leads to "{}", but the English word "{}" means "{}"'.format(SLUGS, k, v, k, back[k])
+                 for k, v in aliases.items() if k in back and back[k] != v]
+    # An old id is no longer in use, and leads straight to a current one (no chain, no loop, no English word)
+    problems += ['{} old id "{}" is a current id: it would send that page elsewhere'.format(SLUGS, k) for k in aliases if k in live]
+    problems += ['{} old id "{}" leads to "{}", which is itself an old id or an English word'.format(SLUGS, k, v)
+                 for k, v in aliases.items() if v in aliases or (v in back and back[v] != v)]
+    return problems
+
+
+def live_ids(files, read):
+    """Every id a URL can name today: views and ids of the French pages, vocabulary sections and kata ids."""
+    ids = set()
+    for f in files:
+        if f.startswith(TWINNED) and f.endswith('.html') and not f.endswith('.en.html'):
+            ids.update(re.findall(r'\b(?:id|data-view)="([^"]+)"', read(f) or ''))
+    for path, key in ((VOCABULARY, 'sections'), (MANIFEST, 'katas')):
+        try:
+            ids.update(x.get('id') for x in json.loads(read(path) or '{}').get(key, []) if isinstance(x, dict))
+        except (ValueError, AttributeError):
+            pass
+    return ids
 
 
 def manifest_problems(data):
@@ -184,6 +286,7 @@ def run(staged):
     problems = pair_problems([f for f in files if f.startswith(TWINNED)])
     problems += label_problems(read) + view_problems(files, read)
     problems += json_file_problems(read, MANIFEST, manifest_problems) + json_file_problems(read, VOCABULARY, vocabulary_problems)
+    problems += tutorial_problems(read) + json_file_problems(read, SLUGS, lambda d: slug_problems(d, live_ids(files, read)))
     if staged:
         problems += changelog_problems(read)
     return problems
