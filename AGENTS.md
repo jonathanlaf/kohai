@@ -40,12 +40,20 @@ Pages are loaded with `fetch`, so test through a local server (`python3 -m http.
   `shared/histoire.html` (Histoire du Shotokan), `shared/dojo-kun.html` (Dojo Kun, one `.kun` card per precept),
   `shared/etiquette.html` (Étiquette au dojo), `shared/ceintures.html` (Ceintures et grades: belt order, kyu and dan), `shared/kihon.html` (Les bases, one `.fiche` card per technique), `shared/lexique.html` (every Japanese term of the site, by topic),
   `shared/credits.html` (Sources et crédits: one `data-credits="<id>"` block per chapter, also printed at the end of that chapter; no print button).
-- `shared/uniforme.html` — Uniforme de karaté (Dogi): one `<section data-view>` per page (`#/uniforme/<view>`). Each view also needs its menu entry in `buildMenu()` (`menu-<label>` key).
+- `shared/uniforme.html` — Uniforme de karaté (Dogi): one `<section data-view>` per page (`#/uniforme/<view>`): its menu entries are read from the file (`data-title`).
 - `img/<kata-id>/` — images of each kata.
 - Every `.html` under `katas/` and `shared/` has an English twin next to it: `x.html` + `x.en.html`.
 - `.githooks/pre-commit` runs `.githooks/check-i18n.py --staged` (see « Two languages »).
 - `tests/` — `test_check_i18n.py` (`python3 -m unittest tests/test_check_i18n.py`) and `cdp.mjs`, a headless Chrome
   driver with no packages (Node 22+): `node tests/cdp.mjs <url> [js-expression …]`.
+
+## Code (app.js)
+
+One source per fact: `SECTIONS` is the site order (the menu and « Tout imprimer » both read it), `PAGES` the one-page
+sections, `COVERS` the print covers of the uniform and Katas chapters; menu entries come from the content files themselves. Each kind of page
+has one view function (`pageView`, `uniformViews`, `sharedViews`, `kataViews`, `aboutView`) that returns what it shows and
+records its menu sub-entries (`pageKids` / `aboutKids` record them alone, for the menu prefetch). `frame()` sets what every page sets (print
+button, top-bar label, menu, tab title), and `resolveRoute()` is the only route table. Keep functions to one task.
 
 ## Two languages (required)
 

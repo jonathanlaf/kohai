@@ -67,62 +67,84 @@ def paths(out):
     return [p for p in (out or '').split('\0') if p]  # -z output: no quoting of non-ASCII names
 
 
+def reader(staged):
+    """The files to check and how to read one: the git index with --staged, else the working tree."""
+    if staged:
+        return paths(git('ls-files', '-z')), lambda p: git('show', ':' + p)
+
+    def read(p):
+        try:
+            with open(p, encoding='utf-8') as f:
+                return f.read()
+        except OSError:
+            return None
+    files = [os.path.relpath(os.path.join(d, f)).replace(os.sep, '/')
+             for top in TWINNED for d, _, fs in os.walk(top) for f in fs]
+    return files, read
+
+
+def label_problems(read):
+    problems = []
+    for fr in LABEL_FILES:
+        a, b = read(fr), read(twin(fr))
+        if a is None or b is None:
+            continue
+        ka, kb = label_keys(a), label_keys(b)
+        for key in sorted(set(ka) ^ set(kb)):
+            problems.append('data-text "{}" is in {} only'.format(key, fr if key in ka else twin(fr)))
+        for name, keys in ((fr, ka), (twin(fr), kb)):
+            for key in sorted({k for k in keys if keys.count(k) > 1}):
+                problems.append('data-text "{}" appears more than once in {}'.format(key, name))
+    return problems
+
+
+def view_problems(files, read):
+    problems = []
+    for fr in files:
+        if fr.startswith(TWINNED) and fr.endswith('.html') and not fr.endswith('.en.html') and twin(fr) in files:
+            a, b = read(fr), read(twin(fr))
+            if a is not None and b is not None and view_ids(a) != view_ids(b):
+                problems.append('{} and {} have different data-view ids: {} / {}'.format(fr, twin(fr), view_ids(a), view_ids(b)))
+    return problems
+
+
+def manifest_file_problems(read):
+    raw = read(MANIFEST)
+    if raw is None:
+        return []
+    try:
+        return manifest_problems(json.loads(raw))
+    except ValueError as e:
+        return ['{} is not valid JSON: {}'.format(MANIFEST, e)]
+
+
+def changelog_problems(read):
+    """A staged content change needs a new entry at the top of both changelogs."""
+    changed = paths(git('diff', '--cached', '--name-only', '-z', '--diff-filter=ACMRD'))
+    if not [p for p in changed if p.startswith(CONTENT) and p not in CHANGELOGS]:
+        return []
+    problems = []
+    for log in CHANGELOGS:
+        entry = first_entry(read(log) or '')
+        old = git('show', 'HEAD:' + log)
+        if not entry:
+            problems.append('no <li> entry found in ' + log)
+        elif old is not None and entry in [l.strip() for l in old.splitlines()]:
+            problems.append('content changed: add a new entry at the top of ' + log)
+    return problems
+
+
 def run(staged):
     top = git('rev-parse', '--show-toplevel')
     if top:
         os.chdir(top.strip())
     elif staged:
         return ['--staged needs a git work tree (git rev-parse failed)']
-    if staged:
-        files = paths(git('ls-files', '-z'))
-        read = lambda p: git('show', ':' + p)
-    else:
-        files = [os.path.relpath(os.path.join(d, f)).replace(os.sep, '/')
-                 for top in TWINNED for d, _, fs in os.walk(top) for f in fs]
-
-        def read(p):
-            try:
-                with open(p, encoding='utf-8') as f:
-                    return f.read()
-            except OSError:
-                return None
-
+    files, read = reader(staged)
     problems = pair_problems([f for f in files if f.startswith(TWINNED)])
-
-    for fr in LABEL_FILES:
-        a, b = read(fr), read(twin(fr))
-        if a is not None and b is not None:
-            ka, kb = label_keys(a), label_keys(b)
-            for key in sorted(set(ka) ^ set(kb)):
-                problems.append('data-text "{}" is in {} only'.format(key, fr if key in ka else twin(fr)))
-            for name, keys in ((fr, ka), (twin(fr), kb)):
-                for key in sorted({k for k in keys if keys.count(k) > 1}):
-                    problems.append('data-text "{}" appears more than once in {}'.format(key, name))
-
-    for fr in files:
-        if fr.startswith(TWINNED) and fr.endswith('.html') and not fr.endswith('.en.html') and twin(fr) in files:
-            a, b = read(fr), read(twin(fr))
-            if a is not None and b is not None and view_ids(a) != view_ids(b):
-                problems.append('{} and {} have different data-view ids: {} / {}'.format(fr, twin(fr), view_ids(a), view_ids(b)))
-
-    raw = read(MANIFEST)
-    if raw is not None:
-        try:
-            problems += manifest_problems(json.loads(raw))
-        except ValueError as e:
-            problems.append('{} is not valid JSON: {}'.format(MANIFEST, e))
-
+    problems += label_problems(read) + view_problems(files, read) + manifest_file_problems(read)
     if staged:
-        changed = paths(git('diff', '--cached', '--name-only', '-z', '--diff-filter=ACMRD'))
-        content = [p for p in changed if p.startswith(CONTENT) and p not in CHANGELOGS]
-        if content:
-            for log in CHANGELOGS:
-                entry = first_entry(read(log) or '')
-                old = git('show', 'HEAD:' + log)
-                if not entry:
-                    problems.append('no <li> entry found in ' + log)
-                elif old is not None and entry in [l.strip() for l in old.splitlines()]:
-                    problems.append('content changed: add a new entry at the top of ' + log)
+        problems += changelog_problems(read)
     return problems
 
 

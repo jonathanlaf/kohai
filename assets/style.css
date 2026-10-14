@@ -81,9 +81,7 @@ main { min-width: 0; max-width: 960px; padding-block: 24px 48px; }
 .toc-web summary { font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); cursor: pointer; padding: 4px 0; }
 .toc, .toc ol { list-style: none; margin: 0; padding: 0; }
 .toc { margin-top: 8px; display: grid; gap: 2px; }
-.toc ol { padding-left: 14px; margin: 2px 0 6px; border-left: 1px solid var(--line); }
 .toc a { display: block; padding: 3px 8px; border-radius: 6px; color: var(--fg); text-decoration: none; line-height: 1.35; }
-.toc ol a { color: var(--muted); font-size: 0.85rem; }
 .toc a:hover { background: var(--chip); }
 .toc a.active { color: var(--accent); font-weight: 600; }
 .toc-print { display: none; }
@@ -201,7 +199,6 @@ td:first-child { white-space: nowrap; font-weight: 600; }
 .embusen > svg.embusen-end { max-width: 400px; }
 .embusen .seg { stroke: var(--fg); stroke-width: 2.5; }
 .embusen .seg-k { stroke: var(--fg); stroke-width: 2.5; stroke-dasharray: 6 4; }
-.embusen .seg-y { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 2 4; }
 .embusen .arrow { fill: var(--fg); }
 .embusen .node, .legend .node, .steps .node { fill: var(--bg); stroke: var(--fg); stroke-width: 2; }
 .legend .other, .steps .other { fill: var(--line); stroke: var(--muted); stroke-width: 2; }  /* a stance with no embusen shape */
@@ -248,13 +245,11 @@ main:focus { outline: none; }
 
 /* Home */
 .home-head { padding: 24px 0 8px; }
-.kata-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 16px; }
 .kata-card {
   display: grid; gap: 2px; height: 100%; padding: 18px 20px 16px; border: 1px solid var(--line); border-radius: 10px;
   color: var(--fg); text-decoration: none; background: var(--bg);
 }
 .kata-card:hover { border-color: var(--accent); }
-.kata-card-jp { font-family: var(--font-jp); font-size: 2rem; line-height: 1.2; color: var(--accent); }
 .kata-card-name { font-weight: 700; font-size: 1.15rem; margin-top: 6px; }
 .kata-card-meaning { color: var(--muted); font-size: 0.95rem; }
 .kata-card-meta { font-size: 0.8rem; letter-spacing: 0.04em; color: var(--muted); margin-top: 10px; font-variant-numeric: tabular-nums; }
@@ -280,11 +275,10 @@ main:focus { outline: none; }
 .fold > summary .jp { color: var(--accent); }
 .fold[open] > summary { border-bottom: 1px solid var(--line); margin-bottom: 12px; }
 .kata-group h3 { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.home .jp { font-family: var(--font-jp); color: var(--accent); font-weight: 500; }
 .count { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .group-desc { color: var(--muted); font-size: 0.95rem; margin-bottom: 12px; max-width: 70ch; }
-.kata-list { grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 12px; }
-.kata-card-jp { font-size: 1.6rem; }
+.kata-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 12px; }
+.kata-card-jp { font-family: var(--font-jp); font-size: 1.6rem; line-height: 1.2; color: var(--accent); }
 .kata-card.is-soon { border-style: dashed; background: transparent; cursor: default; }
 .kata-card.is-soon .kata-card-jp, .kata-card.is-soon .kata-card-name { color: var(--muted); opacity: 0.75; }
 .kata-card.is-soon .kata-card-meaning, .kata-card.is-soon .kata-card-meta { opacity: 0.7; }
@@ -294,7 +288,7 @@ main:focus { outline: none; }
 .kata-card-belt { display: grid; gap: 6px; margin-top: 12px; font-size: 0.85rem; font-weight: 600; }
 .belt-bar { display: flex; gap: 3px; }
 .kata-card-belt + .kata-card-meta { margin-top: 2px; }
-.belt { flex: 1; height: 10px; border-radius: 2px; border: 1px solid rgba(0, 0, 0, 0.25); }
+.belt { flex: 1; height: 10px; border-radius: 2px; border: 1px solid rgba(0, 0, 0, 0.25); display: flex; justify-content: flex-end; align-items: stretch; gap: 3px; padding-right: 8px; }
 .belt-blanche { background: #ffffff; }
 .belt-jaune { background: #f2c200; }
 .belt-orange { background: #ef7d1a; }
@@ -306,11 +300,9 @@ main:focus { outline: none; }
 .kata-card.is-soon .belt { opacity: 0.7; }
 .belts td { vertical-align: middle; }
 .belt-cell { display: inline-flex; width: 56px; margin-right: 10px; vertical-align: middle; }
-.belt { display: flex; justify-content: flex-end; align-items: stretch; gap: 3px; padding-right: 8px; }
 .belt b { width: 5px; background: #f4f1ea; }
 .belt-noire b { background: #d4a72c; }
 .toc ol ol { margin-top: 0; }
-.toc ol ol a { font-size: 0.82rem; color: var(--fg); }
 
 /* Collapsible site menu */
 .toc .row { display: flex; align-items: center; gap: 2px; }
@@ -321,25 +313,23 @@ main:focus { outline: none; }
 .node.open > .row > .tw::before { transform: rotate(45deg); }
 .tw:hover { background: var(--chip); color: var(--fg); }
 .node:not(.open) > ol { display: none; }
-.toc ol { padding-left: 4px; margin-left: 9px; }
-.toc ol a { font-size: 0.86rem; }
-.toc ol ol a { font-size: 0.84rem; }
+.toc ol { padding-left: 4px; margin: 2px 0 6px 9px; border-left: 1px solid var(--line); }
+.toc ol a { color: var(--muted); font-size: 0.86rem; }
+.toc ol ol a { font-size: 0.84rem; color: var(--fg); }
 .toc > li > .row > a { font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { .tw::before { transition: none; } }
 
-h2 .jp, h3 .jp, td .jp { font-family: var(--font-jp); color: var(--accent); font-weight: 500; }
+.home .jp, h2 .jp, h3 .jp, td .jp { font-family: var(--font-jp); color: var(--accent); font-weight: 500; }
 td .jp { font-size: 0.95em; }
-p .jp, li .jp { font-family: var(--font-jp); color: var(--accent); }
-.legend .jp { font-family: var(--font-jp); color: var(--accent); }
+p .jp, li .jp, .legend .jp { font-family: var(--font-jp); color: var(--accent); }
+.embusen .seg-y, .embusen .ov-yame { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 2 4; }
 .legend .seg-y { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 2 3; }
 
 .embusen-inset > svg { max-width: 900px; }
-.embusen .inset-frame { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
-.embusen .inset-link { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.embusen .inset-frame, .embusen .inset-link { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
 .embusen .inset-title { fill: var(--muted); font-size: 12px; text-anchor: start; letter-spacing: 0.02em; }
 
 .embusen .ov-line { stroke: var(--fg); stroke-width: 2.5; stroke-linecap: round; }
-.embusen .ov-yame { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 2 4; }
 .embusen .ov-dot { fill: var(--fg); }
 .embusen .ov-kiai { fill: var(--accent); }
 .embusen .ov-start { fill: var(--bg); stroke: var(--accent); stroke-width: 2.5; }
