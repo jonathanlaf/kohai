@@ -5,6 +5,7 @@
       "title": {"fr": "Au dojo", "en": "In the dojo"},
       "words": [
         {"jp": "Dojo", "kanji": "道場", "pron": {"fr": "do-djo", "en": "doh-joh"}, "meaning": {"fr": "Lieu de pratique", "en": "Training hall"}},
+        {"jp": "Shitsurei shimasu", "kanji": "失礼します", "pron": {"fr": "chi-tsou-ré chi-mass", "en": "shee-tsoo-ray shee-mahs"}, "meaning": {"fr": "Excusez-moi, permettez-moi&nbsp;: en entrant au dojo ou en sortant, ou en passant devant quelqu’un", "en": "Excuse me, may I: when entering or leaving the dojo, or passing in front of someone"}},
         {"jp": "Shomen", "kanji": "正面", "pron": {"fr": "cho-mèn", "en": "shoh-men"}, "meaning": {"fr": "L’avant du dojo, le mur d’honneur", "en": "The front of the dojo, the place of honour"}},
         {"jp": "Rei", "kanji": "礼", "pron": {"fr": "ré-i", "en": "ray"}, "meaning": {"fr": "Salut", "en": "Bow"}},
         {"jp": "Ritsurei", "kanji": "立礼", "pron": {"fr": "ri-tsou-ré", "en": "ree-tsoo-ray"}, "meaning": {"fr": "Salut debout", "en": "Standing bow"}},
@@ -15,6 +16,8 @@
         {"jp": "Shomen ni rei", "kanji": "正面に礼", "pron": {"fr": "cho-mèn ni ré", "en": "shoh-men nee ray"}, "meaning": {"fr": "Salut vers l’avant du dojo", "en": "Bow to the front of the dojo"}},
         {"jp": "Sensei ni rei", "kanji": "先生に礼", "pron": {"fr": "sèn-sé ni ré", "en": "sen-say nee ray"}, "meaning": {"fr": "Salut au sensei", "en": "Bow to the sensei"}},
         {"jp": "Otagai ni rei", "kanji": "お互いに礼", "pron": {"fr": "o-ta-gaï ni ré", "en": "oh-tah-guy nee ray"}, "meaning": {"fr": "Salut entre élèves", "en": "Bow to each other"}},
+        {"jp": "(Yoroshiku) Onegai shimasu", "kanji": "よろしくお願いします", "pron": {"fr": "(yo-ro-chi-kou) o-né-gaï chi-mass", "en": "(yoh-roh-shee-koo) oh-neh-guy shee-mahs"}, "meaning": {"fr": "«&nbsp;S’il vous plaît&nbsp;», dit en saluant avant de pratiquer ensemble", "en": "“Please”, said when bowing before practising together"}},
+        {"jp": "Arigato gozaimasu", "kanji": "ありがとうございます", "pron": {"fr": "a-ri-ga-to go-za-ï-mass", "en": "ah-ree-gah-toh goh-zah-ee-mahs"}, "meaning": {"fr": "Merci beaucoup, dit en saluant à la fin", "en": "Thank you very much, said when bowing at the end"}},
         {"jp": "Yoi", "kanji": "用意", "pron": {"fr": "yo-i", "en": "yoh-ee"}, "meaning": {"fr": "Prêt", "en": "Ready"}},
         {"jp": "Hajime", "kanji": "始め", "pron": {"fr": "ha-dji-mé", "en": "hah-jee-meh"}, "meaning": {"fr": "Commencez", "en": "Begin"}},
         {"jp": "Yame", "kanji": "止め", "pron": {"fr": "ya-mé", "en": "yah-meh"}, "meaning": {"fr": "Arrêtez, fin", "en": "Stop, finish"}},
