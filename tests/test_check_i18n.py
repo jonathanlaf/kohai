@@ -242,7 +242,10 @@ class Staged(unittest.TestCase):
     def test_outside_git_reports_problem(self):
         with tempfile.TemporaryDirectory() as empty:
             os.chdir(empty)
-            problems = ci.run(staged=True)
+            try:
+                problems = ci.run(staged=True)
+            finally:
+                os.chdir(self.root)
         self.assertEqual(len(problems), 1)
         self.assertIn('git', problems[0])
 

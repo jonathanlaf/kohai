@@ -594,6 +594,40 @@
     nodes.querySelectorAll('a[href^="#/"]').forEach(function (a) { a.setAttribute('href', link(a.getAttribute('href'))); });
   }
   function show(nodes, anchorId) {
+    // Each screen has its own primary heading; print uses the unmodified source.
+    if (!nodes.querySelector('h1')) {
+      var title = nodes.querySelector('h2');
+      if (title) {
+        var heading = document.createElement('h1');
+        Array.from(title.attributes).forEach(function (a) { heading.setAttribute(a.name, a.value); });
+        heading.classList.add('page-title');
+        while (title.firstChild) heading.appendChild(title.firstChild);
+        title.replaceWith(heading);
+      }
+    }
+    var previousLevel = 0;
+    nodes.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach(function (heading) {
+      if (heading.closest('details:not([open])')) return;
+      var original = Number(heading.tagName.slice(1));
+      var level = Math.min(original, previousLevel + 1);
+      if (level !== original) {
+        var replacement = document.createElement('h' + level);
+        Array.from(heading.attributes).forEach(function (a) { replacement.setAttribute(a.name, a.value); });
+        replacement.classList.add('original-h' + original);
+        while (heading.firstChild) replacement.appendChild(heading.firstChild);
+        heading.replaceWith(replacement);
+      }
+      previousLevel = level;
+    });
+    nodes.querySelectorAll('.jp,.brand-jp').forEach(function (el) { if (!el.lang) el.lang = 'ja'; });
+    nodes.querySelectorAll('aside').forEach(function (aside) { aside.setAttribute('role', 'note'); });
+    nodes.querySelectorAll('.table-wrap').forEach(function (wrap, index) {
+      wrap.tabIndex = 0;
+      wrap.setAttribute('role', 'region');
+      var title = wrap.closest('section');
+      title = title && title.querySelector('h1,h2,h3');
+      wrap.setAttribute('aria-label', (title ? title.textContent : plain(T('menu-kata', 'Katas'))) + ' — ' + (index + 1));
+    });
     localizeLinks(nodes);
     videoFacades(nodes);
     markStripes(nodes);
@@ -601,9 +635,11 @@
     view.appendChild(nodes);
     if (siteFoot) view.appendChild(siteFoot);
     var target = anchorId && document.getElementById(anchorId);
-    if (target) target.scrollIntoView();
-    else window.scrollTo(0, 0);
-    view.focus({ preventScroll: true });
+    if (target) {
+      target.tabIndex = -1;
+      target.scrollIntoView();
+      target.focus({ preventScroll: true });
+    } else { window.scrollTo(0, 0); view.focus({ preventScroll: true }); }
   }
   // What every page sets around its content: print button, top-bar label, menu, tab title.
   // page: the page without its anchor (a link inside the page keeps the menu as the reader left it)
@@ -1006,6 +1042,9 @@
     game.choices = choicesFor(game.cards[game.i], game.deck);
     slot.innerHTML = questionHtml(game);
     slot.querySelectorAll('.flash-choice').forEach(function (btn) { btn.addEventListener('click', function () { answer(slot, game, btn); }); });
+    var question = slot.querySelector('.flash-question');
+    question.tabIndex = -1;
+    question.focus({ preventScroll: true });
   }
   // Marks the answer, shows the right one and the word, then offers the next card
   function answer(slot, game, picked) {
@@ -1033,6 +1072,7 @@
     saveBest(game);
     slot.innerHTML = endHtml(game);
     slot.querySelector('[data-again]').addEventListener('click', function () { playDeck(slot, game.deck); });
+    slot.querySelector('[data-again]').focus();
   }
   function playDeck(slot, deck) {
     showQuestion(slot, { deck: deck, cards: shuffle(deck.cards).slice(0, roundSize(deck)), i: 0, score: 0 });
@@ -1107,8 +1147,17 @@
     var other = up ? li.previousElementSibling : li.nextElementSibling;
     if (other) list.insertBefore(li, up ? other : other.nextElementSibling);
     li.querySelector(up ? '[data-up]' : '[data-down]').focus();
+    var position = toArray(list.children).indexOf(li) + 1;
+    list.closest('.flash').querySelector('.flash-feedback').textContent =
+      li.querySelector('.order-text').textContent.trim() + ' — ' +
+      plain(T('jeu-position', 'Position {n} sur {total}.')).replace('{n}', position).replace('{total}', list.children.length);
   }
   function makeSortable(list) {
+    list.querySelectorAll('.order-item').forEach(function (li) {
+      li.querySelectorAll('.order-arrows button').forEach(function (button) {
+        button.setAttribute('aria-label', button.getAttribute('aria-label') + ' — ' + li.querySelector('.order-text').textContent.trim());
+      });
+    });
     list.addEventListener('pointerdown', function (e) {
       var grip = e.target.closest('.order-grip');
       if (grip && !list.classList.contains('is-checked')) dragItem(list, grip.closest('li'), e);
@@ -1141,6 +1190,9 @@
   }
   function showBlock(slot, game) {
     slot.innerHTML = blockHtml(game);
+    var count = slot.querySelector('.flash-count');
+    count.tabIndex = -1;
+    count.focus({ preventScroll: true });
     makeSortable(slot.querySelector('.order-list'));
     slot.querySelector('[data-check]').addEventListener('click', function () { checkBlock(slot, game); }, { once: true });
   }
@@ -1155,6 +1207,7 @@
     saveBest(game);
     slot.innerHTML = kataEndHtml(game);
     slot.querySelector('[data-again]').addEventListener('click', function () { playKata(slot, game.deck, game.cards); });
+    slot.querySelector('[data-again]').focus();
   }
   // deck: { id } for the best score; cards: every move, which the score counts out of
   function playKata(slot, deck, moves) {
